@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 
 class AppColors {
   // 🎨 Colores base
-  static const Color primary = Color(0xFF00543D);    // Verde institucional
-  static const Color background = Color(0xFFFFFFFF); // Blanco
-  static const Color text = Color(0xFF000000);       // Negro
-  static const Color muted = Color(0xFF555555);      // Gris oscuro para detalles
+  static const Color primary = Color.fromARGB(255, 5, 176, 67);    // Verde institucional
+  static const Color background = Color.fromARGB(255, 255, 255, 255); // Blanco
+  static const Color text = Color.fromARGB(255, 0, 0, 0);       // Negro
+  static const Color muted = Color.fromARGB(255, 85, 85, 85);      // Gris oscuro para detalles
 
   // 🔘 Botones y componentes
   static const Color button = primary;
