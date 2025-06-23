@@ -1,3 +1,4 @@
+import 'package:alerta_lima/features/dashboard/view/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'app/theme/app_theme.dart';
@@ -30,7 +31,7 @@ class AlertaLimaApp extends StatelessWidget {
         '/': (context) => const SosScreen(),      // Pantalla inicial
         '/login': (context) => const LoginScreen(),
         '/register': (context) => const RegisterScreen(),
-        '/dashboard': (context) => const Placeholder(),
+        '/dashboard': (context) => const HomeScreen(),
         '/forgot': (context) => const ForgotPasswordScreen(),
         },
       )

@@ -8,24 +8,25 @@ class AuthViewModel extends ChangeNotifier {
 
   // Simulación de inicio de sesión
   Future<void> login(BuildContext context) async {
-    final email = emailController.text.trim();
-    final password = passwordController.text.trim();
+  final email = emailController.text.trim();
+  final password = passwordController.text.trim();
 
-    if (email.isEmpty || password.isEmpty) {
-      _showSnackbar(context, 'Completa todos los campos');
-      return;
-    }
-
-    isLoading = true;
-    notifyListeners();
-
-    await Future.delayed(const Duration(seconds: 2)); // Simula una petición
-
-    isLoading = false;
-    notifyListeners();
-
-    Navigator.pushReplacementNamed(context, '/dashboard');
+  if (email.isEmpty || password.isEmpty) {
+    _showSnackbar(context, 'Completa todos los campos');
+    return;
   }
+
+  isLoading = true;
+  notifyListeners();
+
+  await Future.delayed(const Duration(seconds: 2)); // Simulación
+
+  isLoading = false;
+  notifyListeners();
+
+  Navigator.pushReplacementNamed(context, '/dashboard'); // 👈 redirección
+}
+
 
   Future<void> fakeResetPassword(BuildContext context) async {
   final email = emailController.text.trim();

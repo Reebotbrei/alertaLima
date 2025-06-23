@@ -35,108 +35,117 @@ class _LoginScreenState extends State<LoginScreen> {
       child: Scaffold(
         backgroundColor: AppColors.background,
         body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: Consumer<AuthViewModel>(
-              builder: (_, vm, __) => Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const AppLogo(),
-                  const SizedBox(height: 16),
-                  const Text(
-                    "LIMA EN ACCIÓN",
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.text,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  const Text(
-                    "Iniciá sesión para continuar",
-                    style: TextStyle(color: AppColors.muted),
-                  ),
-                  const SizedBox(height: 32),
-
-                  // Email
-                  AppTextField(
-                    controller: vm.emailController,
-                    hintText: "Correo electrónico",
-                    icon: Icons.email_outlined,
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Password
-                  AppTextField(
-                    controller: vm.passwordController,
-                    hintText: "Contraseña",
-                    icon: Icons.lock_outline,
-                    obscureText: true,
-                  ),
-                  const SizedBox(height: 24),
-
-                  // Botón Iniciar sesión
-                  AppButton(
-                    label: "Iniciar Sesión",
-                    onPressed: vm.isLoading ? () {} : () => vm.login(context),
-                    isDisabled: vm.isLoading,
-                  ),
-
-                  const SizedBox(height: 16),
-
-                  // Botón Google
-                  OutlinedButton(
-                    onPressed: () {}, // Aquí irá la lógica de Google
-                    style: OutlinedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 14, horizontal: 24),
-                    ),
-                    child: const Text(
-                      "Registrarse con Google",
-                      style: TextStyle(color: AppColors.text),
-                    ),
-                  ),
-
-                  const SizedBox(height: 24),
-
-                  // ¿Olvidaste tu contraseña?
-                  TextButton(
-                    onPressed: () {
-                      Navigator.pushNamed(context, '/forgot');
-                    },
-                    child: const Text(
-                      "¿Olvidaste tu contraseña?",
-                      style: TextStyle(color: AppColors.primary),
-                    ),
-                  ),
-
-
-                  // ¿No tienes cuenta? Regístrate
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text(
-                        "¿No tienes una cuenta? ",
-                        style: TextStyle(color: AppColors.text),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.pushNamed(context, '/register');
-                        },
-                        child: const Text(
-                          "Regístrate",
+          child: Consumer<AuthViewModel>(
+            builder: (_, vm, __) => SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minHeight: MediaQuery.of(context).size.height,
+                ),
+                child: IntrinsicHeight(
+                  child: Padding(
+                    padding: const EdgeInsets.all(24.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const AppLogo(),
+                        const SizedBox(height: 16),
+                        const Text(
+                          "LIMA EN ACCIÓN",
                           style: TextStyle(
-                            color: AppColors.primary,
+                            fontSize: 22,
                             fontWeight: FontWeight.bold,
+                            color: AppColors.text,
                           ),
                         ),
-                      ),
-                    ],
+                        const SizedBox(height: 8),
+                        const Text(
+                          "Iniciá sesión para continuar",
+                          style: TextStyle(color: AppColors.muted),
+                        ),
+                        const SizedBox(height: 32),
+
+                        // Email
+                        AppTextField(
+                          controller: vm.emailController,
+                          hintText: "Correo electrónico",
+                          icon: Icons.email_outlined,
+                        ),
+                        const SizedBox(height: 16),
+
+                        // Password
+                        AppTextField(
+                          controller: vm.passwordController,
+                          hintText: "Contraseña",
+                          icon: Icons.lock_outline,
+                          obscureText: true,
+                        ),
+                        const SizedBox(height: 24),
+
+                        // Botón Iniciar sesión
+                        AppButton(
+                          label: "Iniciar Sesión",
+                          onPressed: vm.isLoading ? () {} : () => vm.login(context),
+                          isDisabled: vm.isLoading,
+                        ),
+
+                        const SizedBox(height: 16),
+
+                        // Botón Google
+                        OutlinedButton.icon(
+                          onPressed: () {}, // futura autenticación
+                          icon: const Icon(Icons.login, color: AppColors.text, size: 26),
+                          label: const Text(
+                            "Registrarse con Google",
+                            style: TextStyle(color: AppColors.text),
+                          ),
+                          style: OutlinedButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            side: const BorderSide(color: AppColors.primary),
+                            padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 24),
+                          ),
+                        ),
+
+                        const SizedBox(height: 24),
+
+                        // ¿Olvidaste tu contraseña?
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pushNamed(context, '/forgot');
+                          },
+                          child: const Text(
+                            "¿Olvidaste tu contraseña?",
+                            style: TextStyle(color: AppColors.primary),
+                          ),
+                        ),
+
+                        // ¿No tienes cuenta? Regístrate
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Text(
+                              "¿No tienes una cuenta? ",
+                              style: TextStyle(color: AppColors.text),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pushNamed(context, '/register');
+                              },
+                              child: const Text(
+                                "Regístrate",
+                                style: TextStyle(
+                                  color: AppColors.primary,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                ],
+                ),
               ),
             ),
           ),
