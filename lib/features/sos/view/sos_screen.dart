@@ -1,107 +1,93 @@
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:provider/provider.dart';
 import '../../../app/theme/app_colors.dart';
-import '../../../app/widgets/app_button.dart';
+import '../viewmodel/sos_viewmodel.dart';
+import '../model/emergency_contact.dart';
 
-class SOSScreen extends StatelessWidget {
-  const SOSScreen({super.key});
+class SosScreen extends StatelessWidget {
+  const SosScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final List<_EmergencyContact> contacts = [
-      _EmergencyContact('SAMU', '106', Icons.medical_services),
-      _EmergencyContact('Bomberos', '116', Icons.fire_truck),
-      _EmergencyContact('Policía Nacional', '105', Icons.local_police),
-      _EmergencyContact('Defensa Civil', '115', Icons.shield),
-      _EmergencyContact('Elias', '927 073 539', Icons.person),
-    ];
+    final viewModel = Provider.of<SOSViewModel>(context);
 
     return Scaffold(
-      backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text('Líneas de Emergencia'),
+        backgroundColor: AppColors.primary,
         centerTitle: true,
+        title: const Text(
+          'Líneas de Emergencia',
+          style: TextStyle(color: AppColors.background),
+        ),
       ),
-      body: Padding(
+      backgroundColor: AppColors.background,
+      body: ListView.builder(
+        padding: const EdgeInsets.all(16),
+        itemCount: viewModel.contacts.length,
+        itemBuilder: (context, index) {
+          final contact = viewModel.contacts[index];
+          return EmergencyCard(
+            contact: contact,
+            onCall: () => viewModel.callNumber(contact.number, context),
+          );
+        },
+      ),
+      bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            Expanded(
-              child: ListView.builder(
-                itemCount: contacts.length,
-                itemBuilder: (context, index) {
-                  final contact = contacts[index];
-                  return Card(
-                    elevation: 2,
-                    margin: const EdgeInsets.only(bottom: 12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: ListTile(
-                      leading: CircleAvatar(
-                        backgroundColor: AppColors.primary.withOpacity(0.1),
-                        child: Icon(contact.icon, color: AppColors.primary),
-                      ),
-                      title: Text(
-                        contact.name,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 16,
-                        ),
-                      ),
-                      subtitle: Text(
-                        contact.number,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
-                          color: AppColors.text,
-                        ),
-                      ),
-                      onTap: () async {
-                        final Uri uri = Uri(scheme: 'tel', path: contact.number);
-                        try {
-                          final bool launched = await launchUrl(
-                            uri,
-                            mode: LaunchMode.externalApplication,
-                          );
-                          if (!launched) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('No se pudo iniciar la llamada'),
-                              ),
-                            );
-                          }
-                        } catch (e) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('Error al intentar llamar: $e'),
-                            ),
-                          );
-                        }
-                      },
-                    ),
-                  );
-                },
-              ),
+        child: ElevatedButton(
+          onPressed: () {
+            Navigator.pushNamed(context, '/login');
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.button,
+            foregroundColor: AppColors.buttonText,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(30),
             ),
-            const SizedBox(height: 16),
-            AppButton(
-              label: 'Login',
-              onPressed: () {
-                // TODO: Agregar navegación a pantalla de login
-              },
-            ),
-          ],
+            padding: const EdgeInsets.symmetric(vertical: 14),
+          ),
+          child: const Text('Login', style: TextStyle(fontSize: 16)),
         ),
       ),
     );
   }
 }
 
-class _EmergencyContact {
-  final String name;
-  final String number;
-  final IconData icon;
+class EmergencyCard extends StatelessWidget {
+  final EmergencyContact contact;
+  final VoidCallback onCall;
 
-  _EmergencyContact(this.name, this.number, this.icon);
+  const EmergencyCard({
+    super.key,
+    required this.contact,
+    required this.onCall,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 3,
+      margin: const EdgeInsets.symmetric(vertical: 8.0),
+      color: AppColors.background,
+      child: ListTile(
+        leading: CircleAvatar(
+          backgroundColor: AppColors.border,
+          child: Icon(contact.icon, color: AppColors.primary),
+        ),
+        title: Text(
+          contact.title,
+          style: const TextStyle(color: AppColors.text),
+        ),
+        subtitle: Text(
+          contact.number,
+          style: const TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+            color: AppColors.text,
+          ),
+        ),
+        onTap: onCall,
+      ),
+    );
+  }
 }
