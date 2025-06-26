@@ -1,3 +1,4 @@
+import 'package:alerta_lima/features/map/view/map_screen.dart';
 import 'package:flutter/material.dart';
 import '../../../app/theme/app_colors.dart';
 import '../viewmodel/dashboard_viewmodel.dart';
@@ -13,10 +14,7 @@ class HomeScreen extends StatelessWidget {
       create: (_) => DashboardViewModel(),
       child: Scaffold(
         backgroundColor: AppColors.background,
-        appBar: AppBar(
-          title: const Text('Inicio'),
-          centerTitle: true,
-        ),
+        appBar: AppBar(title: const Text('Inicio'), centerTitle: true),
         body: Consumer<DashboardViewModel>(
           builder: (context, vm, _) => Padding(
             padding: const EdgeInsets.all(16.0),
@@ -43,7 +41,13 @@ class HomeScreen extends StatelessWidget {
                   icon: Icons.map_outlined,
                   title: 'Mapa de Seguridad',
                   onTap: () {
-                    Navigator.pushNamed(context, '/map');
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            (MapScreen()), //invocamos al clases donde se encuntra el mapa
+                      ),
+                    );
                   },
                 ),
                 MenuCard(
