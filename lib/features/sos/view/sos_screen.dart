@@ -5,7 +5,8 @@ import '../viewmodel/sos_viewmodel.dart';
 import '../model/emergency_contact.dart';
 
 class SosScreen extends StatelessWidget {
-  const SosScreen({super.key});
+  final bool isEnabled;
+  const SosScreen({super.key, this.isEnabled = true});
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +23,7 @@ class SosScreen extends StatelessWidget {
       ),
       backgroundColor: AppColors.background,
       body: ListView.builder(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(18),
         itemCount: viewModel.contacts.length,
         itemBuilder: (context, index) {
           final contact = viewModel.contacts[index];
@@ -33,8 +34,8 @@ class SosScreen extends StatelessWidget {
         },
       ),
       bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: ElevatedButton(
+        padding: const EdgeInsets.all(20.0),
+        child: isEnabled ? ElevatedButton(
           onPressed: () {
             Navigator.pushNamed(context, '/login');
           },
@@ -44,10 +45,10 @@ class SosScreen extends StatelessWidget {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(30),
             ),
-            padding: const EdgeInsets.symmetric(vertical: 14),
+            padding: const EdgeInsets.symmetric(vertical: 18),
           ),
-          child: const Text('Login', style: TextStyle(fontSize: 16)),
-        ),
+          child: const Text('Login', style: TextStyle(fontSize: 21)),
+        ) : null,
       ),
     );
   }
@@ -57,17 +58,13 @@ class EmergencyCard extends StatelessWidget {
   final EmergencyContact contact;
   final VoidCallback onCall;
 
-  const EmergencyCard({
-    super.key,
-    required this.contact,
-    required this.onCall,
-  });
+  const EmergencyCard({super.key, required this.contact, required this.onCall});
 
   @override
   Widget build(BuildContext context) {
     return Card(
       elevation: 3,
-      margin: const EdgeInsets.symmetric(vertical: 8.0),
+      margin: const EdgeInsets.symmetric(vertical: 10.0),
       color: AppColors.background,
       child: ListTile(
         leading: CircleAvatar(
@@ -81,7 +78,7 @@ class EmergencyCard extends StatelessWidget {
         subtitle: Text(
           contact.number,
           style: const TextStyle(
-            fontSize: 22,
+            fontSize: 20,
             fontWeight: FontWeight.bold,
             color: AppColors.text,
           ),
