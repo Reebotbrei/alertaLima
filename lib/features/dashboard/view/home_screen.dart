@@ -1,4 +1,4 @@
-import 'package:alerta_lima/features/map/view/map_screen.dart';
+import 'package:alerta_lima/features/map/view/pantallaDeMapa.dart';
 import 'package:flutter/material.dart';
 import '../../../app/theme/app_colors.dart';
 import '../viewmodel/dashboard_viewmodel.dart';
@@ -45,7 +45,7 @@ class HomeScreen extends StatelessWidget {
                       context,
                       MaterialPageRoute(
                         builder: (context) =>
-                            (MapScreen()), //invocamos al clases donde se encuntra el mapa
+                            (pantallaMapa()), //invocamos al clases donde se encuntra el mapa
                       ),
                     );
                   },

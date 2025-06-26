@@ -3,6 +3,13 @@
 
     //agregando permiso de internet
     <uses-permission android:name="android.permission.INTERNET"/>
+    //permisos para acceder a la ubicaicon de android
+
+    <!-- Always include this permission -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
+    <!-- Include only if your app benefits from precise location access. -->
+     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
         android:label="alerta_lima"
