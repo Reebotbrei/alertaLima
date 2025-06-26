@@ -57,6 +57,14 @@ class HomeScreen extends StatelessWidget {
                     Navigator.pushNamed(context, '/sos');
                   },
                 ),
+
+                MenuCard(
+                  icon: Icons.warning_amber_rounded,
+                  title: 'Reportar extorciones',
+                  onTap: () {
+                    Navigator.pushNamed(context, '/report');
+                  },
+                ),
               ],
             ),
           ),
