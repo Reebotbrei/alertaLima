@@ -41,6 +41,7 @@ class HomeController {
     bool gpsActivo = await Geolocator.isLocationServiceEnabled();
     if (!gpsActivo) {
       //llmamos a nuesta ventana de alerta emergente si gps esta desactivado
+      //prviene de app_alert_card
       AppAlertCard.show(
         context: context,
         title: 'Ubicación requerida',

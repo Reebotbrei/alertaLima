@@ -1,5 +1,7 @@
 import 'package:alerta_lima/features/map/view/pantalla_Mapa.dart';
 import 'package:alerta_lima/features/reporteExtorciones/pantallaReporteExtorciones.dart';
+import 'package:alerta_lima/features/reprtarIncidente/view/reportar_incidentes.dart';
+import 'package:alerta_lima/features/reprtarIncidente/view/reportar_incidentes.dart';
 import 'package:flutter/material.dart';
 import '../../../app/theme/app_colors.dart';
 import '../viewmodel/dashboard_viewmodel.dart';
@@ -28,9 +30,16 @@ class HomeScreen extends StatelessWidget {
                   icon: Icons.warning_amber_rounded,
                   title: 'Reportar Incidente',
                   onTap: () {
-                    Navigator.pushNamed(context, '/report');
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            Reporteincidentes(), //invocamos al clases donde se encuntra el mapa
+                      ),
+                    );
                   },
                 ),
+
                 MenuCard(
                   icon: Icons.campaign_outlined,
                   title: 'Alertas en tu zona',
