@@ -1,3 +1,5 @@
+// lib/features/profile/view/profile_screen.dart
+
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -19,13 +21,15 @@ class ProfileScreen extends StatelessWidget {
       body: Consumer<ProfileViewmodel>(
         builder: (context, profileVM, child) {
           if (profileVM.isLoading) {
-            return const Center(child: CircularProgressIndicator()); // Corregido de CircularLoadingIndicator
+            return const Center(child: CircularProgressIndicator());
           }
 
           return SingleChildScrollView(
             padding: const EdgeInsets.all(16.0),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center, // Este es el Column padre que envuelve todo.
+                                                          // Si quieres que todos los elementos estén a la izquierda,
+                                                          // cámbialo a CrossAxisAlignment.start
               children: [
                 // Sección de la foto de perfil
                 Stack(
@@ -33,10 +37,6 @@ class ProfileScreen extends StatelessWidget {
                     CircleAvatar(
                       radius: 60,
                       backgroundColor: AppColors.muted.withOpacity(0.2),
-                      // Lógica para mostrar la imagen:
-                      // 1. Imagen seleccionada temporalmente (FileImage)
-                      // 2. URL de imagen existente (NetworkImage)
-                      // 3. Icono por defecto
                       backgroundImage: profileVM.imageFile != null
                           ? FileImage(profileVM.imageFile!) as ImageProvider<Object>?
                           : (profileVM.user.imageUrl?.isNotEmpty == true
@@ -50,7 +50,7 @@ class ProfileScreen extends StatelessWidget {
                       bottom: 0,
                       right: 0,
                       child: FloatingActionButton(
-                        onPressed: () => _pickImage(context, profileVM), // Pasar profileVM para usar updateImage
+                        onPressed: () => _pickImage(context, profileVM),
                         mini: true,
                         backgroundColor: AppColors.button,
                         child: const Icon(Icons.edit, color: AppColors.buttonText),
@@ -68,12 +68,12 @@ class ProfileScreen extends StatelessWidget {
                 // Campo de Nombre completo
                 _buildTextField(
                   context,
-                  controller: profileVM.nombreCompletoController, // ACTUALIZADO: de nameController a nombreCompletoController
+                  controller: profileVM.nombreCompletoController,
                   labelText: 'Nombre completo*',
                   keyboardType: TextInputType.name,
                   suffixIcon: IconButton(
                     icon: const Icon(Icons.cancel),
-                    onPressed: () => profileVM.nombreCompletoController.clear(), // ACTUALIZADO
+                    onPressed: () => profileVM.nombreCompletoController.clear(),
                   ),
                 ),
                 const SizedBox(height: 15),
@@ -84,10 +84,10 @@ class ProfileScreen extends StatelessWidget {
                   child: AbsorbPointer(
                     child: _buildTextField(
                       context,
-                      controller: TextEditingController( // Este controlador es solo para mostrar
-                        text: profileVM.selectedFechaNacimiento == null // ACTUALIZADO: de selectedDateOfBirth a selectedFechaNacimiento
+                      controller: TextEditingController(
+                        text: profileVM.selectedFechaNacimiento == null
                             ? ''
-                            : DateFormat('dd/MM/yyyy').format(profileVM.selectedFechaNacimiento!), // ACTUALIZADO
+                            : DateFormat('dd/MM/yyyy').format(profileVM.selectedFechaNacimiento!),
                       ),
                       labelText: 'Fecha de Nacimiento*',
                       hintText: 'DD/MM/AAAA',
@@ -98,8 +98,14 @@ class ProfileScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 15),
 
-                // Selección de Género
-                _buildGenderSelection(context, profileVM),
+                // Sección de selección de género
+                // Para que esta sección se alinee a la izquierda,
+                // su contenedor padre (este Column o un Align) debe permitirlo.
+                // Si el Column principal tiene CrossAxisAlignment.center, esta sección también se centrará.
+                Align( // Añadimos Align para forzar la alineación a la izquierda si el padre es centrado
+                  alignment: Alignment.centerLeft,
+                  child: _buildGenderSelection(context, profileVM),
+                ),
                 const SizedBox(height: 15),
 
                 // Campo de Número de identificación (DNI)
@@ -118,12 +124,12 @@ class ProfileScreen extends StatelessWidget {
                 // Campo de Número de teléfono
                 _buildTextField(
                   context,
-                  controller: profileVM.numeroTelefonoController, // ACTUALIZADO: de phoneController a numeroTelefonoController
+                  controller: profileVM.numeroTelefonoController,
                   labelText: 'Número de teléfono*',
                   keyboardType: TextInputType.phone,
                   suffixIcon: IconButton(
                     icon: const Icon(Icons.cancel),
-                    onPressed: () => profileVM.numeroTelefonoController.clear(), // ACTUALIZADO
+                    onPressed: () => profileVM.numeroTelefonoController.clear(),
                   ),
                 ),
                 const SizedBox(height: 15),
@@ -138,7 +144,7 @@ class ProfileScreen extends StatelessWidget {
                     icon: const Icon(Icons.cancel),
                     onPressed: () => profileVM.emailController.clear(),
                   ),
-                  readOnly: true, // El email no suele ser editable en el perfil
+                  readOnly: true,
                 ),
                 const SizedBox(height: 30),
 
@@ -148,12 +154,11 @@ class ProfileScreen extends StatelessWidget {
                       ? null
                       : () async {
                           await profileVM.saveProfileChanges();
-                          // La notificación con SnackBar ahora se gestiona en el ViewModel
                         },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.button,
                     foregroundColor: AppColors.buttonText,
-                    minimumSize: const Size(double.infinity, 50), // Ancho completo
+                    minimumSize: const Size(double.infinity, 50),
                   ),
                   child: profileVM.isLoading
                       ? const CircularProgressIndicator(color: AppColors.buttonText)
@@ -180,7 +185,7 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  // Método para seleccionar imagen del perfil (ahora pasa profileVM)
+  // Método para seleccionar imagen del perfil
   Future<void> _pickImage(BuildContext context, ProfileViewmodel profileVM) async {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
@@ -208,7 +213,7 @@ class ProfileScreen extends StatelessWidget {
         labelText: labelText,
         hintText: hintText,
         suffixIcon: suffixIcon,
-        border: OutlineInputBorder( // Diseño de borde
+        border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8.0),
         ),
         enabledBorder: OutlineInputBorder(
@@ -220,28 +225,26 @@ class ProfileScreen extends StatelessWidget {
           borderSide: BorderSide(color: AppColors.primary, width: 2.0),
         ),
         filled: true,
-        fillColor: AppColors.background, // Usar textFieldBackground de AppColors
+        fillColor: AppColors.background,
       ),
-      style: TextStyle(color: AppColors.text), // Color del texto de entrada
-      cursorColor: AppColors.primary, // Color del cursor
+      style: TextStyle(color: AppColors.text),
+      cursorColor: AppColors.primary,
     );
   }
 
   // Widget para construir la sección de selección de género
   Widget _buildGenderSelection(BuildContext context, ProfileViewmodel viewModel) {
-    return Column( // O Row, si prefieres que "Género *" esté en la misma línea que las opciones.
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start, // Alinea el contenido de esta columna a la izquierda
       children: [
         Text(
           'Género *',
           style: Theme.of(context).textTheme.titleSmall?.copyWith(color: AppColors.text),
         ),
-        const SizedBox(height: 8), // Espacio entre el título y las opciones
-        // Aquí es donde puedes decidir si quieres que los radios estén en una fila (Row) o columna (Column).
-        // Las imágenes anteriores mostraban desbordamiento con Row, por eso se sugirió Column.
-        // Si quieres Row, asegúrate de que cada opción tenga un Expanded o Flexible.
-        Column( // Cambiado a Column para apilar verticalmente y evitar desbordamiento [cite: Imagen de WhatsApp 2025-06-27 a las 01.59.40_1df8851c.jpg]
-          crossAxisAlignment: CrossAxisAlignment.start, // Alinea los radios a la izquierda
+        const SizedBox(height: 8),
+        // Las opciones de radio también dentro de una columna para apilarse verticalmente
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start, // Alinea cada Radio a la izquierda
           children: <Widget>[
             _buildGenderOption(context, viewModel, 'Masculino'),
             _buildGenderOption(context, viewModel, 'Femenino'),
@@ -254,14 +257,14 @@ class ProfileScreen extends StatelessWidget {
 
   // Widget auxiliar para construir cada opción de radio de género
   Widget _buildGenderOption(BuildContext context, ProfileViewmodel viewModel, String gender) {
-    return Row( // Cada opción en un Row individual
-      mainAxisSize: MainAxisSize.min, // El Row solo ocupa el espacio necesario
+    return Row(
+      mainAxisSize: MainAxisSize.min, // Ocupa el espacio mínimo necesario
       children: [
         Radio<String>(
           value: gender,
-          groupValue: viewModel.selectedGenero, // ACTUALIZADO: de selectedGender a selectedGenero
+          groupValue: viewModel.selectedGenero,
           onChanged: (String? value) {
-            viewModel.selectedGenero = value; // ACTUALIZADO
+            viewModel.selectedGenero = value;
           },
           activeColor: AppColors.primary,
         ),

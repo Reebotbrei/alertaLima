@@ -1,14 +1,12 @@
-// lib/features/auth/viewmodel/auth_viewmodel.dart
-
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-// Asegúrate de que estas importaciones sean correctas para tu estructura de proyecto
-import 'package:alerta_lima/app/Objetitos/usuario.dart'; // Tu modelo Usuario
-import 'package:alerta_lima/features/dashboard/view/home_screen.dart'; // Importa HomeScreen
-import 'package:alerta_lima/features/auth/view/login_screen.dart'; // Importa LoginScreen para signOut
-import 'package:alerta_lima/main.dart'; // Necesitas esta importación para navigatorKey
+
+import 'package:alerta_lima/app/Objetitos/usuario.dart';
+import 'package:alerta_lima/features/dashboard/view/home_screen.dart';
+import 'package:alerta_lima/features/auth/view/login_screen.dart';
+import 'package:alerta_lima/main.dart'; 
 
 class AuthViewModel extends ChangeNotifier {
   final emailController = TextEditingController();
@@ -19,11 +17,6 @@ class AuthViewModel extends ChangeNotifier {
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
-  AuthViewModel() {
-    // Constructor para inicializar los controladores (si no se inicializan en initState de la vista)
-    // No es estrictamente necesario aquí si la vista los inicializa con late
-  }
-
   @override
   void dispose() {
     emailController.dispose();
@@ -33,7 +26,6 @@ class AuthViewModel extends ChangeNotifier {
     super.dispose();
   }
 
-  // --- Lógica de Login ---
   Future<void> login(BuildContext context) async {
     final email = emailController.text.trim();
     final password = passwordController.text.trim();
@@ -61,17 +53,16 @@ class AuthViewModel extends ChangeNotifier {
 
       // Obtener el documento del usuario de Firestore
       DocumentSnapshot snapshot = await FirebaseFirestore.instance
-          .collection('Usuarios') // Asegúrate de que tu colección se llama 'Usuarios'
+          .collection('Usuarios') 
           .doc(firebaseUser.uid)
           .get();
 
       Usuario usuario;
       if (snapshot.exists) {
-        // Si el perfil existe, cárgalo
+        
         usuario = Usuario.fromFirestore(snapshot);
       } else {
-        // Si el perfil NO existe en Firestore (ej. usuario creado via Firebase Console, o bug de registro)
-        // Crea un perfil básico en Firestore y luego lo recupera
+
         _showSnackbar("Datos de perfil no encontrados en Firestore. Creando un perfil básico...");
         usuario = Usuario(
           uid: firebaseUser.uid,
@@ -86,20 +77,16 @@ class AuthViewModel extends ChangeNotifier {
             .set(usuario.toFirestore()); // Guarda el nuevo perfil
       }
 
-      // Asegúrate de que el contexto esté montado ANTES de navegar
-      // Usar el 'context' pasado como argumento a la función 'login' es más fiable para navegación directa.
-      // Si usas navigatorKey.currentContext, la comprobación de mounted es crucial.
       if (!context.mounted) { // Usamos el context directo si está disponible
         if (navigatorKey.currentContext == null || !navigatorKey.currentContext!.mounted) {
-            print("Error de navegación: Contexto no disponible/montado.");
+            ("Error de navegación: Contexto no disponible/montado.");
             _isLoading = false;
             notifyListeners();
             return;
         }
       }
 
-      // Navegar a HomeScreen y pasar el objeto Usuario
-      // pushReplacement evita que el usuario vuelva al login con el botón de atrás
+
       Navigator.pushReplacement(
         context.mounted ? context : navigatorKey.currentContext!, // Prioriza el context directo
         MaterialPageRoute(builder: (ctx) => HomeScreen(user: usuario)), // Pasa el objeto Usuario
@@ -133,7 +120,7 @@ class AuthViewModel extends ChangeNotifier {
     }
   }
 
-  // --- Lógica de Registro ---
+
   Future<void> registro(BuildContext context) async {
     final email = emailController.text.trim();
     final password = passwordController.text.trim();
@@ -169,29 +156,25 @@ class AuthViewModel extends ChangeNotifier {
         return;
       }
 
-      // Crear el objeto Usuario inicial con los datos del registro
       Usuario nuevoUsuario = Usuario(
-        uid: firebaseUser.uid, // El UID es el identificador único del usuario
+        uid: firebaseUser.uid, 
         nombre: nombre,
         email: email,
-        empadronado: false, // Valor por defecto al registrar
-        dni: null, // Inicializa a null
-        distrito: null, // Inicializa a null
-        imageUrl: null, // Inicializa a null
-        fechaNacimiento: null, // Inicializa a null
-        genero: null, // Inicializa a null
-        numeroTelefono: null, // Inicializa a null
+        empadronado: false, 
+        dni: null, 
+        distrito: null, 
+        imageUrl: null,
+        fechaNacimiento: null, 
+        genero: null, 
+        numeroTelefono: null, 
       );
 
-      // Guardar datos del usuario en Firestore
       await FirebaseFirestore.instance
-          .collection('Usuarios') // Colección 'Usuarios' (en plural para consistencia)
+          .collection('Usuarios') 
           .doc(firebaseUser.uid)
-          .set(nuevoUsuario.toFirestore()); // Usa el método toFirestore de tu modelo
+          .set(nuevoUsuario.toFirestore()); 
 
-      // Mostrar diálogo de éxito
-      // Usar el 'context' pasado como argumento a la función 'registro' es más fiable.
-      if (!context.mounted) { // Mejor chequeo de mounted para diálogo
+      if (!context.mounted) {
         if (navigatorKey.currentContext == null || !navigatorKey.currentContext!.mounted) {
             print("Error de diálogo: Contexto no disponible/montado.");
             _isLoading = false;

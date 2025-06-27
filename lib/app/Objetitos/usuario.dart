@@ -44,7 +44,6 @@ class Usuario {
     }
 
     // Casteo seguro de los campos. Los nombres de los campos deben coincidir
-    // EXACTAMENTE con los nombres de tus campos en Firestore (sensible a mayúsculas/minúsculas).
     DateTime? parsedFechaNacimiento;
     // Manejo para convertir Timestamp o String a DateTime
     if (data['FechaNacimiento'] is Timestamp) {
