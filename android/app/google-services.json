@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "84894115804",
+    "project_id": "alertalima-bed21",
+    "storage_bucket": "alertalima-bed21.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:84894115804:android:a043e2d515737b2fb5d119",
+        "android_client_info": {
+          "package_name": "com.example.alerta_lima"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDCAxkwowD8_QCP-miyFbE_y68F1Ocldi0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
