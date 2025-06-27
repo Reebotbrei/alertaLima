@@ -107,7 +107,15 @@ class AuthViewModel extends ChangeNotifier {
       FirebaseFirestore.instance
           .collection('Usuario')
           .doc(usuario.user!.uid)
-          .set({'DNI': 0, 'Distrito': " ", 'Email': email, 'Nombre': nombre});
+          .set({
+            'DNI': null,
+            'Distrito': null,
+            'Email': email, 
+            'Empadronado': false,
+            'FechaNacimiento': null,
+            'Nombre': nombre,
+            'NumeroTelefono': null
+            });
       if (!context.mounted) return;
 
       showDialog(
