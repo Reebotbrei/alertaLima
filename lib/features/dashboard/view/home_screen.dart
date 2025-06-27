@@ -1,3 +1,7 @@
+import 'package:alerta_lima/features/map/view/pantalla_Mapa.dart';
+import 'package:alerta_lima/features/reporteExtorciones/pantallaReporteExtorciones.dart';
+import 'package:alerta_lima/features/reprtarIncidente/view/reportar_incidentes.dart';
+import 'package:alerta_lima/features/reprtarIncidente/view/reportar_incidentes.dart';
 import 'package:flutter/material.dart';
 import '../../../app/theme/app_colors.dart';
 import '../viewmodel/dashboard_viewmodel.dart';
@@ -26,9 +30,16 @@ class HomeScreen extends StatelessWidget {
                   icon: Icons.warning_amber_rounded,
                   title: 'Reportar Incidente',
                   onTap: () {
-                    Navigator.pushNamed(context, '/report');
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            Reporteincidentes(), //invocamos al clases donde se encuntra el mapa
+                      ),
+                    );
                   },
                 ),
+
                 MenuCard(
                   icon: Icons.campaign_outlined,
                   title: 'Alertas en tu zona',
@@ -40,7 +51,13 @@ class HomeScreen extends StatelessWidget {
                   icon: Icons.map_outlined,
                   title: 'Mapa de Seguridad',
                   onTap: () {
-                    Navigator.pushNamed(context, '/map');
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            (pantallaMapa()), //invocamos al clases donde se encuntra el mapa
+                      ),
+                    );
                   },
                 ),
                 MenuCard(
@@ -48,6 +65,20 @@ class HomeScreen extends StatelessWidget {
                   title: 'Contactar Autoridad',
                   onTap: () {
                     Navigator.pushNamed(context, '/chat');
+                  },
+                ),
+
+                MenuCard(
+                  icon: Icons.map_outlined,
+                  title: 'Reportar Extorciones',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            Pantallareporteextorciones(), //invocamos al clases donde se encuntra el mapa
+                      ),
+                    );
                   },
                 ),
               ],

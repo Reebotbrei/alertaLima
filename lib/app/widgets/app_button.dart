@@ -22,19 +22,16 @@ class AppButton extends StatelessWidget {
     final buttonStyle = ElevatedButton.styleFrom(
       backgroundColor: isDisabled
           ? AppColors.disabled
-          : (isFilled ? AppColors.button : Colors.transparent),
+          : (isFilled
+                ? const Color.fromRGBO(5, 176, 67, 1)
+                : Colors.transparent),
       foregroundColor: isFilled ? AppColors.buttonText : AppColors.primary,
       side: isFilled
           ? null
           : const BorderSide(color: AppColors.primary, width: 2),
-      textStyle: const TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.w600,
-      ),
+      textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
       minimumSize: Size(width ?? double.infinity, 48),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
     );
 
     return ElevatedButton(
