@@ -1,4 +1,3 @@
-import 'package:alerta_lima/features/auth/viewmodel/auth_viewmodel.dart';
 import 'package:alerta_lima/features/chat/view/chat_page.dart';
 import 'package:alerta_lima/features/chat/view/chat_user_tile.dart';
 import 'package:flutter/material.dart';

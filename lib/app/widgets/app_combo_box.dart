@@ -12,13 +12,13 @@ class DropdownTextField extends StatefulWidget {
   final bool enabled; // Determina si el campo está habilitado o deshabilitado
 
   const DropdownTextField({
-    Key? key,
+    super.key,
     this.hintText,
     required this.options,
     this.selectedValue,
     this.onChanged,
     this.enabled = true,
-  }) : super(key: key);
+  });
 
   @override
   State<DropdownTextField> createState() => _DropdownTextFieldState();
