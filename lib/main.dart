@@ -1,5 +1,8 @@
 import 'package:alerta_lima/features/chat/view/chat_screen.dart';
 import 'package:alerta_lima/features/dashboard/view/home_screen.dart';
+import 'package:alerta_lima/features/profile/view/profile_screen.dart';
+import 'package:alerta_lima/features/profile/viewmodel/profile_viewmodel.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'app/theme/app_theme.dart';
@@ -19,11 +22,19 @@ class AlertaLimaApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      providers: [ChangeNotifierProvider(create: (_) => SOSViewModel())],
+      providers: [
+        ChangeNotifierProvider(create: (_) => SOSViewModel()),
+        ChangeNotifierProvider(create: (_)=>ProfileViewmodel()),
+        ],
       child: MaterialApp(
         title: 'Alerta Lima',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.lightTheme,
+        localizationsDelegates: const[
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
         initialRoute: '/', // Empieza con SosScreen
         routes: {
           '/': (context) => const SosScreen(), // Pantalla inicial
@@ -36,6 +47,7 @@ class AlertaLimaApp extends StatelessWidget {
             create: (_) => SOSViewModel(),
             child: const SosScreen(isEnabled: false),
           ),
+          '/perfil':(context) => const ProfileScreen(),
         },
       ),
     );

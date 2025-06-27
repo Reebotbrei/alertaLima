@@ -13,7 +13,18 @@ class HomeScreen extends StatelessWidget {
       create: (_) => DashboardViewModel(),
       child: Scaffold(
         backgroundColor: AppColors.background,
-        appBar: AppBar(title: const Text('Inicio'), centerTitle: true),
+        appBar: AppBar(
+        title: const Text('Inicio'),
+        centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.person),
+            onPressed: () {
+              Navigator.pushNamed(context, '/perfil');
+            },
+          ),
+        ],
+      ),
         body: Consumer<DashboardViewModel>(
           builder: (context, vm, _) => Padding(
             padding: const EdgeInsets.all(16.0),
