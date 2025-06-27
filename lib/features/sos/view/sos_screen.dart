@@ -33,23 +33,25 @@ class SosScreen extends StatelessWidget {
           );
         },
       ),
-      bottomNavigationBar: mostrar ? Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: ElevatedButton(
-          onPressed: () {
-            Navigator.pushNamed(context, '/login');
-          },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.button,
-            foregroundColor: AppColors.buttonText,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(30),
-            ),
-            padding: const EdgeInsets.symmetric(vertical: 18),
-          ),
-          child: const Text('Login', style: TextStyle(fontSize: 21)),
-        ) : null,
-      ),
+      bottomNavigationBar: mostrar
+          ? Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, '/login');
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.button,
+                  foregroundColor: AppColors.buttonText,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 18),
+                ),
+                child: const Text('Login', style: TextStyle(fontSize: 21)),
+              ),
+            )
+          : null,
     );
   }
 }
