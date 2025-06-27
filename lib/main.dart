@@ -36,7 +36,6 @@ class AlertaLimaApp extends StatelessWidget {
         '/': (context) => const SosScreen(),      // Pantalla inicial
         '/login': (context) => const LoginScreen(),
         '/register': (context) => const RegisterScreen(),
-        '/dashboard': (context) => const HomeScreen(),
         '/forgot': (context) => const ForgotPasswordScreen(),
         },
       )

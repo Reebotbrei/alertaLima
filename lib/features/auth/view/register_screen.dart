@@ -14,7 +14,6 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen> {
   late AuthViewModel _viewModel;
-  final confirmPasswordController = TextEditingController();
 
   @override
   void initState() {
@@ -25,7 +24,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   void dispose() {
     _viewModel.disposeControllers();
-    confirmPasswordController.dispose();
     super.dispose();
   }
 
@@ -94,7 +92,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                     AppButton(
                       label: "Crear Cuenta",
-                      onPressed: vm.isLoading ? () {} : () => vm.fakeRegister(context),
+                      onPressed: vm.isLoading ? () {} : () => vm.registro(context),
                       isDisabled: vm.isLoading,
                     ),
                     const SizedBox(height: 16),

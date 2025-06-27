@@ -1,3 +1,6 @@
+import 'package:alerta_lima/app/Objetitos/usuario.dart';
+import 'package:alerta_lima/features/auth/view/login_screen.dart';
+import 'package:alerta_lima/features/dashboard/view/home_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -10,7 +13,7 @@ class AuthViewModel extends ChangeNotifier {
   final confirmaContrasenaControlador = TextEditingController();
   bool isLoading = false;
 
-  // Simulación de inicio de sesión
+  // Ya tiene try
   Future<void> login(BuildContext context) async {
     final email = emailController.text.trim();
     final password = passwordController.text.trim();
@@ -19,19 +22,41 @@ class AuthViewModel extends ChangeNotifier {
       _showSnackbar(context, 'Completa todos los campos');
       return;
     }
+    //el llamado para el ingreso y el recogo de datos se puede
+    //hacer desde otra clase de conexion a base de datos, porque creo que estaremos
+    //llamando varias veces desde varias partes
+    try {
+      isLoading = true;
+      notifyListeners();
 
-    isLoading = true;
-    notifyListeners();
+      UserCredential usuarioParaIngreso = await FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: email, password: password);
 
-    await Future.delayed(const Duration(seconds: 2)); // Simulación
+      DocumentSnapshot snapshot = await FirebaseFirestore.instance
+          .collection('Usuario')
+          .doc(usuarioParaIngreso.user!.uid)
+          .get();
 
-    isLoading = false;
-    notifyListeners();
+      if (!context.mounted) return;
 
-    Navigator.pushReplacementNamed(context, '/dashboard'); // 👈 redirección
+      Usuario usuario = Usuario.fromFirestore(snapshot);
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => HomeScreen(usuario: usuario)),
+      );
+    } catch (e) {
+      if (context.mounted) {
+        _showSnackbar(context, "Correo o contraseña invalidos");
+      }
+    } finally {
+      isLoading = false;
+      notifyListeners();
+    }
   }
 
-  Future<void> fakeResetPassword(BuildContext context) async {
+  /*
+  Future<void> ActualizarControsena(BuildContext context) async {
     final email = emailController.text.trim();
 
     if (email.isEmpty) {
@@ -47,15 +72,17 @@ class AuthViewModel extends ChangeNotifier {
     isLoading = false;
     notifyListeners();
 
+    if (!context.mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Instrucciones enviadas al correo')),
     );
 
     Navigator.pop(context); // Vuelve al login
   }
-
+*/
   // Simulación de registro
-  Future<void> fakeRegister(BuildContext context) async {
+
+  Future<void> registro(BuildContext context) async {
     final email = emailController.text.trim();
     final password = passwordController.text.trim();
     final nombre = nombreControlador.text.trim();
@@ -69,18 +96,44 @@ class AuthViewModel extends ChangeNotifier {
       _showSnackbar(context, 'Contraseña debe tener minimo 6 caracteres');
       return;
     }
+    if (password.compareTo(confirmaContrasena) != 0) {
+      _showSnackbar(context, 'Las constraseñas no son iguales');
+      return;
+    }
+    try {
 
-    UserCredential usuario = await FirebaseAuth.instance
-        .createUserWithEmailAndPassword(email: email, password: password);
-    FirebaseFirestore.instance.collection('Usuario').doc(usuario.user!.uid).set(
-      {'DNI': 0, 'Distrito': " ", 'Email': email, 'Nombre': nombre},
-    );
+      UserCredential usuario = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(email: email, password: password);
+      FirebaseFirestore.instance
+          .collection('Usuario')
+          .doc(usuario.user!.uid)
+          .set({'DNI': 0, 'Distrito': " ", 'Email': email, 'Nombre': nombre});
+      if (!context.mounted) return;
 
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Registro exitoso')));
-
-    Navigator.pushReplacementNamed(context, '/dashboard');
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text("Registro exitoso"),
+          content: Text("Bienvenido a la cumunidad $nombre"),
+          actions: [
+            IconButton(
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const LoginScreen()),
+              ),
+              icon: Text("Vamos allá"),
+            ),
+          ],
+        ),
+      );
+    } catch (e) {
+         if (context.mounted) {
+        _showSnackbar(context, "Este correo ya está siendo usado");
+      }
+    }finally{
+      isLoading = false;
+      notifyListeners();
+    }
   }
 
   void _showSnackbar(BuildContext context, String msg) {
