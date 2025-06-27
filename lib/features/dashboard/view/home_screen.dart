@@ -35,7 +35,7 @@ class HomeScreen extends StatelessWidget {
                   onTap: () {
                     Navigator.pushNamed(context, '/alerts');
                   },
-                ),
+                ),  
                 MenuCard(
                   icon: Icons.map_outlined,
                   title: 'Mapa de Seguridad',
