@@ -3,7 +3,7 @@ import '../theme/app_colors.dart';
 
 class AppButton extends StatelessWidget {
   final String label;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
   final bool isFilled;
   final bool isDisabled;
   final double? width;

@@ -1,175 +1,216 @@
-import 'dart:io';
+import 'dart:io'; // Para File
 import 'package:flutter/material.dart';
-import '../model/user_model.dart';
-import '/app/theme/app_colors.dart'; // Asegúrate de importar AppColors si lo usas en el DatePicker builder
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart' as firebase_auth; // Alias para evitar conflicto de nombres
+import 'package:firebase_storage/firebase_storage.dart'; // Para Firebase Storage
+import '../../../app/Objetitos/usuario.dart'; // Importa tu clase Usuario
+import 'package:intl/intl.dart'; // Para formatear la fecha
+import '../../../main.dart'; // Importa main.dart para navigatorKey
 
 class ProfileViewmodel extends ChangeNotifier {
-  // Simulación de un usuario inicial cargado.
-  // Se utilizará lógica en firebase
-  User _user = User(
-    id: 'user_brei_19',
-    name: 'Brei uwu',
-    email: 'brei@gmail.com',
-    phone: '000000000',
-    dni: '00000000',
-    // ¡CORRECCIÓN AQUÍ! Cambiar a (año, mes, día)
-    dateOfBirth: DateTime(2006, 07, 24), // Correcto: (Año, Mes, Día)
-    gender: 'Masculino',
+  // Propiedades del ViewModel
+  // Inicializamos _user con un valor seguro, que será sobrescrito al cargar el perfil.
+  Usuario _user = const Usuario(
+    uid: '', // UID inicializado como vacío
+    nombre: 'Invitado',
+    email: 'invitado@example.com',
+    empadronado: false,
   );
+  Usuario get user => _user;
 
   bool _isLoading = false;
-  String? _errorMessage;
-
-  // Controladores para los campos de texto
-  final TextEditingController nameController = TextEditingController();
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController phoneController = TextEditingController();
-  final TextEditingController dniController = TextEditingController();
-
-  // Variables para la fecha de nacimiento y género
-  DateTime? _selectedDateOfBirth;
-  String? _selectedGender;
-
-  ProfileViewmodel() {
-    // Cargar los datos iniciales del usuario en los controladores y variables
-    _loadInitialUserData();
-  }
-
-  // Getters para acceder al estado
-  User get user => _user;
   bool get isLoading => _isLoading;
+
+  String? _errorMessage;
   String? get errorMessage => _errorMessage;
-  DateTime? get selectedDateOfBirth => _selectedDateOfBirth;
-  String? get selectedGender => _selectedGender;
 
-  // Setters para actualizar las variables reactivas
-  set selectedDateOfBirth(DateTime? date) {
-    _selectedDateOfBirth = date;
-    notifyListeners(); // Notifica a los listeners que la fecha ha cambiado
-  }
+  // Controladores para los campos de texto, ajustados a los nombres del modelo Usuario
+  late TextEditingController nombreCompletoController; // Antes nameController
+  late TextEditingController dniController;
+  late TextEditingController numeroTelefonoController; // Antes phoneController
+  late TextEditingController emailController;
 
-  set selectedGender(String? gender) {
-    _selectedGender = gender;
-    notifyListeners(); // Notifica a los listeners que el género ha cambiado
-  }
-
-  // Método para inicializar los controladores y variables con los datos del usuario actual
-  void _loadInitialUserData() {
-    nameController.text = _user.name;
-    emailController.text = _user.email;
-    phoneController.text = _user.phone;
-    dniController.text = _user.dni;
-    _selectedDateOfBirth = _user.dateOfBirth;
-    _selectedGender = _user.gender;
-    notifyListeners(); // Asegura que la UI se actualice con los datos iniciales
-  }
-
-  // Método para actualizar la imagen de perfil
-  void updateImage(File image) {
-    _user.imageFile = image; // Almacena el archivo localmente
+  // Propiedades para la selección de fecha y género, ajustadas a los nombres del modelo Usuario
+  DateTime? _selectedFechaNacimiento; // Antes _selectedDateOfBirth
+  DateTime? get selectedFechaNacimiento => _selectedFechaNacimiento;
+  set selectedFechaNacimiento(DateTime? date) {
+    _selectedFechaNacimiento = date;
     notifyListeners();
   }
 
-  // Método para guardar los cambios en el perfil
-  Future<void> saveProfileChanges() async {
+  String? _selectedGenero; // Antes _selectedGender
+  String? get selectedGenero => _selectedGenero;
+  set selectedGenero(String? gender) {
+    _selectedGenero = gender;
+    notifyListeners();
+  }
+
+  // Propiedad para la imagen temporalmente seleccionada
+  File? _imageFile;
+  File? get imageFile => _imageFile;
+
+  // Constructor
+  ProfileViewmodel() {
+    nombreCompletoController = TextEditingController();
+    dniController = TextEditingController();
+    numeroTelefonoController = TextEditingController();
+    emailController = TextEditingController();
+    _loadUserProfile(); // Cargar el perfil al inicializar el ViewModel
+  }
+
+  @override
+  void dispose() {
+    nombreCompletoController.dispose();
+    dniController.dispose();
+    numeroTelefonoController.dispose();
+    emailController.dispose();
+    super.dispose();
+  }
+
+  // Cargar el perfil del usuario desde Firestore
+  Future<void> _loadUserProfile() async {
     _isLoading = true;
-    _errorMessage = null; // Limpia cualquier error anterior
+    _errorMessage = null;
     notifyListeners();
 
     try {
-      // Validaciones básicas de campos
-      if (nameController.text.trim().isEmpty ||
-          phoneController.text.trim().isEmpty ||
-          dniController.text.trim().isEmpty ||
-          _selectedDateOfBirth == null ||
-          _selectedGender == null) {
-        throw Exception('Por favor, completa todos los campos obligatorios (*).');
+      final String? uid = firebase_auth.FirebaseAuth.instance.currentUser?.uid;
+
+      if (uid == null) {
+        _errorMessage = "Usuario no autenticado. Por favor, inicia sesión.";
+        _isLoading = false;
+        notifyListeners();
+        return;
       }
 
-      // Crear una nueva instancia de User con los datos actualizados de los controladores
-      final updatedUser = User(
-        id: _user.id, // Mantener el ID del usuario
-        name: nameController.text.trim(),
-        email: emailController.text.trim(),
-        phone: phoneController.text.trim(),
-        dni: dniController.text.trim(),
-        imageFile: _user.imageFile, // Mantiene la imagen local si se seleccionó una nueva
-        imageUrl: _user.imageUrl, // Mantiene la URL existente (o la nueva si se subió)
-        dateOfBirth: _selectedDateOfBirth,
-        gender: _selectedGender,
-      );
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance.collection('Usuarios').doc(uid).get();
 
-      /* Lógica del firebase*/
-      // Simular una operación de red/base de datos
-      await Future.delayed(const Duration(seconds: 2));
+      if (userDoc.exists) {
+        _user = Usuario.fromFirestore(userDoc);
+        // Inicializar controladores y propiedades con los datos del usuario
+        nombreCompletoController.text = _user.nombre;
+        emailController.text = _user.email;
+        dniController.text = _user.dni?.toString() ?? '';
+        numeroTelefonoController.text = _user.numeroTelefono ?? '';
+        _selectedFechaNacimiento = _user.fechaNacimiento;
+        _selectedGenero = _user.genero;
 
-      _user = updatedUser; // Actualiza el usuario en el ViewModel con los datos guardados
-      debugPrint('Perfil actualizado con éxito: ${_user.name}'); // Usar debugPrint
+      } else {
+        _errorMessage = "Datos de perfil no encontrados en Firestore para el UID: $uid. Se inicializa un perfil básico.";
+        // Si el documento no existe, inicializa _user con datos básicos
+        _user = Usuario(
+          uid: uid,
+          nombre: 'Usuario Nuevo',
+          email: firebase_auth.FirebaseAuth.instance.currentUser?.email ?? 'nuevo_usuario@example.com',
+          empadronado: false,
+        );
+        // También limpiar los controladores para reflejar el perfil "nuevo"
+        nombreCompletoController.clear();
+        dniController.clear();
+        numeroTelefonoController.clear();
+        emailController.text = _user.email; // Establece el email del usuario de Auth
+        _selectedFechaNacimiento = null;
+        _selectedGenero = null;
+      }
+    } on FirebaseException catch (e) {
+      _errorMessage = "Error de Firebase al cargar perfil: ${e.message}";
+      print("Error Firebase al cargar perfil: $e");
     } catch (e) {
-      _errorMessage = 'Error al guardar el perfil: ${e.toString()}';
-      debugPrint('Error en saveProfileChanges: $_errorMessage'); // Usar debugPrint
+      _errorMessage = "Error al cargar el perfil: $e";
+      print("Error general al cargar perfil: $e");
     } finally {
       _isLoading = false;
       notifyListeners();
     }
   }
 
-  // Método para seleccionar la fecha de nacimiento usando un DatePicker
+  // Selector de fecha de nacimiento
   Future<void> selectDateOfBirth(BuildContext context) async {
-    final DateTime firstAllowedDate = DateTime(1900, 1, 1);
-    final DateTime lastAllowedDate = DateTime.now();
-
-    // Aseguramos que initialDate sea válido y esté dentro del rango
-    DateTime initialDateToUse = _selectedDateOfBirth ?? lastAllowedDate;
-
-    if (initialDateToUse.isBefore(firstAllowedDate)) {
-      initialDateToUse = firstAllowedDate;
-    }
-    if (initialDateToUse.isAfter(lastAllowedDate)) {
-      initialDateToUse = lastAllowedDate;
-    }
-
     final DateTime? pickedDate = await showDatePicker(
       context: context,
-      initialDate: initialDateToUse, // Usamos la fecha ya validada
-      firstDate: firstAllowedDate,   // Desde el año 1900
-      lastDate: lastAllowedDate,     // Hasta hoy
-      locale: const Locale('es', 'ES'), // Asegura que el DatePicker esté en español
-      helpText: 'Selecciona tu fecha de nacimiento',
-      cancelText: 'Cancelar',
-      confirmText: 'Aceptar',
-      // Añadir el builder para personalizar los colores del DatePicker
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: ColorScheme.light(
-              primary: Theme.of(context).primaryColor, // O AppColors.primary
-              onPrimary: AppColors.buttonText, // Color del texto en el encabezado del picker
-              onSurface: AppColors.text, // Color del texto en el calendario (días, meses)
-            ),
-            textButtonTheme: TextButtonThemeData(
-              style: TextButton.styleFrom(
-                foregroundColor: Theme.of(context).primaryColor, // O AppColors.primary
-              ),
-            ),
-          ),
-          child: child!,
-        );
-      },
+      initialDate: _selectedFechaNacimiento ?? DateTime(2000), // Usar _selectedFechaNacimiento
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
     );
-
-    if (pickedDate != null && pickedDate != _selectedDateOfBirth) {
-      selectedDateOfBirth = pickedDate; // Usa el setter para notificar cambios
+    if (pickedDate != null && pickedDate != _selectedFechaNacimiento) {
+      _selectedFechaNacimiento = pickedDate;
+      notifyListeners();
     }
   }
 
-  @override
-  void dispose() {
-    // Desecha los controladores para evitar fugas de memoria
-    nameController.dispose();
-    emailController.dispose();
-    phoneController.dispose();
-    dniController.dispose();
-    super.dispose();
+  // Selector de imagen de perfil
+  Future<void> updateImage(File image) async {
+    _imageFile = image;
+    notifyListeners();
+    // Aquí puedes añadir la lógica para subir la imagen a Firebase Storage
+    // y actualizar la URL en Firestore cuando se guarden los cambios.
+  }
+
+  // Guardar cambios del perfil
+  Future<void> saveProfileChanges() async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      final String? uid = firebase_auth.FirebaseAuth.instance.currentUser?.uid;
+      if (uid == null) {
+        _errorMessage = "Usuario no autenticado.";
+        _isLoading = false;
+        notifyListeners();
+        return;
+      }
+
+      String? newImageUrl = _user.imageUrl; // Mantener la URL existente por defecto
+
+      // Si hay una nueva imagen seleccionada, subirla a Firebase Storage
+      if (_imageFile != null) {
+        final storageRef = FirebaseStorage.instance.ref().child('profile_images').child('$uid.jpg');
+        await storageRef.putFile(_imageFile!);
+        newImageUrl = await storageRef.getDownloadURL();
+      }
+
+      // Crear un nuevo objeto Usuario con los datos actualizados de los controladores y propiedades
+      final updatedUser = _user.copyWith(
+        nombre: nombreCompletoController.text.trim(),
+        email: emailController.text.trim(),
+        dni: int.tryParse(dniController.text.trim()),
+        numeroTelefono: numeroTelefonoController.text.trim(), // Guarda el número de teléfono
+        fechaNacimiento: _selectedFechaNacimiento, // Guarda la fecha de nacimiento
+        genero: _selectedGenero, // Guarda el género
+        imageUrl: newImageUrl, // Asigna la nueva URL de la imagen
+        // Los campos 'distrito' y 'empadronado' se mantendrán de _user si no los editas
+      );
+
+      // Actualizar en Firestore
+      // Se utiliza .update() porque ya asumimos que el documento existe (o fue creado al cargar el perfil)
+      await FirebaseFirestore.instance.collection('Usuarios').doc(uid).update(updatedUser.toFirestore());
+
+      _user = updatedUser; // Actualiza el _user localmente
+
+      _errorMessage = null; // Limpiar cualquier mensaje de error anterior
+      // Utiliza navigatorKey para mostrar el SnackBar de forma segura
+      if (navigatorKey.currentContext != null && navigatorKey.currentContext!.mounted) {
+        ScaffoldMessenger.of(navigatorKey.currentContext!).showSnackBar(
+          const SnackBar(content: Text('Perfil actualizado con éxito!'), backgroundColor: Colors.green),
+        );
+      } else {
+        print("Error: No se pudo mostrar SnackBar porque navigatorKey.currentContext no está montado.");
+      }
+
+    } on FirebaseException catch (e) {
+      _errorMessage = "Error de Firebase al actualizar perfil: ${e.message}";
+      print("Error Firebase al actualizar perfil: $e");
+    } catch (e) {
+      _errorMessage = "Error al actualizar el perfil: $e";
+      print("Error general al actualizar perfil: $e");
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
   }
 }
+
+// Necesitas un GlobalKey para acceder al contexto del ScaffoldMessenger si no estás en un Widget.
+// Añade esto en tu main.dart o en un archivo de utilidad global.
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();

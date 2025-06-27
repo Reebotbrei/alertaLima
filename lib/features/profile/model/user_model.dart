@@ -1,58 +1,101 @@
-// lib/models/user_model.dart
-import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart'; // Importar Timestamp
 
-class User {
-  String id; // Considera añadir un ID único para cada usuario (ej. Firebase UID)
-  String name;
-  String email;
-  String phone;
-  String dni;
-  File? imageFile;       // Para la imagen seleccionada localmente
-  String? imageUrl;      // Para la URL de la imagen si se carga de un servidor/Firebase
-  DateTime? dateOfBirth; // Nuevo campo para la fecha de nacimiento
-  String? gender;        // Nuevo campo para el género
+class Usuario {
+  final String uid; // Usa 'uid' como identificador, consistente con Firebase Auth
+  final String nombre;
+  final String email;
+  final bool empadronado;
+  final int? dni; // Puede ser nulo
+  final String? distrito; // Puede ser nulo
+  final String? imageUrl; // Puede ser nulo
+  final DateTime? fechaNacimiento; // Nuevo campo
+  final String? genero; // Nuevo campo
+  final String? numeroTelefono; // Nuevo campo, mapea a 'phone' si es el mismo
 
-  User({
-    required this.id, // Ahora se requiere un ID
-    required this.name,
+  const Usuario({
+    required this.uid,
+    required this.nombre,
     required this.email,
-    required this.phone,
-    required this.dni,
-    this.imageFile,
+    required this.empadronado,
+    this.dni,
+    this.distrito,
     this.imageUrl,
-    this.dateOfBirth,
-    this.gender,
+    this.fechaNacimiento,
+    this.genero,
+    this.numeroTelefono,
   });
 
-  bool get estaEmpadronado => dni.isNotEmpty && phone.isNotEmpty;
+  // Constructor factory para crear Usuario desde un DocumentSnapshot de Firestore
+  factory Usuario.fromFirestore(DocumentSnapshot doc) {
+    final data = doc.data() as Map<String, dynamic>?; // Cast a Map<String, dynamic> y hazlo nullable
 
-  // Opcional: Métodos para serializar/deserializar (útil para Firebase/APIs)
-  factory User.fromJson(Map<String, dynamic> json) {
-    return User(
-      id: json['id'] as String,
-      name: json['name'] as String,
-      email: json['email'] as String,
-      phone: json['phone'] as String,
-      dni: json['dni'] as String,
-      imageUrl: json['imageUrl'] as String?,
-      dateOfBirth: json['dateOfBirth'] != null
-          ? DateTime.tryParse(json['dateOfBirth'])
-          : null,
-      gender: json['gender'] as String?,
-      // imageFile no se deserializa directamente de JSON, se maneja aparte
+    if (data == null) {
+      // Manejar el caso donde el documento no tiene datos
+      throw StateError('Documento de Firestore sin datos para UID: ${doc.id}');
+    }
+
+    // Convertir Timestamp a DateTime si el campo existe
+    DateTime? parsedFechaNacimiento;
+    if (data['FechaNacimiento'] is Timestamp) {
+      parsedFechaNacimiento = (data['FechaNacimiento'] as Timestamp).toDate();
+    } else if (data['FechaNacimiento'] is String) {
+      // Si guardas como String (aunque Timestamp es preferido para fechas)
+      parsedFechaNacimiento = DateTime.tryParse(data['FechaNacimiento']);
+    }
+
+    return Usuario(
+      uid: doc.id, // El UID es el ID del documento
+      nombre: data['Nombre'] as String? ?? 'Desconocido', // Usa '?' para acceso seguro y ?? para valor por defecto
+      email: data['Email'] as String? ?? 'sin_email@ejemplo.com',
+      empadronado: data['Empadronado'] as bool? ?? false,
+      dni: data['DNI'] as int?, // null si no existe o no es int
+      distrito: data['Distrito'] as String?,
+      imageUrl: data['ImageUrl'] as String?,
+      fechaNacimiento: parsedFechaNacimiento,
+      genero: data['Genero'] as String?,
+      numeroTelefono: data['NumeroTelefono'] as String?, // Asegúrate de que el campo en Firestore sea 'NumeroTelefono'
     );
   }
 
-  Map<String, dynamic> toJson() {
+  // Método para convertir Usuario a Map para Firestore
+  Map<String, dynamic> toFirestore() {
     return {
-      'id': id,
-      'name': name,
-      'email': email,
-      'phone': phone,
-      'dni': dni,
-      'imageUrl': imageUrl,
-      'dateOfBirth': dateOfBirth?.toIso8601String(),
-      'gender': gender,
+      'Nombre': nombre,
+      'Email': email,
+      'Empadronado': empadronado,
+      'DNI': dni,
+      'Distrito': distrito,
+      'ImageUrl': imageUrl,
+      'FechaNacimiento': fechaNacimiento != null ? Timestamp.fromDate(fechaNacimiento!) : null,
+      'Genero': genero,
+      'NumeroTelefono': numeroTelefono,
     };
+  }
+
+  // Método copyWith para crear una nueva instancia con propiedades modificadas
+  Usuario copyWith({
+    String? uid,
+    String? nombre,
+    String? email,
+    bool? empadronado,
+    int? dni,
+    String? distrito,
+    String? imageUrl,
+    DateTime? fechaNacimiento,
+    String? genero,
+    String? numeroTelefono,
+  }) {
+    return Usuario(
+      uid: uid ?? this.uid,
+      nombre: nombre ?? this.nombre,
+      email: email ?? this.email,
+      empadronado: empadronado ?? this.empadronado,
+      dni: dni ?? this.dni,
+      distrito: distrito ?? this.distrito,
+      imageUrl: imageUrl ?? this.imageUrl,
+      fechaNacimiento: fechaNacimiento ?? this.fechaNacimiento,
+      genero: genero ?? this.genero,
+      numeroTelefono: numeroTelefono ?? this.numeroTelefono,
+    );
   }
 }
