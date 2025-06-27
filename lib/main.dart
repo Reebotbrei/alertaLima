@@ -37,7 +37,7 @@ class AlertaLimaApp extends StatelessWidget {
           '/register': (context) => const RegisterScreen(),
           '/dashboard': (context) => const HomeScreen(),
           '/forgot': (context) => const ForgotPasswordScreen(),
-          '/chat': (context) => const ChatScreen(),
+          '/chat': (context) => ChatScreen(),
           '/sos': (context) => ChangeNotifierProvider(
             create: (_) => SOSViewModel(),
             child: const SosScreen(isEnabled: false),

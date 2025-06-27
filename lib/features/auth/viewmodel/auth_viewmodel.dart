@@ -8,7 +8,10 @@ class AuthViewModel extends ChangeNotifier {
   final passwordController = TextEditingController();
   final nombreControlador = TextEditingController();
   final confirmaContrasenaControlador = TextEditingController();
+  // final FirebaseAuth _auth = FirebaseAuth.instance;
   bool isLoading = false;
+
+
 
   // Simulación de inicio de sesión
   Future<void> login(BuildContext context) async {
