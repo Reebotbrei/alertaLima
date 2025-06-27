@@ -32,16 +32,11 @@ class AlertaLimaApp extends StatelessWidget {
         theme: AppTheme.lightTheme,
         initialRoute: '/', // Empieza con SosScreen
         routes: {
-          '/': (context) => const SosScreen(), // Pantalla inicial
+          '/': (context) => const SosScreen(mostrar: true,),      // Pantalla inicial
           '/login': (context) => const LoginScreen(),
-          '/register': (context) => const RegisterScreen(),
-          '/dashboard': (context) => const HomeScreen(),
+          '/register': (context) => const RegisterScreen(),          
           '/forgot': (context) => const ForgotPasswordScreen(),
-          '/chat': (context) => ChatScreen(),
-          '/sos': (context) => ChangeNotifierProvider(
-            create: (_) => SOSViewModel(),
-            child: const SosScreen(isEnabled: false),
-          ),
+          '/chat': (context) => ChatScreen(),          
         },
       ),
     );

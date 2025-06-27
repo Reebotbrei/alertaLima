@@ -5,8 +5,8 @@ import '../viewmodel/sos_viewmodel.dart';
 import '../model/emergency_contact.dart';
 
 class SosScreen extends StatelessWidget {
-  final bool isEnabled;
-  const SosScreen({super.key, this.isEnabled = true});
+  final bool mostrar;
+  const SosScreen({super.key, required this.mostrar});
 
   @override
   Widget build(BuildContext context) {
@@ -33,9 +33,9 @@ class SosScreen extends StatelessWidget {
           );
         },
       ),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: isEnabled ? ElevatedButton(
+      bottomNavigationBar: mostrar ? Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: ElevatedButton(
           onPressed: () {
             Navigator.pushNamed(context, '/login');
           },
