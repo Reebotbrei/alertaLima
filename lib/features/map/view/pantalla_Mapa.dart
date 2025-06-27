@@ -1,5 +1,5 @@
 //usamos un statefulwidget
-import 'package:alerta_lima/features/map/viewmodel/home_controler.dart';
+import 'package:alerta_lima/features/map/clasesMaps/home_controler.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 

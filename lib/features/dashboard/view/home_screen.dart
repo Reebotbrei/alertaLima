@@ -1,4 +1,5 @@
-import 'package:alerta_lima/features/map/view/pantallaDeMapa.dart';
+import 'package:alerta_lima/features/map/view/pantalla_Mapa.dart';
+import 'package:alerta_lima/features/reporteExtorciones/pantallaReporteExtorciones.dart';
 import 'package:flutter/material.dart';
 import '../../../app/theme/app_colors.dart';
 import '../viewmodel/dashboard_viewmodel.dart';
@@ -59,10 +60,16 @@ class HomeScreen extends StatelessWidget {
                 ),
 
                 MenuCard(
-                  icon: Icons.warning_amber_rounded,
-                  title: 'Reportar extorciones',
+                  icon: Icons.map_outlined,
+                  title: 'Reportar Extorciones',
                   onTap: () {
-                    Navigator.pushNamed(context, '/report');
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            Pantallareporteextorciones(), //invocamos al clases donde se encuntra el mapa
+                      ),
+                    );
                   },
                 ),
               ],

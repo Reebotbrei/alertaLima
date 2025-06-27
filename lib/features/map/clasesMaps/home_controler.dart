@@ -1,9 +1,9 @@
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:alerta_lima/features/map/viewmodel/estiloMapa.dart';
+import 'package:alerta_lima/features/map/clasesMaps/estilo_Mapa.dart';
 import 'package:alerta_lima/app/widgets/app_alert_card.dart';
 import 'package:flutter/material.dart';
-import 'package:alerta_lima/features/map/viewmodel/marcadorZonas.dart';
+import 'package:alerta_lima/features/map/clasesMaps/marcador_Zonas.dart';
 
 class HomeController {
   //controlador de mapa
