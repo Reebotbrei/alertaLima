@@ -65,13 +65,13 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     icon: Icons.email_outlined,
                   ),
                   const SizedBox(height: 24),
-
+                  /*
                   AppButton(
                     label: "Enviar instrucciones",
-                    onPressed: vm.isLoading ? () {} : () => vm.fakeResetPassword(context),
+                    onPressed: vm.isLoading ? () {} : () => vm.ActualizarContraseña(context),
                     isDisabled: vm.isLoading,
                   ),
-
+                  */
                   const SizedBox(height: 24),
                   TextButton(
                     onPressed: () {

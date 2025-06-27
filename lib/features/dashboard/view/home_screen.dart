@@ -1,3 +1,6 @@
+import 'package:alerta_lima/app/Objetitos/usuario.dart';
+import 'package:alerta_lima/features/sos/view/sos_screen.dart';
+import 'package:alerta_lima/features/sos/viewmodel/sos_viewmodel.dart';
 import 'package:flutter/material.dart';
 import '../../../app/theme/app_colors.dart';
 import '../viewmodel/dashboard_viewmodel.dart';
@@ -5,7 +8,8 @@ import 'menu_card.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+  final Usuario usuario;
+  const HomeScreen({super.key, required this.usuario});
 
   @override
   Widget build(BuildContext context) {
@@ -13,10 +17,7 @@ class HomeScreen extends StatelessWidget {
       create: (_) => DashboardViewModel(),
       child: Scaffold(
         backgroundColor: AppColors.background,
-        appBar: AppBar(
-          title: const Text('Inicio'),
-          centerTitle: true,
-        ),
+        appBar: AppBar(title: const Text('Inicio'), centerTitle: true),
         body: Consumer<DashboardViewModel>(
           builder: (context, vm, _) => Padding(
             padding: const EdgeInsets.all(16.0),
@@ -53,6 +54,23 @@ class HomeScreen extends StatelessWidget {
                     Navigator.pushNamed(context, '/sos');
                   },
                 ),
+                MenuCard(
+                  icon: Icons.chat,
+                  title: 'Chat Vecinal',
+                  onTap: () {
+                    if (usuario.empadronado == false) {
+                    } else {
+                      
+                    }
+                  },
+                ),
+                MenuCard(
+                  icon: Icons.phone,
+                  title: 'SOS',
+                  onTap: () {
+                      Navigator.push(context, MaterialPageRoute( builder: (context) => SosScreen(mostrar: false)));
+                  },
+                ),
               ],
             ),
           ),
@@ -60,4 +78,39 @@ class HomeScreen extends StatelessWidget {
       ),
     );
   }
+//usar para empadronamiento
+ void _mensajeEnable(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 20),
+        titlePadding: EdgeInsets.zero, 
+        title: Container(
+          padding: const EdgeInsets.all(16),
+          color: const Color.fromARGB(212, 8, 160, 79), 
+          child: const Center(child:  Text(
+            "Ups!, Algo salió mal",
+            style: TextStyle(color: Colors.white, fontSize: 18),
+          ),
+        ),
+        ),
+        content: SizedBox(
+          width: 300, //ancho
+          height: 95, //alto
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: const [
+              Text(
+                "Debes estar empadronado para acceder a esta función",
+                style: TextStyle(fontSize: 15),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        ),
+      );
+    },
+  );
+}
 }
