@@ -75,21 +75,6 @@ class HomeScreen extends StatelessWidget {
             ),
           ),
         ),
-        floatingActionButton: SizedBox(
-          width: 70,
-          height: 70,
-          child: FloatingActionButton(            
-            backgroundColor: AppColors.button,
-            foregroundColor: Colors.white,
-            onPressed: () {
-              Navigator.pushNamed(context, '/sos');
-            },
-            child: Text('SOS', style: const TextStyle(fontSize:20,fontWeight:  FontWeight.w800)),
-            
-          ),
-        ),
-                  
-
       ),
     );
   }
