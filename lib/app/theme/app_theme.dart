@@ -13,16 +13,16 @@ class AppTheme {
         foregroundColor: AppColors.buttonText,
         elevation: 0,
         titleTextStyle: const TextStyle(
-          fontSize: 20,
+          fontSize: 22,
           fontWeight: FontWeight.bold,
           color: AppColors.buttonText,
         ),
         iconTheme: const IconThemeData(color: AppColors.buttonText),
       ),
       textTheme: const TextTheme(
-        bodyLarge: TextStyle(color: AppColors.text, fontSize: 16),
-        bodyMedium: TextStyle(color: AppColors.muted, fontSize: 14),
-        titleLarge: TextStyle(color: AppColors.text, fontSize: 20, fontWeight: FontWeight.bold),
+        bodyLarge: TextStyle(color: AppColors.text, fontSize: 20),
+        bodyMedium: TextStyle(color: AppColors.muted, fontSize: 16),
+        titleLarge: TextStyle(color: AppColors.text, fontSize: 14, fontWeight: FontWeight.bold),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(

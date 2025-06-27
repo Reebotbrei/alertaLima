@@ -132,7 +132,6 @@ class AuthViewModel extends ChangeNotifier {
       }
     }
   }
-
   void _showSnackbar(BuildContext context, String msg) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
   }

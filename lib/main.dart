@@ -1,3 +1,4 @@
+import 'package:alerta_lima/features/chat/view/chat_screen.dart';
 import 'package:alerta_lima/features/dashboard/view/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -20,26 +21,24 @@ void main() async{
 
 class AlertaLimaApp extends StatelessWidget {
   const AlertaLimaApp({super.key});
-
+//xd
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => SOSViewModel()),
-      ],
-      child:MaterialApp(
+      providers: [ChangeNotifierProvider(create: (_) => SOSViewModel())],
+      child: MaterialApp(
         title: 'Alerta Lima',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.lightTheme,
         initialRoute: '/', // Empieza con SosScreen
         routes: {
-        '/': (context) => const SosScreen(mostrar: true,),      // Pantalla inicial
-        '/login': (context) => const LoginScreen(),
-        '/register': (context) => const RegisterScreen(),
-        '/forgot': (context) => const ForgotPasswordScreen(),
+          '/': (context) => const SosScreen(mostrar: true,),      // Pantalla inicial
+          '/login': (context) => const LoginScreen(),
+          '/register': (context) => const RegisterScreen(),          
+          '/forgot': (context) => const ForgotPasswordScreen(),
+          '/chat': (context) => ChatScreen(),          
         },
-      )
-
+      ),
     );
   }
 }
