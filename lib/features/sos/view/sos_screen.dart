@@ -8,6 +8,7 @@ class SosScreen extends StatelessWidget {
   final bool mostrar;
   const SosScreen({super.key, required this.mostrar});
 
+
   @override
   Widget build(BuildContext context) {
     final viewModel = Provider.of<SOSViewModel>(context);
@@ -23,7 +24,7 @@ class SosScreen extends StatelessWidget {
       ),
       backgroundColor: AppColors.background,
       body: ListView.builder(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(18),
         itemCount: viewModel.contacts.length,
         itemBuilder: (context, index) {
           final contact = viewModel.contacts[index];
@@ -33,6 +34,7 @@ class SosScreen extends StatelessWidget {
           );
         },
       ),
+
       bottomNavigationBar: mostrar ? Padding(
         padding: const EdgeInsets.all(16.0),
         child: ElevatedButton(
@@ -45,12 +47,14 @@ class SosScreen extends StatelessWidget {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(30),
             ),
-            padding: const EdgeInsets.symmetric(vertical: 14),
+            padding: const EdgeInsets.symmetric(vertical: 18),
           ),
+
           child: const Text('Log in', style: TextStyle(fontSize: 16)),
         ), 
       )
     : null, 
+
     );
   }
 }
@@ -65,7 +69,7 @@ class EmergencyCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       elevation: 3,
-      margin: const EdgeInsets.symmetric(vertical: 8.0),
+      margin: const EdgeInsets.symmetric(vertical: 10.0),
       color: AppColors.background,
       child: ListTile(
         leading: CircleAvatar(
@@ -79,7 +83,7 @@ class EmergencyCard extends StatelessWidget {
         subtitle: Text(
           contact.number,
           style: const TextStyle(
-            fontSize: 22,
+            fontSize: 20,
             fontWeight: FontWeight.bold,
             color: AppColors.text,
           ),

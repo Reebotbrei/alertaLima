@@ -15,6 +15,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   late AuthViewModel _viewModel;
+  bool _obscurePassword = true;
 
   @override
   void initState() {
@@ -52,14 +53,14 @@ class _LoginScreenState extends State<LoginScreen> {
                         const Text(
                           "LIMA EN ACCIÓN",
                           style: TextStyle(
-                            fontSize: 22,
+                            fontSize: 23,
                             fontWeight: FontWeight.bold,
                             color: AppColors.text,
                           ),
                         ),
                         const SizedBox(height: 8),
                         const Text(
-                          "Iniciá sesión para continuar",
+                          "Inicia sesión para continuar",
                           style: TextStyle(color: AppColors.muted),
                         ),
                         const SizedBox(height: 32),
@@ -77,14 +78,25 @@ class _LoginScreenState extends State<LoginScreen> {
                           controller: vm.passwordController,
                           hintText: "Contraseña",
                           icon: Icons.lock_outline,
-                          obscureText: true,
+                          obscureText: _obscurePassword,
+                          iconEye: _obscurePassword
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                          onEyeTab: () {
+                            setState(() {
+                              _obscurePassword = !_obscurePassword;
+                            });
+                          },
                         ),
+
                         const SizedBox(height: 24),
 
                         // Botón Iniciar sesión
                         AppButton(
                           label: "Iniciar Sesión",
-                          onPressed: vm.isLoading ? () {} : () => vm.login(context),
+                          onPressed: vm.isLoading
+                              ? () {}
+                              : () => vm.login(context),
                           isDisabled: vm.isLoading,
                         ),
 
@@ -93,7 +105,11 @@ class _LoginScreenState extends State<LoginScreen> {
                         // Botón Google
                         OutlinedButton.icon(
                           onPressed: () {}, // futura autenticación
-                          icon: const Icon(Icons.login, color: AppColors.text, size: 26),
+                          icon: const Icon(
+                            Icons.login,
+                            color: AppColors.text,
+                            size: 26,
+                          ),
                           label: const Text(
                             "Registrarse con Google",
                             style: TextStyle(color: AppColors.text),
@@ -103,7 +119,10 @@ class _LoginScreenState extends State<LoginScreen> {
                               borderRadius: BorderRadius.circular(30),
                             ),
                             side: const BorderSide(color: AppColors.primary),
-                            padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 24),
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 14,
+                              horizontal: 24,
+                            ),
                           ),
                         ),
 

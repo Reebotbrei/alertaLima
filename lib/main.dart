@@ -1,3 +1,4 @@
+import 'package:alerta_lima/features/chat/view/chat_screen.dart';
 import 'package:alerta_lima/features/dashboard/view/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -10,13 +11,13 @@ import 'features/sos/viewmodel/sos_viewmodel.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
+
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(const AlertaLimaApp());
-}
+
 
 class AlertaLimaApp extends StatelessWidget {
   const AlertaLimaApp({super.key});
@@ -24,10 +25,8 @@ class AlertaLimaApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => SOSViewModel()),
-      ],
-      child:MaterialApp(
+      providers: [ChangeNotifierProvider(create: (_) => SOSViewModel())],
+      child: MaterialApp(
         title: 'Alerta Lima',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.lightTheme,
@@ -37,9 +36,9 @@ class AlertaLimaApp extends StatelessWidget {
         '/login': (context) => const LoginScreen(),
         '/register': (context) => const RegisterScreen(),
         '/forgot': (context) => const ForgotPasswordScreen(),
-        },
-      )
 
+        },
+      ),
     );
   }
 }
