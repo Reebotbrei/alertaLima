@@ -1,4 +1,5 @@
 import 'package:alerta_lima/app/Objetitos/usuario.dart';
+import 'package:alerta_lima/features/chat/view/chat_screen.dart';
 import 'package:alerta_lima/features/sos/view/sos_screen.dart';
 import 'package:alerta_lima/features/sos/viewmodel/sos_viewmodel.dart';
 import 'package:flutter/material.dart';
@@ -30,7 +31,11 @@ class HomeScreen extends StatelessWidget {
                   icon: Icons.warning_amber_rounded,
                   title: 'Reportar Incidente',
                   onTap: () {
-                    Navigator.pushNamed(context, '/report');
+                    if (usuario.empadronado == false) {
+                      _mensajeEnable(context);
+                    } else {
+                      Navigator.pushNamed(context, '/report');
+                    }
                   },
                 ),
                 MenuCard(
@@ -51,7 +56,11 @@ class HomeScreen extends StatelessWidget {
                   icon: Icons.support_agent,
                   title: 'Contactar Autoridad',
                   onTap: () {
-                    Navigator.pushNamed(context, '/chat');
+                    if (usuario.empadronado == false) {
+                      _mensajeEnable(context);
+                    } else {
+                      Navigator.pushNamed(context, '/chat');
+                    }
                   },
                 ),
                 MenuCard(
@@ -59,8 +68,14 @@ class HomeScreen extends StatelessWidget {
                   title: 'Chat Vecinal',
                   onTap: () {
                     if (usuario.empadronado == false) {
+                      _mensajeEnable(context);
                     } else {
-                      
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ChatScreen(),
+                        ),
+                      );
                     }
                   },
                 ),
@@ -68,7 +83,12 @@ class HomeScreen extends StatelessWidget {
                   icon: Icons.phone,
                   title: 'SOS',
                   onTap: () {
-                      Navigator.push(context, MaterialPageRoute( builder: (context) => SosScreen(mostrar: false)));
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => SosScreen(mostrar: false),
+                      ),
+                    );
                   },
                 ),
               ],
@@ -78,39 +98,41 @@ class HomeScreen extends StatelessWidget {
       ),
     );
   }
-//usar para empadronamiento
- void _mensajeEnable(BuildContext context) {
-  showDialog(
-    context: context,
-    builder: (context) {
-      return AlertDialog(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 20),
-        titlePadding: EdgeInsets.zero, 
-        title: Container(
-          padding: const EdgeInsets.all(16),
-          color: const Color.fromARGB(212, 8, 160, 79), 
-          child: const Center(child:  Text(
-            "Ups!, Algo salió mal",
-            style: TextStyle(color: Colors.white, fontSize: 18),
-          ),
-        ),
-        ),
-        content: SizedBox(
-          width: 300, //ancho
-          height: 95, //alto
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: const [
-              Text(
-                "Debes estar empadronado para acceder a esta función",
-                style: TextStyle(fontSize: 15),
-                textAlign: TextAlign.center,
+
+  //usar para empadronamiento
+  void _mensajeEnable(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          contentPadding: const EdgeInsets.symmetric(horizontal: 20),
+          titlePadding: EdgeInsets.zero,
+          title: Container(
+            padding: const EdgeInsets.all(16),
+            color: const Color.fromARGB(212, 8, 160, 79),
+            child: const Center(
+              child: Text(
+                "Ups!, Algo salió mal",
+                style: TextStyle(color: Colors.white, fontSize: 18),
               ),
-            ],
+            ),
           ),
-        ),
-      );
-    },
-  );
-}
+          content: SizedBox(
+            width: 300, //ancho
+            height: 95, //alto
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: const [
+                Text(
+                  "Debes estar empadronado para acceder a esta función",
+                  style: TextStyle(fontSize: 15),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
 }

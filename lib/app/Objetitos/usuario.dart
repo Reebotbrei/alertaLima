@@ -27,13 +27,14 @@ class Usuario {
     final inforDeFireStore = doc.data() as Map<String, dynamic>;
     
     return Usuario(
-      nombre: inforDeFireStore['Nombre'],
-      distrito: inforDeFireStore['Distrito'],
+      dni: inforDeFireStore["DNI"],
+      distrito: inforDeFireStore['Distrito'],  
       email: inforDeFireStore['Email'],
       empadronado: inforDeFireStore['Empadronado'],
-      dni: inforDeFireStore["DNI"],
       fechaNacimiento: inforDeFireStore["FechaNacimiento"],
       genero : inforDeFireStore["Genero"],
+      nombre: inforDeFireStore['Nombre'],
+      numeroTelefono: inforDeFireStore['NumeroTelefono'] 
     );
   }
 }
