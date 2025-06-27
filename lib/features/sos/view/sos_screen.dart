@@ -5,7 +5,8 @@ import '../viewmodel/sos_viewmodel.dart';
 import '../model/emergency_contact.dart';
 
 class SosScreen extends StatelessWidget {
-  const SosScreen({super.key});
+  final bool mostrar;
+  const SosScreen({super.key, required this.mostrar});
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +33,7 @@ class SosScreen extends StatelessWidget {
           );
         },
       ),
-      bottomNavigationBar: Padding(
+      bottomNavigationBar: mostrar ? Padding(
         padding: const EdgeInsets.all(16.0),
         child: ElevatedButton(
           onPressed: () {
@@ -46,9 +47,10 @@ class SosScreen extends StatelessWidget {
             ),
             padding: const EdgeInsets.symmetric(vertical: 14),
           ),
-          child: const Text('Login', style: TextStyle(fontSize: 16)),
-        ),
-      ),
+          child: const Text('Log in', style: TextStyle(fontSize: 16)),
+        ), 
+      )
+    : null, 
     );
   }
 }
@@ -57,11 +59,7 @@ class EmergencyCard extends StatelessWidget {
   final EmergencyContact contact;
   final VoidCallback onCall;
 
-  const EmergencyCard({
-    super.key,
-    required this.contact,
-    required this.onCall,
-  });
+  const EmergencyCard({super.key, required this.contact, required this.onCall});
 
   @override
   Widget build(BuildContext context) {

@@ -33,7 +33,7 @@ class AlertaLimaApp extends StatelessWidget {
         theme: AppTheme.lightTheme,
         initialRoute: '/', // Empieza con SosScreen
         routes: {
-        '/': (context) => const SosScreen(),      // Pantalla inicial
+        '/': (context) => const SosScreen(mostrar: true,),      // Pantalla inicial
         '/login': (context) => const LoginScreen(),
         '/register': (context) => const RegisterScreen(),
         '/forgot': (context) => const ForgotPasswordScreen(),

@@ -128,11 +128,8 @@ class AuthViewModel extends ChangeNotifier {
       );
     } catch (e) {
          if (context.mounted) {
-        _showSnackbar(context, "Este correo ya está siendo usado");
+        _showSnackbar(context, "Este correo ya está siendo utilizado");
       }
-    }finally{
-      isLoading = false;
-      notifyListeners();
     }
   }
 
