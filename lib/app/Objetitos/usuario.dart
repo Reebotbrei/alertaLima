@@ -20,11 +20,12 @@ class Usuario {
   factory Usuario.fromFirestore(DocumentSnapshot doc){
     final inforDeFireStore = doc.data() as  Map<String, dynamic>;
     return Usuario(
-      nombre: inforDeFireStore['nombre'],
-      distrito: inforDeFireStore['distrito'],
-      email: inforDeFireStore['email'],
+      nombre: inforDeFireStore['Nombre'],
+      distrito: inforDeFireStore['Distrito'],
+      email: inforDeFireStore['Email'],
+      empadronado: inforDeFireStore['Empadronado'],
+      dni: inforDeFireStore["DNI"]
     );
-
   }
 
 

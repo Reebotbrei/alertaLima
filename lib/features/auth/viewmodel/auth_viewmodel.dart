@@ -1,4 +1,7 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class AuthViewModel extends ChangeNotifier {
   final emailController = TextEditingController();
@@ -56,23 +59,22 @@ class AuthViewModel extends ChangeNotifier {
     final email = emailController.text.trim();
     final password = passwordController.text.trim();
     final nombre = nombreControlador.text.trim();
-    final confirmaContrasena =  confirmaContrasenaControlador.text.trim();
+    final confirmaContrasena = confirmaContrasenaControlador.text.trim();
+
     if (email.isEmpty || password.isEmpty) {
       _showSnackbar(context, 'Completa todos los campos');
       return;
     }
-    if(password != confirmaContrasena){
-        _showSnackbar(context, "Las contraseñas no coinciden");
+    if (password.length < 6) {
+      _showSnackbar(context, 'Contraseña debe tener minimo 6 caracteres');
       return;
     }
 
-    isLoading = true;
-    notifyListeners();
-
-    await Future.delayed(const Duration(seconds: 2)); // Simula llamada
-
-    isLoading = false;
-    notifyListeners();
+    UserCredential usuario = await FirebaseAuth.instance
+        .createUserWithEmailAndPassword(email: email, password: password);
+    FirebaseFirestore.instance.collection('Usuario').doc(usuario.user!.uid).set(
+      {'DNI': 0, 'Distrito': " ", 'Email': email, 'Nombre': nombre},
+    );
 
     ScaffoldMessenger.of(
       context,
