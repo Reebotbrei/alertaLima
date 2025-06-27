@@ -14,7 +14,6 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen> {
   late AuthViewModel _viewModel;
-  final nameController = TextEditingController();
   final confirmPasswordController = TextEditingController();
 
   @override
@@ -26,7 +25,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   void dispose() {
     _viewModel.disposeControllers();
-    nameController.dispose();
     confirmPasswordController.dispose();
     super.dispose();
   }
@@ -65,7 +63,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     const SizedBox(height: 32),
 
                     AppTextField(
-                      controller: nameController,
+                      controller: vm.nombreControlador,
                       hintText: "Nombre completo",
                       icon: Icons.person,
                     ),
@@ -87,7 +85,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     const SizedBox(height: 16),
 
                     AppTextField(
-                      controller: confirmPasswordController,
+                      controller: vm.confirmaContrasenaControlador,
                       hintText: "Confirmar contraseña",
                       icon: Icons.lock_outline,
                       obscureText: true,
