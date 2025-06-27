@@ -86,6 +86,7 @@ class DefaultFirebaseOptions {
     storageBucket: 'alertalima-bed21.firebasestorage.app',
     measurementId: 'G-JEKF86W9ZB',
   );
+
 }
 
 /// Default [FirebaseOptions] for use with your Firebase apps.
