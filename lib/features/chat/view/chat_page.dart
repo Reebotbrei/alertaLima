@@ -1,4 +1,6 @@
+import 'package:alerta_lima/app/theme/app_colors.dart';
 import 'package:alerta_lima/app/widgets/app_text_field.dart';
+import 'package:alerta_lima/app/widgets/chat_bubble.dart';
 import 'package:alerta_lima/features/chat/viewmodel/chat_viewmodel.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -22,7 +24,14 @@ class ChatPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(receiverEmail), centerTitle: true),
+      backgroundColor: AppColors.background,
+      appBar: AppBar(
+        title: Text(receiverEmail),
+        centerTitle: true,
+        // backgroundColor: Colors.transparent,
+        // foregroundColor: Colors.grey,
+        // elevation: 0,
+      ),
       body: Column(
         children: [
           Expanded(child: _buildMessageList()),
@@ -57,25 +66,53 @@ class ChatPage extends StatelessWidget {
   Widget _buildMessageItem(DocumentSnapshot doc) {
     Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
 
-    return Text(data["message"]);
+    bool isCurrentUser = data['senderID'] == _authService.getCurrentUser()!.uid;
+    var alignment = isCurrentUser
+        ? Alignment.bottomRight
+        : Alignment.centerLeft;
+
+    return Container(
+      alignment: alignment,
+      child: Column(
+        crossAxisAlignment: isCurrentUser
+            ? CrossAxisAlignment.end
+            : CrossAxisAlignment.start,
+        children: [
+          ChatBubble(message: data["message"], isCurrentUser: isCurrentUser),
+        ],
+      ),
+    );
   }
 
   Widget _buildUserInput() {
-    return Row(
-      children: [
-        Expanded(
-          child: AppTextField(
-            controller: _messageController,
-            hintText: "Escribe un mensaje",
-            obscureText: false,
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 20.0),
+      child: Row(
+        children: [
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: AppTextField(
+                controller: _messageController,
+                hintText: "Escribe un mensaje",
+                obscureText: false,
+              ),
+            ),
           ),
-        ),
 
-        IconButton(
-          onPressed: sendMessage,
-          icon: const Icon(Icons.arrow_upward),
-        ),
-      ],
+          Container(
+            decoration: const BoxDecoration(
+              color: Colors.green,
+              shape: BoxShape.circle,
+            ),
+            margin: const EdgeInsets.only(right: 15),
+            child: IconButton(
+              onPressed: sendMessage,
+              icon: const Icon(Icons.arrow_upward, color: Colors.white),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -20,7 +20,13 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(title: const Text('Contactos'), centerTitle: true),
+      appBar: AppBar(
+        title: const Text('Contactos'),
+        centerTitle: true,
+        // // backgroundColor: Colors.transparent,
+        // foregroundColor: Colors.grey,
+        // elevation: 0,
+      ),
       body: _builUserList(),
     );
   }
@@ -46,9 +52,7 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  Widget _buildUserListItem(
-    Map<String, dynamic> userData,
-  ) {
+  Widget _buildUserListItem(Map<String, dynamic> userData) {
     if ((userData['Email'] ?? "Usuario sin correo") !=
         ChatViewmodel().getCurrentUser()!.email) {
       return UserTile(
