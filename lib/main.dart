@@ -1,5 +1,4 @@
 import 'package:alerta_lima/features/chat/view/chat_screen.dart';
-import 'package:alerta_lima/features/dashboard/view/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'app/theme/app_theme.dart';

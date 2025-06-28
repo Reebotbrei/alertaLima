@@ -1,7 +1,6 @@
 import 'package:alerta_lima/app/Objetitos/usuario.dart';
 import 'package:alerta_lima/features/chat/view/chat_screen.dart';
 import 'package:alerta_lima/features/sos/view/sos_screen.dart';
-import 'package:alerta_lima/features/sos/viewmodel/sos_viewmodel.dart';
 import 'package:flutter/material.dart';
 import '../../../app/theme/app_colors.dart';
 import '../viewmodel/dashboard_viewmodel.dart';
