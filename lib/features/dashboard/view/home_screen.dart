@@ -7,6 +7,7 @@ import '../../../app/theme/app_colors.dart';
 import '../viewmodel/dashboard_viewmodel.dart';
 import 'menu_card.dart';
 import 'package:provider/provider.dart';
+import 'package:alerta_lima/features/chat/chat_vecinal/view/presentacion/chat/chat_vecinal_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   final Usuario usuario;
@@ -72,9 +73,7 @@ class HomeScreen extends StatelessWidget {
                     } else {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
-                          builder: (context) => ChatScreen(),
-                        ),
+                        MaterialPageRoute(builder: (context) => ChatVecinalScreen()),
                       );
                     }
                   },

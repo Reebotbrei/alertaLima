@@ -41,14 +41,14 @@ class SosScreen extends StatelessWidget {
                   Navigator.pushNamed(context, '/login');
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.button,
+                  backgroundColor: const Color.fromARGB(150, 37, 154, 80),
                   foregroundColor: AppColors.buttonText,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
+                    borderRadius: BorderRadius.circular(25),
                   ),
                   padding: const EdgeInsets.symmetric(vertical: 18),
                 ),
-                child: const Text('Login', style: TextStyle(fontSize: 21)),
+                child: const Text('Log in', style: TextStyle(fontSize: 20)),
               ),
             )
           : null,
