@@ -1,40 +1,43 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Usuario {
-  final String nombre;
-  final bool? empadronado;
-  final String email;
-  final int? dni;
-  final String? distrito;
-  final String? contrasena;
-  final DateTime? fechaNacimiento;
-  final int? numeroTelefono;
-  final String? genero;
+  String nombre;
+  bool? empadronado;
+  String email;
+  int? dni;
+  String? distrito;
+  DateTime? fechaNacimiento;
+  int? numeroTelefono;
+  String? genero;
+  String id;
+  String? vecindario;
 
-  const Usuario({
+  Usuario({
+    required this.id,
     required this.nombre,
     required this.email,
     this.numeroTelefono,
     this.fechaNacimiento,
     this.empadronado,
     this.dni,
-    this.contrasena,
     this.distrito,
-    this.genero
+    this.genero,
+    this.vecindario,
   });
 
-  factory Usuario.fromFirestore(DocumentSnapshot doc) {
+  factory Usuario.fromFirestore(DocumentSnapshot doc, id) {
     final inforDeFireStore = doc.data() as Map<String, dynamic>;
-    
     return Usuario(
+      id: id,
       dni: inforDeFireStore["DNI"],
-      distrito: inforDeFireStore['Distrito'],  
+      distrito: inforDeFireStore['Distrito'],
       email: inforDeFireStore['Email'],
       empadronado: inforDeFireStore['Empadronado'],
       fechaNacimiento: inforDeFireStore["FechaNacimiento"],
-      genero : inforDeFireStore["Genero"],
+      genero: inforDeFireStore["Genero"],
       nombre: inforDeFireStore['Nombre'],
-      numeroTelefono: inforDeFireStore['NumeroTelefono'] 
+      numeroTelefono: inforDeFireStore['NumeroTelefono'],
+      vecindario: inforDeFireStore['Vecindario']
     );
   }
 }

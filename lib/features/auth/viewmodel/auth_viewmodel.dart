@@ -38,7 +38,7 @@ class AuthViewModel extends ChangeNotifier {
 
       if (!context.mounted) return;
 
-      Usuario usuario = Usuario.fromFirestore(snapshot);
+      Usuario usuario = Usuario.fromFirestore(snapshot, usuarioParaIngreso.user!.uid);
 
       Navigator.push(
         context,
@@ -113,7 +113,9 @@ class AuthViewModel extends ChangeNotifier {
             'Empadronado': false,
             'FechaNacimiento': null,
             'Nombre': nombre,
-            'NumeroTelefono': null
+            'NumeroTelefono': null,
+            'Genero': null,
+            'Vecindario': null,
             });
       if (!context.mounted) return;
 

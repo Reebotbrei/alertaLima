@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 class SusMensajes extends StatelessWidget {
   final String nombre;
   final String mensaje;
-  const SusMensajes({super.key, required this.nombre, this.mensaje = "aeaeaeaa"});
+  const SusMensajes({super.key, required this.nombre, required this.mensaje});
 
   @override
   Widget build(BuildContext context) {

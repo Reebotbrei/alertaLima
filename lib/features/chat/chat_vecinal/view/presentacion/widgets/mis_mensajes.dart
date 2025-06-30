@@ -4,7 +4,7 @@ import 'package:alerta_lima/app/theme/app_colors.dart';
 class MisMensajes extends StatelessWidget {
   final String mensaje;
 
-  MisMensajes({super.key, this.mensaje = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"});
+  MisMensajes({super.key, required this.mensaje});
 
   @override
   Widget build(BuildContext context) {

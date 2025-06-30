@@ -1,11 +1,16 @@
+import 'package:alerta_lima/app/Objetitos/usuario.dart';
+import 'package:alerta_lima/features/chat/chat_vecinal/view/presentacion/chat/chat_vecinal_services.dart';
 import 'package:flutter/material.dart';
 
 class CajitaParaMensaje extends StatelessWidget {
-  const CajitaParaMensaje({super.key});
+  final Usuario usuario;
+  CajitaParaMensaje({super.key, required this.usuario});
+
+  final textoControlador = TextEditingController();
+  final ChatVecinalServices _chatServices = ChatVecinalServices();
 
   @override
   Widget build(BuildContext context) {
-    final textoControlador = TextEditingController();
     final foco = FocusNode();
 
     final outlineInputBorder = UnderlineInputBorder(
@@ -21,7 +26,7 @@ class CajitaParaMensaje extends StatelessWidget {
       suffixIcon: IconButton(
         icon: Icon(Icons.send_outlined),
         onPressed: () {
-          final texto = textoControlador.value.text;
+          sendMessage();
           textoControlador.clear();
         },
       ),
@@ -39,5 +44,11 @@ class CajitaParaMensaje extends StatelessWidget {
         foco.requestFocus();
       },
     );
+  }
+
+  void sendMessage() async {
+    if (textoControlador.text.isNotEmpty) {
+      await _chatServices.sendMessages(usuario, textoControlador.text);
+    }
   }
 }
