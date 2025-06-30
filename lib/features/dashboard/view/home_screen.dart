@@ -1,11 +1,13 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
 import 'package:alerta_lima/app/Objetitos/usuario.dart';
 import 'package:alerta_lima/features/chat/view/chat_screen.dart';
 import 'package:alerta_lima/features/sos/view/sos_screen.dart';
-import 'package:flutter/material.dart';
 import '../../../app/theme/app_colors.dart';
 import '../viewmodel/dashboard_viewmodel.dart';
 import 'menu_card.dart';
-import 'package:provider/provider.dart';
+
 
 class HomeScreen extends StatelessWidget {
   final Usuario usuario;
@@ -17,7 +19,18 @@ class HomeScreen extends StatelessWidget {
       create: (_) => DashboardViewModel(),
       child: Scaffold(
         backgroundColor: AppColors.background,
-        appBar: AppBar(title: const Text('Inicio'), centerTitle: true),
+        appBar: AppBar(
+        title: const Text('Inicio'),
+        centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.person),
+            onPressed: () {
+              Navigator.pushNamed(context, '/perfil');
+            },
+          ),
+        ],
+      ),
         body: Consumer<DashboardViewModel>(
           builder: (context, vm, _) => Padding(
             padding: const EdgeInsets.all(16.0),
@@ -66,6 +79,7 @@ class HomeScreen extends StatelessWidget {
                   icon: Icons.chat,
                   title: 'Chat Vecinal',
                   onTap: () {
+
                     if (usuario.empadronado == false) {
                       _mensajeEnable(context);
                     } else {
