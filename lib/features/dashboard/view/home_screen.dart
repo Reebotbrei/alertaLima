@@ -1,4 +1,5 @@
 import 'package:alerta_lima/app/Objetitos/usuario.dart';
+import 'package:alerta_lima/features/reporte_incidentes/view/reporte_incidentes.dart';
 import 'package:alerta_lima/features/sos/view/sos_screen.dart';
 import 'package:flutter/material.dart';
 import '../../../app/theme/app_colors.dart';
@@ -30,11 +31,13 @@ class HomeScreen extends StatelessWidget {
                   icon: Icons.warning_amber_rounded,
                   title: 'Reportar Incidente',
                   onTap: () {
-                    if (usuario.empadronado == false) {
-                      _mensajeEnable(context);
-                    } else {
-                      Navigator.pushNamed(context, '/report');
-                    }
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            Reporteincidentes(), //invocamos al clases donde se encuntra el mapa
+                      ),
+                    );
                   },
                 ),
                 MenuCard(
@@ -71,7 +74,10 @@ class HomeScreen extends StatelessWidget {
                     } else {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => ChatVecinalScreen(usuario: usuario)),
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              ChatVecinalScreen(usuario: usuario),
+                        ),
                       );
                     }
                   },

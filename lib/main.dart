@@ -10,11 +10,9 @@ import 'features/sos/viewmodel/sos_viewmodel.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
-void main() async{
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(const AlertaLimaApp());
 }
 
@@ -28,13 +26,13 @@ class AlertaLimaApp extends StatelessWidget {
         title: 'Alerta Lima',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.lightTheme,
-        initialRoute: '/', 
+        initialRoute: '/',
         routes: {
-          '/': (context) => const SosScreen(mostrar: true,),      
+          '/': (context) => const SosScreen(mostrar: true),
           '/login': (context) => const LoginScreen(),
-          '/register': (context) => const RegisterScreen(),          
+          '/register': (context) => const RegisterScreen(),
           '/forgot': (context) => const ForgotPasswordScreen(),
-          '/chat': (context) => ChatScreen(),          
+          '/chat': (context) => ChatScreen(),
         },
       ),
     );

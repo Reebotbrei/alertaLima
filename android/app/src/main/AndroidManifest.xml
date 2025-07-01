@@ -1,5 +1,19 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-permission android:name="android.permission.CALL_PHONE"/>
+   <!-- Permiso para leer almacenamiento (Android 10 y anteriores) -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+
+    <!-- Para escribir archivos, si guardas audio en almacenamiento externo -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <!-- Permiso para grabar audio -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
+    <!-- Permiso para usar cámara -->
+    <uses-permission android:name="android.permission.CAMERA" />
+
+
+
 
     <application
         android:label="alerta_lima"
