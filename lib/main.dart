@@ -20,7 +20,6 @@ void main() async{
 
 class AlertaLimaApp extends StatelessWidget {
   const AlertaLimaApp({super.key});
-//xd
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -29,9 +28,9 @@ class AlertaLimaApp extends StatelessWidget {
         title: 'Alerta Lima',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.lightTheme,
-        initialRoute: '/', // Empieza con SosScreen
+        initialRoute: '/', 
         routes: {
-          '/': (context) => const SosScreen(mostrar: true,),      // Pantalla inicial
+          '/': (context) => const SosScreen(mostrar: true,),      
           '/login': (context) => const LoginScreen(),
           '/register': (context) => const RegisterScreen(),          
           '/forgot': (context) => const ForgotPasswordScreen(),
