@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 
 class ChatVecinalScreen extends StatelessWidget {
   final Usuario usuario;
-  ChatVecinalScreen({super.key, required this.usuario});
+  const ChatVecinalScreen({super.key, required this.usuario});
 
   @override
   Widget build(BuildContext context) {

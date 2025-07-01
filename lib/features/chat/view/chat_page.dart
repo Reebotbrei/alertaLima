@@ -96,12 +96,10 @@ class _ChatPageState extends State<ChatPage> {
           },
         ),
         centerTitle: true,
-        // backgroundColor: Colors.transparent,
-        // foregroundColor: Colors.grey,
-        // elevation: 0,
       ),
-      body: Column(
+      body: Column(        
         children: [
+          SizedBox(height: 5),
           Expanded(child: _buildMessageList()),
           _buildUserInput(),
         ],
