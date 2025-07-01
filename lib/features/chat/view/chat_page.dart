@@ -155,12 +155,12 @@ class _ChatPageState extends State<ChatPage> {
 
   Widget _buildUserInput() {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 20.0),
+      padding: const EdgeInsets.only(bottom: 5.0),
       child: Row(
         children: [
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              padding: const EdgeInsets.symmetric(horizontal: 5.0),
               child: AppTextField(
                 controller: _messageController,
                 hintText: "Escribe un mensaje",
@@ -172,13 +172,15 @@ class _ChatPageState extends State<ChatPage> {
 
           Container(
             decoration: const BoxDecoration(
-              color: Colors.green,
-              shape: BoxShape.circle,
+              color: AppColors.primary,
+              shape: BoxShape.circle,             
             ),
-            margin: const EdgeInsets.only(right: 15),
+            height: 49.5,
+            width: 49.5,
+            margin: const EdgeInsets.only(right: 3),
             child: IconButton(
               onPressed: sendMessage,
-              icon: const Icon(Icons.arrow_upward, color: Colors.white),
+              icon: const Icon(Icons.send_outlined, color: Colors.white),
             ),
           ),
         ],

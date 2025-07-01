@@ -31,6 +31,18 @@ class AppTextField extends StatelessWidget {
       obscureText: obscureText,
       keyboardType: keyboardType,
       decoration: InputDecoration(
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(30),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(30),
+          borderSide: BorderSide(color: Colors.grey),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(30),
+          borderSide: BorderSide(color: AppColors.primary),
+        ),
+        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         hintText: hintText,
         prefixIcon: icon != null ? Icon(icon, color: AppColors.primary) : null,
         suffixIcon: iconEye != null
