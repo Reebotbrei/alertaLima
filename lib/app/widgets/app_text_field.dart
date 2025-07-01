@@ -9,6 +9,7 @@ class AppTextField extends StatelessWidget {
   final bool obscureText;
   final TextInputType keyboardType;
   final VoidCallback? onEyeTab;
+  final FocusNode? focusNode;
 
   const AppTextField({
     super.key,
@@ -19,20 +20,24 @@ class AppTextField extends StatelessWidget {
     this.obscureText = false,
     this.keyboardType = TextInputType.text,
     this.onEyeTab,
+    this.focusNode,
   });
 
   @override
   Widget build(BuildContext context) {
     return TextField(
       controller: controller,
+      focusNode: focusNode,
       obscureText: obscureText,
       keyboardType: keyboardType,
       decoration: InputDecoration(
         hintText: hintText,
         prefixIcon: icon != null ? Icon(icon, color: AppColors.primary) : null,
         suffixIcon: iconEye != null
-            ? IconButton(icon: Icon(iconEye, color: AppColors.primary),
-            onPressed: onEyeTab,)
+            ? IconButton(
+                icon: Icon(iconEye, color: AppColors.primary),
+                onPressed: onEyeTab,
+              )
             : null,
       ),
     );

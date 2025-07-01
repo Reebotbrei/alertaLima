@@ -12,10 +12,14 @@ class ChatViewmodel {
 
   Stream<List<Map<String, dynamic>>> getAutorithies() {
     return _firestore.collection("Usuario").snapshots().map((snapshot) {
-      return snapshot.docs.map((doc) {
-        final user = doc.data();
-        return user;
-      }).toList();
+      return snapshot.docs
+          .map((doc) => doc.data())
+          .where(
+            (user) =>
+                user["Nombre"] != null &&
+                user["Nombre"].toString().trim().endsWith("San Juan"),
+          )
+          .toList();
     });
   }
 
