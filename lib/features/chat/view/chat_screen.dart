@@ -15,6 +15,7 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final ChatViewmodel _chatViewmodel = ChatViewmodel();
+  String correoUser = "";
 
   @override
   Widget build(BuildContext context) {
@@ -53,6 +54,7 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Widget _buildUserListItem(Map<String, dynamic> userData) {
+    correoUser = userData['Email'];
     if ((userData['Email'] ?? "Usuario sin correo") !=
         ChatViewmodel().getCurrentUser()!.email) {
       return UserTile(

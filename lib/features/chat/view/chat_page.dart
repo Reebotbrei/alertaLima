@@ -5,20 +5,77 @@ import 'package:alerta_lima/features/chat/viewmodel/chat_viewmodel.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-class ChatPage extends StatelessWidget {
-  final TextEditingController _messageController = TextEditingController();
-  final ChatViewmodel _authService = ChatViewmodel();
-  final ChatViewmodel _chatService = ChatViewmodel();
+class ChatPage extends StatefulWidget {
   final String receiverEmail;
   final String receiverID;
 
-  ChatPage({super.key, required this.receiverEmail, required this.receiverID});
+  const ChatPage({
+    super.key,
+    required this.receiverEmail,
+    required this.receiverID,
+  });
+
+  @override
+  State<ChatPage> createState() => _ChatPageState();
+}
+
+class _ChatPageState extends State<ChatPage> {
+  final TextEditingController _messageController = TextEditingController();
+  final ChatViewmodel _authService = ChatViewmodel();
+  final ChatViewmodel _chatService = ChatViewmodel();
+
+
+  FocusNode myFocusNode = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+    myFocusNode.addListener(() {
+      if (myFocusNode.hasFocus) {
+        Future.delayed(const Duration(milliseconds: 700), () => scrollDown());
+      }
+    });
+
+    Future.delayed(const Duration(milliseconds: 700), () => scrollDown());
+  }
+
+  @override
+  void dispose() {
+    myFocusNode.dispose();
+    _messageController.dispose();
+    super.dispose();
+  }
+
+  final ScrollController _scrollController = ScrollController();
+
+  void scrollDown() {
+    _scrollController.animateTo(
+      _scrollController.position.extentTotal,
+      duration: const Duration(seconds: 1),
+      curve: Curves.fastOutSlowIn,
+    );
+  }
 
   void sendMessage() async {
     if (_messageController.text.isNotEmpty) {
-      await _chatService.sendMessages(receiverID, _messageController.text);
+      await _chatService.sendMessages(
+        widget.receiverID,
+        _messageController.text,
+      );
       _messageController.clear();
     }
+
+    scrollDown();
+  }
+
+  Future<String> obtenerNombre(String email) async {
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection('Usuario').get();
+    for (var doc in querySnapshot.docs) {
+      if (doc['Email'] == email) {
+        return doc["Nombre"]; 
+      }
+    }
+    return 'Anónimo';
   }
 
   @override
@@ -26,7 +83,18 @@ class ChatPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: Text(receiverEmail),
+        title: FutureBuilder<String>(
+          future: obtenerNombre(widget.receiverEmail),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Text('Cargando...');
+            } else if (snapshot.hasError) {
+              return const Text('Error');
+            } else {
+              return Text(snapshot.data ?? 'Anónimo');
+            }
+          },
+        ),
         centerTitle: true,
         // backgroundColor: Colors.transparent,
         // foregroundColor: Colors.grey,
@@ -44,7 +112,7 @@ class ChatPage extends StatelessWidget {
   Widget _buildMessageList() {
     String senderID = _authService.getCurrentUser()!.uid;
     return StreamBuilder(
-      stream: _chatService.getMessages(receiverID, senderID),
+      stream: _chatService.getMessages(widget.receiverID, senderID),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return const Text("Ocurrió un Error");
@@ -55,6 +123,7 @@ class ChatPage extends StatelessWidget {
         }
 
         return ListView(
+          controller: _scrollController,
           children: snapshot.data!.docs
               .map((doc) => _buildMessageItem(doc))
               .toList(),
@@ -96,6 +165,7 @@ class ChatPage extends StatelessWidget {
                 controller: _messageController,
                 hintText: "Escribe un mensaje",
                 obscureText: false,
+                focusNode: myFocusNode,
               ),
             ),
           ),
