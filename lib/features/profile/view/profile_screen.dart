@@ -14,7 +14,9 @@ class ProfileScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Actualizar perfil'),
-        backgroundColor: Theme.of(context).primaryColor, // Usar el color primario del tema
+        backgroundColor: Theme.of(
+          context,
+        ).primaryColor, // Usar el color primario del tema
       ),
       body: Consumer<ProfileViewmodel>(
         builder: (context, profileVM, child) {
@@ -25,7 +27,8 @@ class ProfileScreen extends StatelessWidget {
           return SingleChildScrollView(
             padding: const EdgeInsets.all(16.0),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center, // Este es el Column padre que envuelve todo.
+              crossAxisAlignment: CrossAxisAlignment
+                  .center, // Este es el Column padre que envuelve todo.
               children: [
                 // Sección de la foto de perfil
                 Stack(
@@ -34,11 +37,16 @@ class ProfileScreen extends StatelessWidget {
                       radius: 60,
                       backgroundColor: AppColors.muted.withOpacity(0.2),
                       backgroundImage: profileVM.imageFile != null
-                          ? FileImage(profileVM.imageFile!) as ImageProvider<Object>?
+                          ? FileImage(profileVM.imageFile!)
+                                as ImageProvider<Object>?
                           : (profileVM.user.imageUrl?.isNotEmpty == true
-                                  ? NetworkImage(profileVM.user.imageUrl!) as ImageProvider<Object>?
-                                  : null),
-                      child: (profileVM.imageFile == null && (profileVM.user.imageUrl?.isEmpty == true || profileVM.user.imageUrl == null))
+                                ? NetworkImage(profileVM.user.imageUrl!)
+                                      as ImageProvider<Object>?
+                                : null),
+                      child:
+                          (profileVM.imageFile == null &&
+                              (profileVM.user.imageUrl?.isEmpty == true ||
+                                  profileVM.user.imageUrl == null))
                           ? Icon(Icons.person, size: 60, color: AppColors.muted)
                           : null,
                     ),
@@ -49,7 +57,10 @@ class ProfileScreen extends StatelessWidget {
                         onPressed: () => _pickImage(context, profileVM),
                         mini: true,
                         backgroundColor: AppColors.button,
-                        child: const Icon(Icons.edit, color: AppColors.buttonText),
+                        child: const Icon(
+                          Icons.edit,
+                          color: AppColors.buttonText,
+                        ),
                       ),
                     ),
                   ],
@@ -83,7 +94,9 @@ class ProfileScreen extends StatelessWidget {
                       controller: TextEditingController(
                         text: profileVM.selectedFechaNacimiento == null
                             ? ''
-                            : DateFormat('dd/MM/yyyy').format(profileVM.selectedFechaNacimiento!),
+                            : DateFormat(
+                                'dd/MM/yyyy',
+                              ).format(profileVM.selectedFechaNacimiento!),
                       ),
                       labelText: 'Fecha de Nacimiento*',
                       hintText: 'DD/MM/AAAA',
@@ -94,7 +107,7 @@ class ProfileScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 15),
 
-                Align( 
+                Align(
                   alignment: Alignment.centerLeft,
                   child: _buildGenderSelection(context, profileVM),
                 ),
@@ -140,6 +153,19 @@ class ProfileScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 30),
 
+                //Sección departamentos
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Dirección Actual',
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                ),
+                const SizedBox(height: 20),
+
+                //Provincia/Ciudad (Dropdown)
+                
+
                 // Botón de Guardar Cambios
                 ElevatedButton(
                   onPressed: profileVM.isLoading
@@ -153,10 +179,15 @@ class ProfileScreen extends StatelessWidget {
                     minimumSize: const Size(double.infinity, 50),
                   ),
                   child: profileVM.isLoading
-                      ? const CircularProgressIndicator(color: AppColors.buttonText)
+                      ? const CircularProgressIndicator(
+                          color: AppColors.buttonText,
+                        )
                       : const Text(
                           'Guardar Cambios',
-                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                 ),
                 // Mensaje de error
@@ -165,7 +196,10 @@ class ProfileScreen extends StatelessWidget {
                     padding: const EdgeInsets.only(top: 20.0),
                     child: Text(
                       profileVM.errorMessage!,
-                      style: const TextStyle(color: AppColors.error, fontSize: 14),
+                      style: const TextStyle(
+                        color: AppColors.error,
+                        fontSize: 14,
+                      ),
                       textAlign: TextAlign.center,
                     ),
                   ),
@@ -178,7 +212,10 @@ class ProfileScreen extends StatelessWidget {
   }
 
   // Método para seleccionar imagen del perfil
-  Future<void> _pickImage(BuildContext context, ProfileViewmodel profileVM) async {
+  Future<void> _pickImage(
+    BuildContext context,
+    ProfileViewmodel profileVM,
+  ) async {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
@@ -205,9 +242,7 @@ class ProfileScreen extends StatelessWidget {
         labelText: labelText,
         hintText: hintText,
         suffixIcon: suffixIcon,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8.0),
-        ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0)),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8.0),
           borderSide: BorderSide(color: AppColors.muted, width: 1.0),
@@ -225,18 +260,25 @@ class ProfileScreen extends StatelessWidget {
   }
 
   // Widget para construir la sección de selección de género
-  Widget _buildGenderSelection(BuildContext context, ProfileViewmodel viewModel) {
+  Widget _buildGenderSelection(
+    BuildContext context,
+    ProfileViewmodel viewModel,
+  ) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start, // Alinea el contenido de esta columna a la izquierda
+      crossAxisAlignment: CrossAxisAlignment
+          .start, // Alinea el contenido de esta columna a la izquierda
       children: [
         Text(
           'Género *',
-          style: Theme.of(context).textTheme.titleSmall?.copyWith(color: AppColors.text),
+          style: Theme.of(
+            context,
+          ).textTheme.titleSmall?.copyWith(color: AppColors.text),
         ),
         const SizedBox(height: 8),
         // Las opciones de radio también dentro de una columna para apilarse verticalmente
         Column(
-          crossAxisAlignment: CrossAxisAlignment.start, // Alinea cada Radio a la izquierda
+          crossAxisAlignment:
+              CrossAxisAlignment.start, // Alinea cada Radio a la izquierda
           children: <Widget>[
             _buildGenderOption(context, viewModel, 'Masculino'),
             _buildGenderOption(context, viewModel, 'Femenino'),
@@ -248,7 +290,11 @@ class ProfileScreen extends StatelessWidget {
   }
 
   // Widget auxiliar para construir cada opción de radio de género
-  Widget _buildGenderOption(BuildContext context, ProfileViewmodel viewModel, String gender) {
+  Widget _buildGenderOption(
+    BuildContext context,
+    ProfileViewmodel viewModel,
+    String gender,
+  ) {
     return Row(
       mainAxisSize: MainAxisSize.min, // Ocupa el espacio mínimo necesario
       children: [
@@ -260,7 +306,12 @@ class ProfileScreen extends StatelessWidget {
           },
           activeColor: AppColors.primary,
         ),
-        Text(gender, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.text)),
+        Text(
+          gender,
+          style: Theme.of(
+            context,
+          ).textTheme.bodyMedium?.copyWith(color: AppColors.text),
+        ),
       ],
     );
   }
