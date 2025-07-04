@@ -16,8 +16,11 @@ class AppAlertCard {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(title),
-        content: Text(message),
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        title: Text(title, style: Theme.of(context).textTheme.titleLarge),
+
+        content: Text(message, style: Theme.of(context).textTheme.bodyMedium),
+
         actions: [
           // Si se proporciona texto y función para el botón secundario, se muestra
           if (secondaryButtonText != null && onSecondaryPressed != null)
@@ -28,6 +31,7 @@ class AppAlertCard {
               },
               child: Text(
                 secondaryButtonText,
+                style: TextStyle(color: Theme.of(context).colorScheme.primary),
               ), // Muestra el texto del botón secundario
             ),
           //boton principal

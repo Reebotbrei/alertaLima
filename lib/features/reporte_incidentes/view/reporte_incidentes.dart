@@ -1,11 +1,12 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:alerta_lima/app/widgets/app_text_field.dart';
-import 'package:alerta_lima/app/widgets/app_button2.dart';
 import 'package:alerta_lima/app/widgets/app_button.dart';
 import 'package:alerta_lima/app/widgets/app_combo_box.dart';
 import 'package:alerta_lima/features/reporte_incidentes/clases/audio_helper.dart';
-import 'dart:io'; // Para usar File
-import 'package:image_picker/image_picker.dart'; // Para usar ImagePicker
+import 'package:alerta_lima/features/reporte_incidentes/clases/boton_adjuntar_audio.dart';
+import 'package:alerta_lima/features/reporte_incidentes/clases/boton_adjuntar_foto.dart';
+import 'package:alerta_lima/features/reporte_incidentes/clases/boton_adjuntar_video.dart';
 
 class Reporteincidentes extends StatefulWidget {
   const Reporteincidentes({super.key});
@@ -15,48 +16,50 @@ class Reporteincidentes extends StatefulWidget {
 }
 
 class _ReporteincidentesState extends State<Reporteincidentes> {
+  // Controlador para el campo de texto de descripción
   final TextEditingController _numeroController = TextEditingController();
-
-  //
+  //intanciacion de la calse helper  para grabar audio
   final AudioHelper _audioHelper = AudioHelper();
-  final ImagePicker _picker = ImagePicker(); // Instancia del selector
-  File? _image; // Para guardar la foto
-  File? _video; // Para guardar el video
+  //variables para almacenar archivos seleccionados
+  List<File> _imagenes = [];
+  List<File> _videos = [];
+  File? _archivoAudioLocal;
 
   @override
   void initState() {
     super.initState();
-    _audioHelper.inicializar(); // Inicializa el grabador
+    _audioHelper.inicializar(); //inicializar el grabador de audio
   }
 
   @override
   void dispose() {
-    _audioHelper.cerrar(); // Libera recursos del micrófono
+    _audioHelper.cerrar(); //liberar recursos de microfono
     super.dispose();
   }
 
-  //la fecha y los datos de ukbicaion  los vamos ha tomar de manera autaomatica
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false, // Evita que la pantalla se redimensione
+      resizeToAvoidBottomInset:
+          false, //evita redimentcionar al abrir el teclado
       appBar: AppBar(
         title: const Text('Reportar Incidente'),
         centerTitle: true,
       ),
+      //body
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
+            // ComboBox
+            //encabezado de witget combo box
             Align(
-              //encabezado del combo box
               alignment: Alignment.centerLeft,
               child: Text("Seleccione", style: TextStyle(fontSize: 20)),
             ),
-            //invocamos al combo box
+            // ComboBox para elegir tipo de incidente
             DropdownTextField(
               hintText: 'Selecciona una opción',
-              //lista de opciones del combobox
               options: [
                 'Robo',
                 'Hurto',
@@ -76,9 +79,9 @@ class _ReporteincidentesState extends State<Reporteincidentes> {
               ],
               onChanged: (value) {},
             ),
+            SizedBox(height: 8),
 
-            SizedBox(height: 8), // Espacio de 8 píxeles
-            //encabezado de detalle
+            // Detalle del incidente
             Align(
               alignment: Alignment.centerLeft,
               child: Text(
@@ -86,132 +89,64 @@ class _ReporteincidentesState extends State<Reporteincidentes> {
                 style: TextStyle(fontSize: 20),
               ),
             ),
-            SizedBox(height: 8), // Espacio de 8 píxeles
-            //caja de texto para agregar descripcion proviene de app_text_field
+            SizedBox(height: 8),
             AppTextField(
               controller: _numeroController,
-              hintText: 'breve descripción',
+              hintText: 'Breve descripción',
               keyboardType: TextInputType.text,
               maxLines: 3,
             ),
-            SizedBox(height: 8),
-            //evcabezado
+
+            SizedBox(height: 16),
+            //encabezado de adjuntar
             Align(
               alignment: Alignment.centerLeft,
               child: Text("Adjuntar", style: TextStyle(fontSize: 20)),
             ),
-            SizedBox(height: 8), // Espacio de 8 píxeles
+            SizedBox(height: 8),
+
+            // Botón de Audio
+            BotonAdjuntoAudio(
+              audioHelper:
+                  _audioHelper, // helper que maneja la logica de la grabacion
+              archivoAudioLocal:
+                  _archivoAudioLocal, //archivos de audio para cargar de almacenamineto
+              onAudioSeleccionado: (nuevoArchivo) {
+                //actualiza el audio cargado
+                _archivoAudioLocal = nuevoArchivo;
+              },
+              onActualizar: () => setState(() {}), //refresca la vista
+            ),
 
             SizedBox(height: 8),
-            //boton para adjuntar audio proviene de app_button2
-            BotonAdjuntoNuevo(
-              titulo: 'Agregar audio',
-              subtitulo: _audioHelper.estaGrabando
-                  ? 'Grabando...'
-                  : (_audioHelper.rutaAudio != null
-                        ? 'Audio grabado'
-                        : 'Presione para iniciar'),
-              icono: Icons.mic,
-              onTap: () async {
-                await _audioHelper.grabarAudio();
-                setState(() {}); // Refresca para mostrar el nuevo estado
+
+            // Botón de Fotos tomar o almacenamiento
+            BotonAdjuntoFoto(
+              imagenes: _imagenes, //lista actual de imagene seleccionados
+              onImagenesSeleccionadas: (nuevasImagenes) {
+                //callback qu actualiza  la lista con nuevas imagens
+                setState(() {
+                  _imagenes = nuevasImagenes;
+                });
               },
             ),
 
             SizedBox(height: 8),
-            //boton para adjuntar fotos proviene de app_button2
-            BotonAdjuntoNuevo(
-              titulo: 'Agregar foto',
-              subtitulo: _image != null
-                  ? 'Foto agregada'
-                  : 'Presione para tomar o cargar foto',
-              icono: Icons.image,
-              onTap: () async {
-                showModalBottomSheet(
-                  context: context,
-                  builder: (_) => Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      ListTile(
-                        leading: Icon(Icons.camera_alt),
-                        title: Text('Tomar foto'),
-                        onTap: () async {
-                          final img = await _picker.pickImage(
-                            source: ImageSource.camera,
-                          );
-                          if (img != null) {
-                            setState(() => _image = File(img.path));
-                          }
-                          Navigator.pop(context);
-                        },
-                      ),
-                      ListTile(
-                        leading: Icon(Icons.photo_library),
-                        title: Text('Seleccionar de galería'),
-                        onTap: () async {
-                          final img = await _picker.pickImage(
-                            source: ImageSource.gallery,
-                          );
-                          if (img != null) {
-                            setState(() => _image = File(img.path));
-                          }
-                          Navigator.pop(context);
-                        },
-                      ),
-                    ],
-                  ),
-                );
+
+            // Botón de Videos
+            BotonAdjuntoVideo(
+              videos: _videos, // Lista actual de videos seleccionados
+              onVideosSeleccionados: (nuevosVideos) {
+                //actualiza la lista de videos
+                setState(() {
+                  _videos = nuevosVideos;
+                });
               },
             ),
 
-            SizedBox(height: 8),
-            //boton para adjuntar video proviene de app_button2
-            BotonAdjuntoNuevo(
-              titulo: 'Agregar video',
-              subtitulo: _video != null
-                  ? 'Video agregado'
-                  : 'Presione para cargar o agregar video',
-              icono: Icons.videocam,
-              onTap: () async {
-                showModalBottomSheet(
-                  context: context,
-                  builder: (_) => Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      ListTile(
-                        leading: Icon(Icons.videocam),
-                        title: Text('Grabar video'),
-                        onTap: () async {
-                          final vid = await _picker.pickVideo(
-                            source: ImageSource.camera,
-                          );
-                          if (vid != null) {
-                            setState(() => _video = File(vid.path));
-                          }
-                          Navigator.pop(context);
-                        },
-                      ),
-                      ListTile(
-                        leading: Icon(Icons.video_library),
-                        title: Text('Subir desde galería'),
-                        onTap: () async {
-                          final vid = await _picker.pickVideo(
-                            source: ImageSource.gallery,
-                          );
-                          if (vid != null) {
-                            setState(() => _video = File(vid.path));
-                          }
-                          Navigator.pop(context);
-                        },
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
+            const SizedBox(height: 80),
 
-            SizedBox(height: 80),
-
+            // Botón Final
             AppButton(
               label: 'Enviar reporte',
               onPressed: () {

@@ -17,21 +17,31 @@ class BotonAdjuntoNuevo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
+      // Detecta el gesto de toque y ejecuta la función proporcionada
       onTap: onTap,
       child: Container(
-        margin: const EdgeInsets.only(bottom: 12),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        margin: const EdgeInsets.only(
+          bottom: 12,
+        ), // Margen inferior entre botones
+        padding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 12,
+        ), // Espaciado interno
         decoration: BoxDecoration(
-          color: Colors.grey[100],
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.grey.shade300),
+          color: Colors.grey[100], // Color de fondo del botón
+          borderRadius: BorderRadius.circular(12), // Bordes redondeados
+          border: Border.all(
+            color: Colors.grey.shade300,
+          ), // Borde con color gris claro
         ),
         child: Row(
           children: [
             Expanded(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment:
+                    CrossAxisAlignment.start, // Alineación a la izquierda
                 children: [
+                  // Título del botón
                   Text(
                     titulo,
                     style: const TextStyle(
@@ -39,7 +49,7 @@ class BotonAdjuntoNuevo extends StatelessWidget {
                       fontSize: 14,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 4), // Espacio entre título y subtítulo
                   Text(
                     subtitulo,
                     style: const TextStyle(color: Colors.grey, fontSize: 13),
@@ -54,3 +64,18 @@ class BotonAdjuntoNuevo extends StatelessWidget {
     );
   }
 }
+
+/* SE INVOCA ASI
+
+BotonAdjuntoNuevo(
+  titulo: 'Agregar foto',
+  subtitulo: 'Presione para tomar o cargar una foto',
+  icono: Icons.image,
+  onTap: () {
+    // Acción al presionar el botón
+
+  },
+),
+
+
+ */

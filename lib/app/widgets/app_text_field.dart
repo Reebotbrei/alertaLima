@@ -45,6 +45,7 @@ class AppTextField extends StatelessWidget {
         ),
         contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         hintText: hintText,
+        hintStyle: TextStyle(color: const Color.fromARGB(255, 155, 154, 154)),
         prefixIcon: icon != null ? Icon(icon, color: AppColors.primary) : null,
         suffixIcon: iconEye != null
             ? IconButton(
