@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:alerta_lima/app/Objetitos/Incidente.dart';
 import 'package:flutter/material.dart';
 import 'package:alerta_lima/app/widgets/app_text_field.dart';
 import 'package:alerta_lima/app/widgets/app_button.dart';
@@ -7,9 +8,13 @@ import 'package:alerta_lima/features/reporte_incidentes/clases/audio_helper.dart
 import 'package:alerta_lima/features/reporte_incidentes/clases/boton_adjuntar_audio.dart';
 import 'package:alerta_lima/features/reporte_incidentes/clases/boton_adjuntar_foto.dart';
 import 'package:alerta_lima/features/reporte_incidentes/clases/boton_adjuntar_video.dart';
+import 'package:alerta_lima/features/map/clasesMaps/obtener_ubicacion_actual.dart';
+import 'package:alerta_lima/app/Objetitos/usuario.dart';
 
 class Reporteincidentes extends StatefulWidget {
-  const Reporteincidentes({super.key});
+  //para recivir el ususario
+  final Usuario usuario;
+  const Reporteincidentes({super.key, required this.usuario});
 
   @override
   State<Reporteincidentes> createState() => _ReporteincidentesState();
@@ -24,6 +29,8 @@ class _ReporteincidentesState extends State<Reporteincidentes> {
   List<File> _imagenes = [];
   List<File> _videos = [];
   File? _archivoAudioLocal;
+  //variable para guardar el tipo de incidente
+  String? _tipoSeleccionado;
 
   @override
   void initState() {
@@ -77,7 +84,12 @@ class _ReporteincidentesState extends State<Reporteincidentes> {
                 'Suplantación de identidad',
                 'Maltrato infantil',
               ],
-              onChanged: (value) {},
+              onChanged: (value) {
+                setState(() {
+                  //guardamos el la variable el tipo de incidnete seleccionado
+                  _tipoSeleccionado = value;
+                });
+              },
             ),
             SizedBox(height: 8),
 
@@ -149,8 +161,37 @@ class _ReporteincidentesState extends State<Reporteincidentes> {
             // Botón Final
             AppButton(
               label: 'Enviar reporte',
-              onPressed: () {
-                print('Botón presionado');
+              onPressed: () async {
+                final ubicacion =
+                    await UbicacionHelper.obtenerUbicacion(); //obtenemos la ubicacion actual del usuario
+
+                if (_tipoSeleccionado == null ||
+                    _numeroController.text.trim().isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Completa todos los campos obligatorios.'),
+                    ),
+                  );
+                  return;
+                }
+
+                try {
+                  final incidente = Incidente(
+                    tipo: _tipoSeleccionado!,
+                    descripcion: _numeroController.text.trim(),
+                    fechaHora: DateTime.now(),
+                    ubicacion: ubicacion,
+                    imagenes: _imagenes.isEmpty ? null : _imagenes,
+                    audio: _archivoAudioLocal,
+                    video: _videos.isEmpty ? null : _videos,
+                    usuario: widget
+                        .usuario, // Reemplaza con el usuario real si tienes
+                  );
+                } catch (e) {
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text(e.toString())));
+                }
               },
             ),
           ],

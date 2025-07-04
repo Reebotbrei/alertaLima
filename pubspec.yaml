@@ -41,9 +41,12 @@ dependencies:
   intl: ^0.20.2
   image_picker: ^1.1.2
   flutter_sound: ^9.2.13+1 #para dar accseso audio
-  image_picker: ^1.1.0 # para dar acceso a
   permission_handler: ^11.0.0
   file_picker: ^10.2.0
+  geolocator:
+    ^10.1.0
+    #agregando  google maps
+  google_maps_flutter: ^2.12.3
 
 dev_dependencies:
   flutter_lints: ^5.0.0
