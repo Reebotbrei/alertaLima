@@ -10,6 +10,7 @@ class AppTextField extends StatelessWidget {
   final TextInputType keyboardType;
   final VoidCallback? onEyeTab;
   final FocusNode? focusNode;
+  final int? maxLines;
 
   const AppTextField({
     super.key,
@@ -21,6 +22,7 @@ class AppTextField extends StatelessWidget {
     this.keyboardType = TextInputType.text,
     this.onEyeTab,
     this.focusNode,
+    this.maxLines = 1,
   });
 
   @override
@@ -30,10 +32,9 @@ class AppTextField extends StatelessWidget {
       focusNode: focusNode,
       obscureText: obscureText,
       keyboardType: keyboardType,
+      maxLines: obscureText ? 1 : maxLines,
       decoration: InputDecoration(
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(30),
-        ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(30),
           borderSide: BorderSide(color: Colors.grey),
@@ -44,6 +45,7 @@ class AppTextField extends StatelessWidget {
         ),
         contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         hintText: hintText,
+        hintStyle: TextStyle(color: const Color.fromARGB(255, 155, 154, 154)),
         prefixIcon: icon != null ? Icon(icon, color: AppColors.primary) : null,
         suffixIcon: iconEye != null
             ? IconButton(
