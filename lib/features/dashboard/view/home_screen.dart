@@ -34,14 +34,6 @@ class HomeScreen extends StatelessWidget {
               );
             },
           ),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.person),
-              onPressed: () {
-                Navigator.pushNamed(context, '/perfil');
-              },
-            ),
-          ],
         ),
 
         drawer: Drawer(
