@@ -14,9 +14,7 @@ class ProfileScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Actualizar perfil'),
-        backgroundColor: Theme.of(
-          context,
-        ).primaryColor, // Usar el color primario del tema
+        backgroundColor: Theme.of(context).primaryColor, // Usar el color primario del tema
       ),
       body: Consumer<ProfileViewmodel>(
         builder: (context, profileVM, child) {
@@ -27,8 +25,7 @@ class ProfileScreen extends StatelessWidget {
           return SingleChildScrollView(
             padding: const EdgeInsets.all(16.0),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment
-                  .center, // Este es el Column padre que envuelve todo.
+              crossAxisAlignment: CrossAxisAlignment.stretch, 
               children: [
                 // Sección de la foto de perfil
                 Stack(
@@ -37,16 +34,11 @@ class ProfileScreen extends StatelessWidget {
                       radius: 60,
                       backgroundColor: AppColors.muted.withOpacity(0.2),
                       backgroundImage: profileVM.imageFile != null
-                          ? FileImage(profileVM.imageFile!)
-                                as ImageProvider<Object>?
+                          ? FileImage(profileVM.imageFile!) as ImageProvider<Object>?
                           : (profileVM.user.imageUrl?.isNotEmpty == true
-                                ? NetworkImage(profileVM.user.imageUrl!)
-                                      as ImageProvider<Object>?
-                                : null),
-                      child:
-                          (profileVM.imageFile == null &&
-                              (profileVM.user.imageUrl?.isEmpty == true ||
-                                  profileVM.user.imageUrl == null))
+                                  ? NetworkImage(profileVM.user.imageUrl!) as ImageProvider<Object>?
+                                  : null),
+                      child: (profileVM.imageFile == null && (profileVM.user.imageUrl?.isEmpty == true || profileVM.user.imageUrl == null))
                           ? Icon(Icons.person, size: 60, color: AppColors.muted)
                           : null,
                     ),
@@ -57,10 +49,7 @@ class ProfileScreen extends StatelessWidget {
                         onPressed: () => _pickImage(context, profileVM),
                         mini: true,
                         backgroundColor: AppColors.button,
-                        child: const Icon(
-                          Icons.edit,
-                          color: AppColors.buttonText,
-                        ),
+                        child: const Icon(Icons.edit, color: AppColors.buttonText),
                       ),
                     ),
                   ],
@@ -69,6 +58,7 @@ class ProfileScreen extends StatelessWidget {
                 Text(
                   'Información de la cuenta',
                   style: Theme.of(context).textTheme.titleLarge,
+                  textAlign: TextAlign.center, 
                 ),
                 const SizedBox(height: 20),
 
@@ -91,13 +81,7 @@ class ProfileScreen extends StatelessWidget {
                   child: AbsorbPointer(
                     child: _buildTextField(
                       context,
-                      controller: TextEditingController(
-                        text: profileVM.selectedFechaNacimiento == null
-                            ? ''
-                            : DateFormat(
-                                'dd/MM/yyyy',
-                              ).format(profileVM.selectedFechaNacimiento!),
-                      ),
+                      controller: profileVM.fechaNacimientoController, // Usar el controlador del VM
                       labelText: 'Fecha de Nacimiento*',
                       hintText: 'DD/MM/AAAA',
                       suffixIcon: const Icon(Icons.calendar_today),
@@ -107,8 +91,9 @@ class ProfileScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 15),
 
+                // Sección de Género
                 Align(
-                  alignment: Alignment.centerLeft,
+                  alignment: Alignment.centerLeft, 
                   child: _buildGenderSelection(context, profileVM),
                 ),
                 const SizedBox(height: 15),
@@ -117,7 +102,7 @@ class ProfileScreen extends StatelessWidget {
                 _buildTextField(
                   context,
                   controller: profileVM.dniController,
-                  labelText: 'Número de identificación*',
+                  labelText: 'DNI*',
                   keyboardType: TextInputType.number,
                   suffixIcon: IconButton(
                     icon: const Icon(Icons.cancel),
@@ -139,7 +124,7 @@ class ProfileScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 15),
 
-                // Campo de Email (generalmente no editable directamente)
+                // Campo de Email
                 _buildTextField(
                   context,
                   controller: profileVM.emailController,
@@ -153,18 +138,120 @@ class ProfileScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 30),
 
-                //Sección departamentos
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Dirección Actual',
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
+                // Campo direccion
+                Text(
+                  'Dirección Actual',
+                  style: Theme.of(context).textTheme.titleLarge,
+                  textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 20),
 
-                //Provincia/Ciudad (Dropdown)
-                
+                // Dropdown Provincia/Ciudad
+                DropdownButtonFormField<String>(
+                  value: profileVM.selectedProvincia,
+                  decoration: InputDecoration(
+                    labelText: 'Provincia/ Ciudad*',
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                      borderSide: BorderSide(color: AppColors.muted, width: 1.0),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                      borderSide: BorderSide(color: AppColors.primary, width: 2.0),
+                    ),
+                    filled: true,
+                    fillColor: AppColors.background,
+                  ),
+                  items: profileVM.provincias.map((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value, style: TextStyle(color: AppColors.text)),
+                    );
+                  }).toList(),
+                  onChanged: (String? newValue) {
+                    if (newValue != null) {
+                      profileVM.selectedProvincia = newValue;
+                    }
+                  },
+                ),
+                const SizedBox(height: 15),
+
+                // Dropdown Distrito
+                DropdownButtonFormField<String>(
+                  value: profileVM.selectedDistrito,
+                  decoration: InputDecoration(
+                    labelText: 'Distrito*',
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                      borderSide: BorderSide(color: AppColors.muted, width: 1.0),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                      borderSide: BorderSide(color: AppColors.primary, width: 2.0),
+                    ),
+                    filled: true,
+                    fillColor: AppColors.background,
+                  ),
+                  items: profileVM.distritos.map((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value, style: TextStyle(color: AppColors.text)),
+                    );
+                  }).toList(),
+                  onChanged: (String? newValue) {
+                    if (newValue != null) {
+                      profileVM.selectedDistrito = newValue;
+                    }
+                  },
+                ),
+                const SizedBox(height: 15),
+
+                // Dropdown Urbanización
+                DropdownButtonFormField<String>(
+                  value: profileVM.selectedUrbanizacion,
+                  decoration: InputDecoration(
+                    labelText: 'Urbanización',
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                      borderSide: BorderSide(color: AppColors.muted, width: 1.0),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                      borderSide: BorderSide(color: AppColors.primary, width: 2.0),
+                    ),
+                    filled: true,
+                    fillColor: AppColors.background,
+                  ),
+                  items: profileVM.urbanizaciones.map((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value, style: TextStyle(color: AppColors.text)),
+                    );
+                  }).toList(),
+                  onChanged: (String? newValue) {
+                    if (newValue != null) {
+                      profileVM.selectedUrbanizacion = newValue;
+                    }
+                  },
+                ),
+                const SizedBox(height: 15),
+
+                // Campo de Dirección detallada
+                _buildTextField(
+                  context,
+                  controller: profileVM.direccionDetalladaController,
+                  labelText: 'Dirección detallada',
+                  keyboardType: TextInputType.streetAddress,
+                  maxLines: 3,
+                  suffixIcon: IconButton(
+                    icon: const Icon(Icons.cancel),
+                    onPressed: () => profileVM.direccionDetalladaController.clear(),
+                  ),
+                ),
+                const SizedBox(height: 30),
 
                 // Botón de Guardar Cambios
                 ElevatedButton(
@@ -179,15 +266,10 @@ class ProfileScreen extends StatelessWidget {
                     minimumSize: const Size(double.infinity, 50),
                   ),
                   child: profileVM.isLoading
-                      ? const CircularProgressIndicator(
-                          color: AppColors.buttonText,
-                        )
+                      ? const CircularProgressIndicator(color: AppColors.buttonText)
                       : const Text(
                           'Guardar Cambios',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
+                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                         ),
                 ),
                 // Mensaje de error
@@ -196,10 +278,7 @@ class ProfileScreen extends StatelessWidget {
                     padding: const EdgeInsets.only(top: 20.0),
                     child: Text(
                       profileVM.errorMessage!,
-                      style: const TextStyle(
-                        color: AppColors.error,
-                        fontSize: 14,
-                      ),
+                      style: const TextStyle(color: AppColors.error, fontSize: 14),
                       textAlign: TextAlign.center,
                     ),
                   ),
@@ -212,10 +291,7 @@ class ProfileScreen extends StatelessWidget {
   }
 
   // Método para seleccionar imagen del perfil
-  Future<void> _pickImage(
-    BuildContext context,
-    ProfileViewmodel profileVM,
-  ) async {
+  Future<void> _pickImage(BuildContext context, ProfileViewmodel profileVM) async {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
@@ -233,16 +309,20 @@ class ProfileScreen extends StatelessWidget {
     TextInputType keyboardType = TextInputType.text,
     Widget? suffixIcon,
     bool readOnly = false,
+    int? maxLines = 1, // Añadido para controlar líneas (útil para dirección)
   }) {
     return TextField(
       controller: controller,
       keyboardType: keyboardType,
       readOnly: readOnly,
+      maxLines: maxLines, // Se usa aquí
       decoration: InputDecoration(
         labelText: labelText,
         hintText: hintText,
         suffixIcon: suffixIcon,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0)),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.0),
+        ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8.0),
           borderSide: BorderSide(color: AppColors.muted, width: 1.0),
@@ -260,29 +340,22 @@ class ProfileScreen extends StatelessWidget {
   }
 
   // Widget para construir la sección de selección de género
-  Widget _buildGenderSelection(
-    BuildContext context,
-    ProfileViewmodel viewModel,
-  ) {
+  Widget _buildGenderSelection(BuildContext context, ProfileViewmodel viewModel) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment
-          .start, // Alinea el contenido de esta columna a la izquierda
+      crossAxisAlignment: CrossAxisAlignment.start, // Alinea el título "Género *" a la izquierda
       children: [
         Text(
           'Género *',
-          style: Theme.of(
-            context,
-          ).textTheme.titleSmall?.copyWith(color: AppColors.text),
+          style: Theme.of(context).textTheme.titleSmall?.copyWith(color: AppColors.text),
         ),
         const SizedBox(height: 8),
-        // Las opciones de radio también dentro de una columna para apilarse verticalmente
-        Column(
-          crossAxisAlignment:
-              CrossAxisAlignment.start, // Alinea cada Radio a la izquierda
+        // Usar una Row para que las opciones de radio se muestren horizontalmente
+        Row(
           children: <Widget>[
-            _buildGenderOption(context, viewModel, 'Masculino'),
-            _buildGenderOption(context, viewModel, 'Femenino'),
-            _buildGenderOption(context, viewModel, 'Desconocida'),
+            // Usamos Expanded para que cada RadioListTile ocupe el espacio disponible de forma equitativa
+            Expanded(child: _buildGenderOption(context, viewModel, 'Masculino')),
+            Expanded(child: _buildGenderOption(context, viewModel, 'Femenino')),
+            Expanded(child: _buildGenderOption(context, viewModel, 'Desconocida')),
           ],
         ),
       ],
@@ -290,29 +363,17 @@ class ProfileScreen extends StatelessWidget {
   }
 
   // Widget auxiliar para construir cada opción de radio de género
-  Widget _buildGenderOption(
-    BuildContext context,
-    ProfileViewmodel viewModel,
-    String gender,
-  ) {
-    return Row(
-      mainAxisSize: MainAxisSize.min, // Ocupa el espacio mínimo necesario
-      children: [
-        Radio<String>(
-          value: gender,
-          groupValue: viewModel.selectedGenero,
-          onChanged: (String? value) {
-            viewModel.selectedGenero = value;
-          },
-          activeColor: AppColors.primary,
-        ),
-        Text(
-          gender,
-          style: Theme.of(
-            context,
-          ).textTheme.bodyMedium?.copyWith(color: AppColors.text),
-        ),
-      ],
+  Widget _buildGenderOption(BuildContext context, ProfileViewmodel viewModel, String gender) {
+    return RadioListTile<String>(
+      title: Text(gender, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.text)),
+      value: gender,
+      groupValue: viewModel.selectedGenero,
+      onChanged: (String? value) {
+        viewModel.selectedGenero = value;
+      },
+      activeColor: AppColors.primary,
+      dense: true,
+      contentPadding: EdgeInsets.zero, 
     );
   }
 }

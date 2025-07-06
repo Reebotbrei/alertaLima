@@ -3,7 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth; // Alias para evitar conflicto de nombres
 import 'package:firebase_storage/firebase_storage.dart'; // Para Firebase Storage
-import '../../../app/Objetitos/usuario.dart'; // Importa tu clase Usuario
+import '../../../app/Objetitos/usuario.dart'; 
+import 'package:intl/intl.dart'; // Para DateFormat
+
+import '../../../main.dart';
 
 class ProfileViewmodel extends ChangeNotifier {
   // Propiedades del ViewModel
@@ -24,14 +27,17 @@ class ProfileViewmodel extends ChangeNotifier {
   // Controladores para los campos de texto
   late TextEditingController nombreCompletoController;
   late TextEditingController dniController;
-  late TextEditingController numeroTelefonoController; 
+  late TextEditingController numeroTelefonoController;
   late TextEditingController emailController;
+  late TextEditingController fechaNacimientoController; // <--- CAMBIO AQUÍ: Nuevo controlador para la fecha
+  late TextEditingController direccionDetalladaController; // <--- CAMBIO AQUÍ: Nuevo controlador para la dirección detallada
 
   // Propiedades para la selección de fecha y género, ajustadas a los nombres del modelo Usuario
-  DateTime? _selectedFechaNacimiento; 
+  DateTime? _selectedFechaNacimiento;
   DateTime? get selectedFechaNacimiento => _selectedFechaNacimiento;
   set selectedFechaNacimiento(DateTime? date) {
     _selectedFechaNacimiento = date;
+    fechaNacimientoController.text = date == null ? '' : DateFormat('dd/MM/yyyy').format(date); // Actualiza el controlador
     notifyListeners();
   }
 
@@ -41,6 +47,34 @@ class ProfileViewmodel extends ChangeNotifier {
     _selectedGenero = gender;
     notifyListeners();
   }
+
+  // Propiedades para los dropdowns de dirección
+  String? _selectedProvincia; // <--- CAMBIO AQUÍ: Nueva propiedad
+  String? get selectedProvincia => _selectedProvincia;
+  set selectedProvincia(String? value) {
+    _selectedProvincia = value;
+    notifyListeners();
+  }
+
+  String? _selectedDistrito; // <--- CAMBIO AQUÍ: Nueva propiedad
+  String? get selectedDistrito => _selectedDistrito;
+  set selectedDistrito(String? value) {
+    _selectedDistrito = value;
+    notifyListeners();
+  }
+
+  String? _selectedUrbanizacion; // <--- CAMBIO AQUÍ: Nueva propiedad
+  String? get selectedUrbanizacion => _selectedUrbanizacion;
+  set selectedUrbanizacion(String? value) {
+    _selectedUrbanizacion = value;
+    notifyListeners();
+  }
+
+  // Listas de opciones para los dropdowns (puedes cargarlas dinámicamente de tu backend)
+  final List<String> provincias = ['LIMA', 'AREQUIPA', 'CUSCO', 'CALLAO']; // <--- CAMBIO AQUÍ: Ejemplo de datos
+  final List<String> distritos = ['LIMA', 'SURCO', 'MIRAFLORES', 'SAN JUAN DE LURIGANCHO']; // <--- CAMBIO AQUÍ: Ejemplo de datos
+  final List<String> urbanizaciones = ['LIMA', 'SAN ISIDRO', 'LA MOLINA', 'CHACARILLA']; // <--- CAMBIO AQUÍ: Ejemplo de datos
+
 
   // Propiedad para la imagen temporalmente seleccionada
   File? _imageFile;
@@ -52,6 +86,8 @@ class ProfileViewmodel extends ChangeNotifier {
     dniController = TextEditingController();
     numeroTelefonoController = TextEditingController();
     emailController = TextEditingController();
+    fechaNacimientoController = TextEditingController(); // <--- CAMBIO AQUÍ: Inicializar
+    direccionDetalladaController = TextEditingController(); // <--- CAMBIO AQUÍ: Inicializar
     _loadUserProfile(); // Cargar el perfil al inicializar el ViewModel
   }
 
@@ -61,6 +97,8 @@ class ProfileViewmodel extends ChangeNotifier {
     dniController.dispose();
     numeroTelefonoController.dispose();
     emailController.dispose();
+    fechaNacimientoController.dispose(); // <--- CAMBIO AQUÍ: Disponer
+    direccionDetalladaController.dispose(); // <--- CAMBIO AQUÍ: Disponer
     super.dispose();
   }
 
@@ -90,7 +128,15 @@ class ProfileViewmodel extends ChangeNotifier {
         dniController.text = _user.dni?.toString() ?? '';
         numeroTelefonoController.text = _user.numeroTelefono ?? '';
         _selectedFechaNacimiento = _user.fechaNacimiento;
+        // Actualiza el controlador de fecha
+        fechaNacimientoController.text = _user.fechaNacimiento == null
+            ? ''
+            : DateFormat('dd/MM/yyyy').format(_user.fechaNacimiento!); // <--- CAMBIO AQUÍ
         _selectedGenero = _user.genero;
+        _selectedProvincia = _user.provincia; // <--- CAMBIO AQUÍ
+        _selectedDistrito = _user.distrito; // <--- CAMBIO AQUÍ
+        _selectedUrbanizacion = _user.urbanizacion; // <--- CAMBIO AQUÍ
+        direccionDetalladaController.text = _user.direccionDetallada ?? ''; // <--- CAMBIO AQUÍ
 
       } else {
         _errorMessage = "Datos de perfil no encontrados en Firestore para el UID: $uid. Se inicializa un perfil básico.";
@@ -100,21 +146,36 @@ class ProfileViewmodel extends ChangeNotifier {
           nombre: 'Usuario Nuevo',
           email: firebase_auth.FirebaseAuth.instance.currentUser?.email ?? 'nuevo_usuario@example.com',
           empadronado: false,
+          // Inicializa las nuevas propiedades con valores predeterminados o nulos
+          provincia: null,
+          distrito: null,
+          urbanizacion: null,
+          direccionDetallada: null,
+          fechaNacimiento: null,
+          genero: null,
+          dni: null,
+          numeroTelefono: null,
+          imageUrl: null,
         );
-      
+
         nombreCompletoController.clear();
         dniController.clear();
         numeroTelefonoController.clear();
         emailController.text = _user.email; // Establece el email del usuario de Auth
+        fechaNacimientoController.clear(); // <--- CAMBIO AQUÍ
+        direccionDetalladaController.clear(); // <--- CAMBIO AQUÍ
         _selectedFechaNacimiento = null;
         _selectedGenero = null;
+        _selectedProvincia = null; // <--- CAMBIO AQUÍ
+        _selectedDistrito = null; // <--- CAMBIO AQUÍ
+        _selectedUrbanizacion = null; // <--- CAMBIO AQUÍ
       }
     } on FirebaseException catch (e) {
       _errorMessage = "Error de Firebase al cargar perfil: ${e.message}";
-      ("Error Firebase al cargar perfil: $e");
+      debugPrint("Error Firebase al cargar perfil: $e"); // Usar debugPrint
     } catch (e) {
       _errorMessage = "Error al cargar el perfil: $e";
-      ("Error general al cargar perfil: $e");
+      debugPrint("Error general al cargar perfil: $e"); // Usar debugPrint
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -125,13 +186,12 @@ class ProfileViewmodel extends ChangeNotifier {
   Future<void> selectDateOfBirth(BuildContext context) async {
     final DateTime? pickedDate = await showDatePicker(
       context: context,
-      initialDate: _selectedFechaNacimiento ?? DateTime(2000), 
+      initialDate: _selectedFechaNacimiento ?? DateTime(2000),
       firstDate: DateTime(1900),
       lastDate: DateTime.now(),
     );
     if (pickedDate != null && pickedDate != _selectedFechaNacimiento) {
-      _selectedFechaNacimiento = pickedDate;
-      notifyListeners();
+      selectedFechaNacimiento = pickedDate; // Usa el setter para actualizar y notificar
     }
   }
 
@@ -165,16 +225,59 @@ class ProfileViewmodel extends ChangeNotifier {
         newImageUrl = await storageRef.getDownloadURL();
       }
 
+      // Validaciones básicas (puedes expandir esto)
+      if (nombreCompletoController.text.trim().isEmpty) {
+        _errorMessage = "El nombre completo es obligatorio.";
+        _isLoading = false;
+        notifyListeners();
+        return;
+      }
+      if (_selectedFechaNacimiento == null) {
+        _errorMessage = "La fecha de nacimiento es obligatoria.";
+        _isLoading = false;
+        notifyListeners();
+        return;
+      }
+      if (_selectedGenero == null) {
+        _errorMessage = "El género es obligatorio.";
+        _isLoading = false;
+        notifyListeners();
+        return;
+      }
+      if (dniController.text.trim().isEmpty) {
+        _errorMessage = "El número de identificación es obligatorio.";
+        _isLoading = false;
+        notifyListeners();
+        return;
+      }
+      if (numeroTelefonoController.text.trim().isEmpty) {
+        _errorMessage = "El número de teléfono es obligatorio.";
+        _isLoading = false;
+        notifyListeners();
+        return;
+      }
+      if (_selectedProvincia == null || _selectedDistrito == null) {
+        _errorMessage = "Provincia y Distrito son obligatorios.";
+        _isLoading = false;
+        notifyListeners();
+        return;
+      }
+
+
       // Crear un nuevo objeto Usuario con los datos actualizados de los controladores y propiedades
       final updatedUser = _user.copyWith(
         nombre: nombreCompletoController.text.trim(),
         email: emailController.text.trim(),
         dni: int.tryParse(dniController.text.trim()),
-        numeroTelefono: numeroTelefonoController.text.trim(), // Guarda el número de teléfono
-        fechaNacimiento: _selectedFechaNacimiento, // Guarda la fecha de nacimiento
-        genero: _selectedGenero, // Guarda el género
-        imageUrl: newImageUrl, // Asigna la nueva URL de la imagen
-
+        numeroTelefono: numeroTelefonoController.text.trim(),
+        fechaNacimiento: _selectedFechaNacimiento,
+        genero: _selectedGenero,
+        imageUrl: newImageUrl,
+        // Añadir las nuevas propiedades de dirección
+        provincia: _selectedProvincia,
+        distrito: _selectedDistrito,
+        urbanizacion: _selectedUrbanizacion,
+        direccionDetallada: direccionDetalladaController.text.trim(),
       );
 
       await FirebaseFirestore.instance.collection('Usuarios').doc(uid).update(updatedUser.toFirestore());
@@ -188,22 +291,18 @@ class ProfileViewmodel extends ChangeNotifier {
           const SnackBar(content: Text('Perfil actualizado con éxito!'), backgroundColor: Colors.green),
         );
       } else {
-        ("Error: No se pudo mostrar SnackBar porque navigatorKey.currentContext no está montado.");
+        debugPrint("Error: No se pudo mostrar SnackBar porque navigatorKey.currentContext no está montado."); // Usar debugPrint
       }
 
     } on FirebaseException catch (e) {
       _errorMessage = "Error de Firebase al actualizar perfil: ${e.message}";
-      ("Error Firebase al actualizar perfil: $e");
+      debugPrint("Error Firebase al actualizar perfil: $e"); // Usar debugPrint
     } catch (e) {
       _errorMessage = "Error al actualizar el perfil: $e";
-      ("Error general al actualizar perfil: $e");
+      debugPrint("Error general al actualizar perfil: $e"); // Usar debugPrint
     } finally {
       _isLoading = false;
       notifyListeners();
     }
   }
 }
-
-// Necesitas un GlobalKey para acceder al contexto del ScaffoldMessenger si no estás en un Widget.
-// Añade esto en tu main.dart o en un archivo de utilidad global.
-final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
