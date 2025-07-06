@@ -71,9 +71,51 @@ class ProfileViewmodel extends ChangeNotifier {
   }
 
   // Listas de opciones para los dropdowns (puedes cargarlas dinámicamente de tu backend)
-  final List<String> provincias = ['LIMA', 'AREQUIPA', 'CUSCO', 'CALLAO']; // <--- CAMBIO AQUÍ: Ejemplo de datos
-  final List<String> distritos = ['LIMA', 'SURCO', 'MIRAFLORES', 'SAN JUAN DE LURIGANCHO']; // <--- CAMBIO AQUÍ: Ejemplo de datos
-  final List<String> urbanizaciones = ['LIMA', 'SAN ISIDRO', 'LA MOLINA', 'CHACARILLA']; // <--- CAMBIO AQUÍ: Ejemplo de datos
+  final List<String> provincias = ['LIMA']; //Ejemplo de datos
+  final List<String> distritos = ['ANCON',
+                                  'ATE', 
+                                  'BARRANCO',
+                                  'BREÑA', 
+                                  'CHACLACAYO', 
+                                  'CARABAYLLO',
+                                  'CHORRILLOS',
+                                  'CIENEGUILLA',
+                                  'COMAS',
+                                  'EL AGUSTINO',
+                                  'INDEPENDENCIA',
+                                  'JESUS MARIA',
+                                  'LA MOLINA',
+                                  'LA VICTORIA',
+                                  'LIMA',
+                                  'LINCE',
+                                  'LOS OLIVOS',
+                                  'LURIGANCHO',
+                                  'LURIN',
+                                  'MAGDALENA DEL MAR',
+                                  'MIRAFLORES',
+                                  'PACHAMAC',
+                                  'PUCUSANA',
+                                  'PUEBLO LIBRE',
+                                  'PUENTE PIEDRA',
+                                  'PUNTA HERMOSA',
+                                  'PUNTA NEGRA',
+                                  'RIMAC',
+                                  'SAN BARTOLO',
+                                  'SAN ISIDRO',
+                                  'SAN JUAN DE LURIGANCHO',
+                                  'SAN JUAN DE MIRAFLORES',
+                                  'SAN LUIS',
+                                  'SAN MARTIN DE PORRES',
+                                  'SAN MIGUEL',
+                                  'SANTA ANITA',
+                                  'SANTA MARIA DEL MAR',
+                                  'SANTA ROSA',
+                                  'SANTIAGO DE SURCO',
+                                  'SURQUILLO',
+                                  'VILLA EL SALVADOR',
+                                  'VILLA MARIA DEL TRIUNFO',
+                                  ];
+  final List<String> urbanizaciones = ['LIMA']; 
 
 
   // Propiedad para la imagen temporalmente seleccionada
@@ -86,8 +128,8 @@ class ProfileViewmodel extends ChangeNotifier {
     dniController = TextEditingController();
     numeroTelefonoController = TextEditingController();
     emailController = TextEditingController();
-    fechaNacimientoController = TextEditingController(); // <--- CAMBIO AQUÍ: Inicializar
-    direccionDetalladaController = TextEditingController(); // <--- CAMBIO AQUÍ: Inicializar
+    fechaNacimientoController = TextEditingController(); 
+    direccionDetalladaController = TextEditingController(); 
     _loadUserProfile(); // Cargar el perfil al inicializar el ViewModel
   }
 
@@ -97,8 +139,8 @@ class ProfileViewmodel extends ChangeNotifier {
     dniController.dispose();
     numeroTelefonoController.dispose();
     emailController.dispose();
-    fechaNacimientoController.dispose(); // <--- CAMBIO AQUÍ: Disponer
-    direccionDetalladaController.dispose(); // <--- CAMBIO AQUÍ: Disponer
+    fechaNacimientoController.dispose(); 
+    direccionDetalladaController.dispose(); 
     super.dispose();
   }
 
@@ -131,12 +173,12 @@ class ProfileViewmodel extends ChangeNotifier {
         // Actualiza el controlador de fecha
         fechaNacimientoController.text = _user.fechaNacimiento == null
             ? ''
-            : DateFormat('dd/MM/yyyy').format(_user.fechaNacimiento!); // <--- CAMBIO AQUÍ
+            : DateFormat('dd/MM/yyyy').format(_user.fechaNacimiento!); 
         _selectedGenero = _user.genero;
-        _selectedProvincia = _user.provincia; // <--- CAMBIO AQUÍ
-        _selectedDistrito = _user.distrito; // <--- CAMBIO AQUÍ
-        _selectedUrbanizacion = _user.urbanizacion; // <--- CAMBIO AQUÍ
-        direccionDetalladaController.text = _user.direccionDetallada ?? ''; // <--- CAMBIO AQUÍ
+        _selectedProvincia = _user.provincia; 
+        _selectedDistrito = _user.distrito; 
+        _selectedUrbanizacion = _user.urbanizacion; 
+        direccionDetalladaController.text = _user.direccionDetallada ?? ''; 
 
       } else {
         _errorMessage = "Datos de perfil no encontrados en Firestore para el UID: $uid. Se inicializa un perfil básico.";
@@ -162,20 +204,20 @@ class ProfileViewmodel extends ChangeNotifier {
         dniController.clear();
         numeroTelefonoController.clear();
         emailController.text = _user.email; // Establece el email del usuario de Auth
-        fechaNacimientoController.clear(); // <--- CAMBIO AQUÍ
-        direccionDetalladaController.clear(); // <--- CAMBIO AQUÍ
+        fechaNacimientoController.clear(); 
+        direccionDetalladaController.clear(); 
         _selectedFechaNacimiento = null;
         _selectedGenero = null;
-        _selectedProvincia = null; // <--- CAMBIO AQUÍ
-        _selectedDistrito = null; // <--- CAMBIO AQUÍ
-        _selectedUrbanizacion = null; // <--- CAMBIO AQUÍ
+        _selectedProvincia = null;
+        _selectedDistrito = null; 
+        _selectedUrbanizacion = null;
       }
     } on FirebaseException catch (e) {
       _errorMessage = "Error de Firebase al cargar perfil: ${e.message}";
-      debugPrint("Error Firebase al cargar perfil: $e"); // Usar debugPrint
+      debugPrint("Error Firebase al cargar perfil: $e"); 
     } catch (e) {
       _errorMessage = "Error al cargar el perfil: $e";
-      debugPrint("Error general al cargar perfil: $e"); // Usar debugPrint
+      debugPrint("Error general al cargar perfil: $e"); 
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -225,7 +267,7 @@ class ProfileViewmodel extends ChangeNotifier {
         newImageUrl = await storageRef.getDownloadURL();
       }
 
-      // Validaciones básicas (puedes expandir esto)
+      // Validaciones básicas
       if (nombreCompletoController.text.trim().isEmpty) {
         _errorMessage = "El nombre completo es obligatorio.";
         _isLoading = false;

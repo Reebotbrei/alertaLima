@@ -2,9 +2,9 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-import 'package:intl/intl.dart'; // Importa DateFormat
+import 'package:intl/intl.dart';
 import '../viewmodel/profile_viewmodel.dart';
-import '/app/theme/app_colors.dart'; // Importa AppColors
+import '/app/theme/app_colors.dart'; 
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -14,7 +14,9 @@ class ProfileScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Actualizar perfil'),
-        backgroundColor: Theme.of(context).primaryColor, // Usar el color primario del tema
+        backgroundColor: Theme.of(
+          context,
+          ).primaryColor, // Usar el color primario del tema
       ),
       body: Consumer<ProfileViewmodel>(
         builder: (context, profileVM, child) {
@@ -25,7 +27,7 @@ class ProfileScreen extends StatelessWidget {
           return SingleChildScrollView(
             padding: const EdgeInsets.all(16.0),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch, 
+              crossAxisAlignment: CrossAxisAlignment.center, 
               children: [
                 // Sección de la foto de perfil
                 Stack(
@@ -309,7 +311,7 @@ class ProfileScreen extends StatelessWidget {
     TextInputType keyboardType = TextInputType.text,
     Widget? suffixIcon,
     bool readOnly = false,
-    int? maxLines = 1, // Añadido para controlar líneas (útil para dirección)
+    int? maxLines = 1,
   }) {
     return TextField(
       controller: controller,
@@ -340,22 +342,25 @@ class ProfileScreen extends StatelessWidget {
   }
 
   // Widget para construir la sección de selección de género
-  Widget _buildGenderSelection(BuildContext context, ProfileViewmodel viewModel) {
+  Widget _buildGenderSelection(
+    BuildContext context, 
+    ProfileViewmodel viewModel
+    ) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start, // Alinea el título "Género *" a la izquierda
+      crossAxisAlignment: CrossAxisAlignment.start, 
       children: [
         Text(
           'Género *',
           style: Theme.of(context).textTheme.titleSmall?.copyWith(color: AppColors.text),
         ),
         const SizedBox(height: 8),
-        // Usar una Row para que las opciones de radio se muestren horizontalmente
-        Row(
+        
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            // Usamos Expanded para que cada RadioListTile ocupe el espacio disponible de forma equitativa
-            Expanded(child: _buildGenderOption(context, viewModel, 'Masculino')),
-            Expanded(child: _buildGenderOption(context, viewModel, 'Femenino')),
-            Expanded(child: _buildGenderOption(context, viewModel, 'Desconocida')),
+            
+            _buildGenderOption(context, viewModel, 'Masculino'),
+            _buildGenderOption(context, viewModel, 'Femenino'),
           ],
         ),
       ],

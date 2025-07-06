@@ -95,6 +95,7 @@ class HomeScreen extends StatelessWidget {
                 },
               ),
               const Divider(), // Divisor para separar el perfil de cerrar sesión
+              
               // Botón para "Cerrar Sesión"
               ListTile(
                 leading: const Icon(Icons.logout, color: AppColors.error),
@@ -106,7 +107,7 @@ class HomeScreen extends StatelessWidget {
                   try {
                     await firebase_auth.FirebaseAuth.instance.signOut();
                     // Después de cerrar sesión, navega a la pantalla de login y elimina todas las rutas anteriores
-                    if (context.mounted) { //
+                    if (context.mounted) { 
                       Navigator.pushAndRemoveUntil(
                         context,
                         MaterialPageRoute(builder: (context) => const LoginScreen()),

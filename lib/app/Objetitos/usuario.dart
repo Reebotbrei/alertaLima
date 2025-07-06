@@ -1,85 +1,86 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Usuario {
-  final String uid; // <-- Propiedad 'uid' declarada
+  final String uid; //
+
   final String nombre;
+  final bool? empadronado;
   final String email;
-  final bool empadronado;
   final int? dni;
   final String? distrito;
+  final String? contrasena;
+  final DateTime? fechaNacimiento;
+  final String? numeroTelefono;
+  final String? genero;
+
   final String? imageUrl;
-  final DateTime? fechaNacimiento; // <-- Propiedad 'fechaNacimiento' declarada
-  final String? genero; // <-- Propiedad 'genero' declarada
-  final String? numeroTelefono; // <-- Propiedad 'numeroTelefono' declarada
+  final String? provincia;
+  final String? urbanizacion;
+  final String? direccionDetallada;
 
   const Usuario({
-    required this.uid, // <-- 'uid' requerido en el constructor
+    required this.uid,
+
     required this.nombre,
     required this.email,
-    required this.empadronado,
-    this.dni, // Estos son opcionales (nullable)
-    this.distrito, // Estos son opcionales (nullable)
-    this.imageUrl, // Estos son opcionales (nullable)
-    this.fechaNacimiento, // <-- 'fechaNacimiento' en el constructor como opcional
-    this.genero, // <-- 'genero' en el constructor como opcional
-    this.numeroTelefono, // <-- 'numeroTelefono' en el constructor como opcional
+    this.numeroTelefono,
+    this.fechaNacimiento,
+    this.empadronado,
+    this.dni,
+    this.contrasena,
+    this.distrito,
+    this.genero,
+
+    this.imageUrl,
+    this.provincia,
+    this.urbanizacion,
+    this.direccionDetallada,
   });
 
-  // Constructor factory para crear una instancia de Usuario desde un DocumentSnapshot de Firestore
   factory Usuario.fromFirestore(DocumentSnapshot doc) {
-    // Es crucial manejar el caso en que doc.data() sea null
-    final data = doc.data() as Map<String, dynamic>?;
-
-    if (data == null) {
-      // Si el documento no tiene datos, crea un Usuario básico para evitar errores.
-    
-      return Usuario(
-        uid: doc.id,
-        nombre: 'Usuario Desconocido',
-        email: 'desconocido@example.com',
-        empadronado: false,
-      );
-    }
-
-    // Casteo seguro de los campos. Los nombres de los campos deben coincidir
-    DateTime? parsedFechaNacimiento;
-    // Manejo para convertir Timestamp o String a DateTime
-    if (data['FechaNacimiento'] is Timestamp) {
-      parsedFechaNacimiento = (data['FechaNacimiento'] as Timestamp).toDate();
-    } else if (data['FechaNacimiento'] is String) {
-      parsedFechaNacimiento = DateTime.tryParse(data['FechaNacimiento']);
-    }
+    final inforDeFireStore = doc.data() as Map<String, dynamic>;
 
     return Usuario(
-      uid: doc.id, // El UID se obtiene del ID del documento de Firestore
-      nombre: data['Nombre'] as String? ?? 'Desconocido',
-      email: data['Email'] as String? ?? 'sin_email@ejemplo.com',
-      empadronado: data['Empadronado'] as bool? ?? false,
-      dni: data['DNI'] as int?,
-      distrito: data['Distrito'] as String?,
-      imageUrl: data['ImageUrl'] as String?,
-      fechaNacimiento: parsedFechaNacimiento,
-      genero: data['Genero'] as String?,
-      numeroTelefono: data['NumeroTelefono'] as String?,
+      uid: doc.id,
+
+      nombre: inforDeFireStore['Nombre'] ?? 'N/A',
+      distrito: inforDeFireStore['Distrito'],
+      email: inforDeFireStore['Email'] ?? 'N/A',
+      empadronado: inforDeFireStore['Empadronado'],
+      dni: inforDeFireStore["DNI"],
+
+      fechaNacimiento: (inforDeFireStore["FechaNacimiento"] as Timestamp?)
+          ?.toDate(),
+      genero: inforDeFireStore["Genero"],
+      //
+      numeroTelefono: inforDeFireStore["NumeroTelefono"],
+      imageUrl: inforDeFireStore["ImageUrl"],
+      provincia: inforDeFireStore["Provincia"],
+      urbanizacion: inforDeFireStore["Urbanizacion"],
+      direccionDetallada: inforDeFireStore["DireccionDetallada"],
+      //
     );
   }
 
-  // Método para convertir la instancia de Usuario a un mapa para guardar en Firestore
+  //
   Map<String, dynamic> toFirestore() {
     return {
       'Nombre': nombre,
-      'Email': email,
-      'Empadronado': empadronado,
+      'Email': empadronado,
       'DNI': dni,
       'Distrito': distrito,
-      'ImageUrl': imageUrl,
-      'FechaNacimiento': fechaNacimiento != null ? Timestamp.fromDate(fechaNacimiento!) : null,
-      'Genero': genero,
+      'FechaNacimiento': fechaNacimiento != null
+          ? Timestamp.fromDate(fechaNacimiento!)
+          : null,
       'NumeroTelefono': numeroTelefono,
+      'Genero': genero,
+      'ImageUrl': imageUrl,
+      'Provincia': provincia,
+      'Urbanizacion': urbanizacion,
+      'DireccionDetallada': direccionDetallada,
     };
   }
 
-  // Método copyWith para crear una nueva instancia de Usuario con algunos campos modificados
   Usuario copyWith({
     String? uid,
     String? nombre,
@@ -87,10 +88,14 @@ class Usuario {
     bool? empadronado,
     int? dni,
     String? distrito,
-    String? imageUrl,
+    String? contrasena,
     DateTime? fechaNacimiento,
-    String? genero,
     String? numeroTelefono,
+    String? genero,
+    String? imageUrl,
+    String? provincia,
+    String? urbanizacion,
+    String? direccionDetallada,
   }) {
     return Usuario(
       uid: uid ?? this.uid,
@@ -99,10 +104,14 @@ class Usuario {
       empadronado: empadronado ?? this.empadronado,
       dni: dni ?? this.dni,
       distrito: distrito ?? this.distrito,
-      imageUrl: imageUrl ?? this.imageUrl,
+      contrasena: contrasena ?? this.contrasena,
       fechaNacimiento: fechaNacimiento ?? this.fechaNacimiento,
-      genero: genero ?? this.genero,
       numeroTelefono: numeroTelefono ?? this.numeroTelefono,
+      genero: genero ?? this.genero,
+      imageUrl: imageUrl ?? this.imageUrl,
+      provincia: provincia ?? this.provincia,
+      urbanizacion: urbanizacion ?? this.urbanizacion,
+      direccionDetallada: direccionDetallada ?? this.direccionDetallada,
     );
   }
 }
