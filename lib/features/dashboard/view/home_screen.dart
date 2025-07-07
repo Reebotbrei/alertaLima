@@ -169,6 +169,33 @@ class HomeScreen extends StatelessWidget {
                     Navigator.pushNamed(context, '/alerts');
                   },
                 ),
+                 MenuCard(
+                    texto: usuario.empadronado == false
+                      ? const Color.fromARGB(136, 49, 46, 46)                    
+                      : colorTexto,
+                  fondo: usuario.empadronado == false
+                      ? const Color.fromARGB(170, 251, 247, 247)
+                      : colorFondo,
+                  colorIcono: usuario.empadronado == false
+                      ? const Color.fromARGB(99, 39, 38, 38)
+                      : colorIcono,
+                  icon: Icons.chat,
+                  title: 'Chat Vecinal',
+                  onTap: () {
+                    if (usuario.empadronado == false) {
+                      _mensajeEnable(context);
+                    } else {
+                      Navigator.push(
+                        context,
+
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              ChatVecinalScreen(usuario: usuario),
+                        ),
+                      );
+                    }
+                  },
+                ),
                 MenuCard(
                   texto: colorTexto,
                   fondo: colorFondo,
@@ -205,33 +232,7 @@ class HomeScreen extends StatelessWidget {
                     }
                   },
                 ),
-                MenuCard(
-                    texto: usuario.empadronado == false
-                      ? const Color.fromARGB(136, 49, 46, 46)                    
-                      : colorTexto,
-                  fondo: usuario.empadronado == false
-                      ? const Color.fromARGB(170, 251, 247, 247)
-                      : colorFondo,
-                  colorIcono: usuario.empadronado == false
-                      ? const Color.fromARGB(99, 39, 38, 38)
-                      : colorIcono,
-                  icon: Icons.chat,
-                  title: 'Chat Vecinal',
-                  onTap: () {
-                    if (usuario.empadronado == false) {
-                      _mensajeEnable(context);
-                    } else {
-                      Navigator.push(
-                        context,
-
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              ChatVecinalScreen(usuario: usuario),
-                        ),
-                      );
-                    }
-                  },
-                ),
+               
                 MenuCard(
                   texto: colorTexto,
                   fondo: colorFondo,
