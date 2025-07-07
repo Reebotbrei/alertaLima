@@ -15,17 +15,15 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
-void main() async{
+
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(const AlertaLimaApp());
 }
 
 class AlertaLimaApp extends StatelessWidget {
   const AlertaLimaApp({super.key});
-//xd
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -39,13 +37,15 @@ class AlertaLimaApp extends StatelessWidget {
         theme: AppTheme.lightTheme,
         navigatorKey:navigatorKey,
         initialRoute: '/', // Empieza con SosScreen
+
         routes: {
-          '/': (context) => const SosScreen(mostrar: true,),      // Pantalla inicial
+          '/': (context) => const SosScreen(mostrar: true),
           '/login': (context) => const LoginScreen(),
-          '/register': (context) => const RegisterScreen(),          
+          '/register': (context) => const RegisterScreen(),
           '/forgot': (context) => const ForgotPasswordScreen(),
           '/chat': (context) => ChatScreen(),       
           '/perfil':(context) => const ProfileScreen(), 
+
         },
       ),
     );

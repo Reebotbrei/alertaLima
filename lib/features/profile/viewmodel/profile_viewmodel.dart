@@ -1,17 +1,16 @@
-import 'dart:io'; // Para File
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart' as firebase_auth; // Alias para evitar conflicto de nombres
-import 'package:firebase_storage/firebase_storage.dart'; // Para Firebase Storage
-import '../../../app/Objetitos/usuario.dart'; 
-import 'package:intl/intl.dart'; // Para DateFormat
+import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
+import 'package:firebase_storage/firebase_storage.dart';
+import '../../../app/Objetitos/usuario.dart';
+import 'package:intl/intl.dart';
 
-import '../../../main.dart';
 
 class ProfileViewmodel extends ChangeNotifier {
   // Propiedades del ViewModel
-  Usuario _user = const Usuario(
-    uid: '', // UID inicializado como vacío
+  Usuario _user = Usuario(
+    id: '',
     nombre: 'Invitado',
     email: 'invitado@example.com',
     empadronado: false,
@@ -29,15 +28,17 @@ class ProfileViewmodel extends ChangeNotifier {
   late TextEditingController dniController;
   late TextEditingController numeroTelefonoController;
   late TextEditingController emailController;
-  late TextEditingController fechaNacimientoController; // <--- CAMBIO AQUÍ: Nuevo controlador para la fecha
-  late TextEditingController direccionDetalladaController; // <--- CAMBIO AQUÍ: Nuevo controlador para la dirección detallada
+  late TextEditingController fechaNacimientoController; //
+  late TextEditingController direccionDetalladaController; //
 
   // Propiedades para la selección de fecha y género, ajustadas a los nombres del modelo Usuario
   DateTime? _selectedFechaNacimiento;
   DateTime? get selectedFechaNacimiento => _selectedFechaNacimiento;
   set selectedFechaNacimiento(DateTime? date) {
     _selectedFechaNacimiento = date;
-    fechaNacimientoController.text = date == null ? '' : DateFormat('dd/MM/yyyy').format(date); // Actualiza el controlador
+    fechaNacimientoController.text = date == null
+        ? ''
+        : DateFormat('dd/MM/yyyy').format(date);
     notifyListeners();
   }
 
@@ -49,74 +50,74 @@ class ProfileViewmodel extends ChangeNotifier {
   }
 
   // Propiedades para los dropdowns de dirección
-  String? _selectedProvincia; // <--- CAMBIO AQUÍ: Nueva propiedad
+  String? _selectedProvincia;
   String? get selectedProvincia => _selectedProvincia;
   set selectedProvincia(String? value) {
     _selectedProvincia = value;
     notifyListeners();
   }
 
-  String? _selectedDistrito; // <--- CAMBIO AQUÍ: Nueva propiedad
+  String? _selectedDistrito;
   String? get selectedDistrito => _selectedDistrito;
   set selectedDistrito(String? value) {
     _selectedDistrito = value;
     notifyListeners();
   }
 
-  String? _selectedUrbanizacion; // <--- CAMBIO AQUÍ: Nueva propiedad
+  String? _selectedUrbanizacion;
   String? get selectedUrbanizacion => _selectedUrbanizacion;
   set selectedUrbanizacion(String? value) {
     _selectedUrbanizacion = value;
     notifyListeners();
   }
 
-  // Listas de opciones para los dropdowns (puedes cargarlas dinámicamente de tu backend)
-  final List<String> provincias = ['LIMA']; //Ejemplo de datos
-  final List<String> distritos = ['ANCON',
-                                  'ATE', 
-                                  'BARRANCO',
-                                  'BREÑA', 
-                                  'CHACLACAYO', 
-                                  'CARABAYLLO',
-                                  'CHORRILLOS',
-                                  'CIENEGUILLA',
-                                  'COMAS',
-                                  'EL AGUSTINO',
-                                  'INDEPENDENCIA',
-                                  'JESUS MARIA',
-                                  'LA MOLINA',
-                                  'LA VICTORIA',
-                                  'LIMA',
-                                  'LINCE',
-                                  'LOS OLIVOS',
-                                  'LURIGANCHO',
-                                  'LURIN',
-                                  'MAGDALENA DEL MAR',
-                                  'MIRAFLORES',
-                                  'PACHAMAC',
-                                  'PUCUSANA',
-                                  'PUEBLO LIBRE',
-                                  'PUENTE PIEDRA',
-                                  'PUNTA HERMOSA',
-                                  'PUNTA NEGRA',
-                                  'RIMAC',
-                                  'SAN BARTOLO',
-                                  'SAN ISIDRO',
-                                  'SAN JUAN DE LURIGANCHO',
-                                  'SAN JUAN DE MIRAFLORES',
-                                  'SAN LUIS',
-                                  'SAN MARTIN DE PORRES',
-                                  'SAN MIGUEL',
-                                  'SANTA ANITA',
-                                  'SANTA MARIA DEL MAR',
-                                  'SANTA ROSA',
-                                  'SANTIAGO DE SURCO',
-                                  'SURQUILLO',
-                                  'VILLA EL SALVADOR',
-                                  'VILLA MARIA DEL TRIUNFO',
-                                  ];
-  final List<String> urbanizaciones = ['LIMA']; 
-
+  // Listas de opciones para los dropdowns
+  final List<String> provincias = ['LIMA'];
+  final List<String> distritos = [
+    'ANCON',
+    'ATE',
+    'BARRANCO',
+    'BREÑA',
+    'CHACLACAYO',
+    'CARABAYLLO',
+    'CHORRILLOS',
+    'CIENEGUILLA',
+    'COMAS',
+    'EL AGUSTINO',
+    'INDEPENDENCIA',
+    'JESUS MARIA',
+    'LA MOLINA',
+    'LA VICTORIA',
+    'LIMA',
+    'LINCE',
+    'LOS OLIVOS',
+    'LURIGANCHO',
+    'LURIN',
+    'MAGDALENA DEL MAR',
+    'MIRAFLORES',
+    'PACHAMAC',
+    'PUCUSANA',
+    'PUEBLO LIBRE',
+    'PUENTE PIEDRA',
+    'PUNTA HERMOSA',
+    'PUNTA NEGRA',
+    'RIMAC',
+    'SAN BARTOLO',
+    'SAN ISIDRO',
+    'SAN JUAN DE LURIGANCHO',
+    'SAN JUAN DE MIRAFLORES',
+    'SAN LUIS',
+    'SAN MARTIN DE PORRES',
+    'SAN MIGUEL',
+    'SANTA ANITA',
+    'SANTA MARIA DEL MAR',
+    'SANTA ROSA',
+    'SANTIAGO DE SURCO',
+    'SURQUILLO',
+    'VILLA EL SALVADOR',
+    'VILLA MARIA DEL TRIUNFO',
+  ];
+  final List<String> urbanizaciones = ['LIMA'];
 
   // Propiedad para la imagen temporalmente seleccionada
   File? _imageFile;
@@ -128,8 +129,8 @@ class ProfileViewmodel extends ChangeNotifier {
     dniController = TextEditingController();
     numeroTelefonoController = TextEditingController();
     emailController = TextEditingController();
-    fechaNacimientoController = TextEditingController(); 
-    direccionDetalladaController = TextEditingController(); 
+    fechaNacimientoController = TextEditingController();
+    direccionDetalladaController = TextEditingController();
     _loadUserProfile(); // Cargar el perfil al inicializar el ViewModel
   }
 
@@ -139,8 +140,8 @@ class ProfileViewmodel extends ChangeNotifier {
     dniController.dispose();
     numeroTelefonoController.dispose();
     emailController.dispose();
-    fechaNacimientoController.dispose(); 
-    direccionDetalladaController.dispose(); 
+    fechaNacimientoController.dispose();
+    direccionDetalladaController.dispose();
     super.dispose();
   }
 
@@ -160,33 +161,38 @@ class ProfileViewmodel extends ChangeNotifier {
         return;
       }
 
-      DocumentSnapshot userDoc = await FirebaseFirestore.instance.collection('Usuarios').doc(uid).get();
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('Usuarios')
+          .doc(uid)
+          .get();
 
       if (userDoc.exists) {
-        _user = Usuario.fromFirestore(userDoc);
+        _user = Usuario.fromFirestore(userDoc, uid);
         // Inicializar controladores y propiedades con los datos del usuario
         nombreCompletoController.text = _user.nombre;
         emailController.text = _user.email;
         dniController.text = _user.dni?.toString() ?? '';
-        numeroTelefonoController.text = _user.numeroTelefono ?? '';
+        numeroTelefonoController.text = _user.numeroTelefono?.toString() ?? '';
         _selectedFechaNacimiento = _user.fechaNacimiento;
-        // Actualiza el controlador de fecha
+       
         fechaNacimientoController.text = _user.fechaNacimiento == null
             ? ''
-            : DateFormat('dd/MM/yyyy').format(_user.fechaNacimiento!); 
+            : DateFormat('dd/MM/yyyy').format(_user.fechaNacimiento!);
         _selectedGenero = _user.genero;
-        _selectedProvincia = _user.provincia; 
-        _selectedDistrito = _user.distrito; 
-        _selectedUrbanizacion = _user.urbanizacion; 
-        direccionDetalladaController.text = _user.direccionDetallada ?? ''; 
-
+        _selectedProvincia = _user.provincia;
+        _selectedDistrito = _user.distrito;
+        _selectedUrbanizacion = _user.urbanizacion;
+        direccionDetalladaController.text = _user.direccionDetallada ?? '';
       } else {
-        _errorMessage = "Datos de perfil no encontrados en Firestore para el UID: $uid. Se inicializa un perfil básico.";
+        _errorMessage =
+            "Datos de perfil no encontrados en Firestore para el UID: $uid. Se inicializa un perfil básico.";
         // Si el documento no existe, inicializa _user con datos básicos
         _user = Usuario(
-          uid: uid,
+          id: uid,
           nombre: 'Usuario Nuevo',
-          email: firebase_auth.FirebaseAuth.instance.currentUser?.email ?? 'nuevo_usuario@example.com',
+          email:
+              firebase_auth.FirebaseAuth.instance.currentUser?.email ??
+              'nuevo_usuario@example.com',
           empadronado: false,
           // Inicializa las nuevas propiedades con valores predeterminados o nulos
           provincia: null,
@@ -203,21 +209,22 @@ class ProfileViewmodel extends ChangeNotifier {
         nombreCompletoController.clear();
         dniController.clear();
         numeroTelefonoController.clear();
-        emailController.text = _user.email; // Establece el email del usuario de Auth
-        fechaNacimientoController.clear(); 
-        direccionDetalladaController.clear(); 
+        emailController.text =
+            _user.email; // Establece el email del usuario de Auth
+        fechaNacimientoController.clear();
+        direccionDetalladaController.clear();
         _selectedFechaNacimiento = null;
         _selectedGenero = null;
         _selectedProvincia = null;
-        _selectedDistrito = null; 
+        _selectedDistrito = null;
         _selectedUrbanizacion = null;
       }
     } on FirebaseException catch (e) {
       _errorMessage = "Error de Firebase al cargar perfil: ${e.message}";
-      debugPrint("Error Firebase al cargar perfil: $e"); 
+      debugPrint("Error Firebase al cargar perfil: $e");
     } catch (e) {
       _errorMessage = "Error al cargar el perfil: $e";
-      debugPrint("Error general al cargar perfil: $e"); 
+      debugPrint("Error general al cargar perfil: $e");
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -233,7 +240,8 @@ class ProfileViewmodel extends ChangeNotifier {
       lastDate: DateTime.now(),
     );
     if (pickedDate != null && pickedDate != _selectedFechaNacimiento) {
-      selectedFechaNacimiento = pickedDate; // Usa el setter para actualizar y notificar
+      selectedFechaNacimiento =
+          pickedDate; // Usa el setter para actualizar y notificar
     }
   }
 
@@ -258,11 +266,15 @@ class ProfileViewmodel extends ChangeNotifier {
         return;
       }
 
-      String? newImageUrl = _user.imageUrl; // Mantener la URL existente por defecto
+      String? newImageUrl =
+          _user.imageUrl; // Mantener la URL existente por defecto
 
       // Si hay una nueva imagen seleccionada, subirla a Firebase Storage
       if (_imageFile != null) {
-        final storageRef = FirebaseStorage.instance.ref().child('profile_images').child('$uid.jpg');
+        final storageRef = FirebaseStorage.instance
+            .ref()
+            .child('profile_images')
+            .child('$uid.jpg');
         await storageRef.putFile(_imageFile!);
         newImageUrl = await storageRef.getDownloadURL();
       }
@@ -305,36 +317,31 @@ class ProfileViewmodel extends ChangeNotifier {
         return;
       }
 
-
       // Crear un nuevo objeto Usuario con los datos actualizados de los controladores y propiedades
       final updatedUser = _user.copyWith(
         nombre: nombreCompletoController.text.trim(),
         email: emailController.text.trim(),
         dni: int.tryParse(dniController.text.trim()),
-        numeroTelefono: numeroTelefonoController.text.trim(),
+        numeroTelefono: int.tryParse(numeroTelefonoController.text.trim()),
         fechaNacimiento: _selectedFechaNacimiento,
         genero: _selectedGenero,
         imageUrl: newImageUrl,
-        // Añadir las nuevas propiedades de dirección
+        
         provincia: _selectedProvincia,
         distrito: _selectedDistrito,
         urbanizacion: _selectedUrbanizacion,
         direccionDetallada: direccionDetalladaController.text.trim(),
       );
 
-      await FirebaseFirestore.instance.collection('Usuarios').doc(uid).update(updatedUser.toFirestore());
+      await FirebaseFirestore.instance
+          .collection('Usuarios')
+          .doc(uid)
+          .set(updatedUser.toFirestore(), SetOptions(merge: true));
 
       _user = updatedUser; // Actualiza el _user localmente
 
       _errorMessage = null; // Limpiar cualquier mensaje de error anterior
-      // Utiliza navigatorKey para mostrar el SnackBar de forma segura
-      if (navigatorKey.currentContext != null && navigatorKey.currentContext!.mounted) {
-        ScaffoldMessenger.of(navigatorKey.currentContext!).showSnackBar(
-          const SnackBar(content: Text('Perfil actualizado con éxito!'), backgroundColor: Colors.green),
-        );
-      } else {
-        debugPrint("Error: No se pudo mostrar SnackBar porque navigatorKey.currentContext no está montado."); // Usar debugPrint
-      }
+    
 
     } on FirebaseException catch (e) {
       _errorMessage = "Error de Firebase al actualizar perfil: ${e.message}";

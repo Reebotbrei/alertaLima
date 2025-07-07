@@ -2,9 +2,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-import 'package:intl/intl.dart';
 import '../viewmodel/profile_viewmodel.dart';
-import '/app/theme/app_colors.dart'; 
+import '/app/theme/app_colors.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -16,7 +15,7 @@ class ProfileScreen extends StatelessWidget {
         title: const Text('Actualizar perfil'),
         backgroundColor: Theme.of(
           context,
-          ).primaryColor, // Usar el color primario del tema
+        ).primaryColor, // Usar el color primario del tema
       ),
       body: Consumer<ProfileViewmodel>(
         builder: (context, profileVM, child) {
@@ -27,7 +26,7 @@ class ProfileScreen extends StatelessWidget {
           return SingleChildScrollView(
             padding: const EdgeInsets.all(16.0),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center, 
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 // Sección de la foto de perfil
                 Stack(
@@ -36,11 +35,16 @@ class ProfileScreen extends StatelessWidget {
                       radius: 60,
                       backgroundColor: AppColors.muted.withOpacity(0.2),
                       backgroundImage: profileVM.imageFile != null
-                          ? FileImage(profileVM.imageFile!) as ImageProvider<Object>?
+                          ? FileImage(profileVM.imageFile!)
+                                as ImageProvider<Object>?
                           : (profileVM.user.imageUrl?.isNotEmpty == true
-                                  ? NetworkImage(profileVM.user.imageUrl!) as ImageProvider<Object>?
-                                  : null),
-                      child: (profileVM.imageFile == null && (profileVM.user.imageUrl?.isEmpty == true || profileVM.user.imageUrl == null))
+                                ? NetworkImage(profileVM.user.imageUrl!)
+                                      as ImageProvider<Object>?
+                                : null),
+                      child:
+                          (profileVM.imageFile == null &&
+                              (profileVM.user.imageUrl?.isEmpty == true ||
+                                  profileVM.user.imageUrl == null))
                           ? Icon(Icons.person, size: 60, color: AppColors.muted)
                           : null,
                     ),
@@ -51,7 +55,10 @@ class ProfileScreen extends StatelessWidget {
                         onPressed: () => _pickImage(context, profileVM),
                         mini: true,
                         backgroundColor: AppColors.button,
-                        child: const Icon(Icons.edit, color: AppColors.buttonText),
+                        child: const Icon(
+                          Icons.edit,
+                          color: AppColors.buttonText,
+                        ),
                       ),
                     ),
                   ],
@@ -60,7 +67,7 @@ class ProfileScreen extends StatelessWidget {
                 Text(
                   'Información de la cuenta',
                   style: Theme.of(context).textTheme.titleLarge,
-                  textAlign: TextAlign.center, 
+                  textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 20),
 
@@ -83,7 +90,8 @@ class ProfileScreen extends StatelessWidget {
                   child: AbsorbPointer(
                     child: _buildTextField(
                       context,
-                      controller: profileVM.fechaNacimientoController, // Usar el controlador del VM
+                      controller: profileVM
+                          .fechaNacimientoController, // Usar el controlador del VM
                       labelText: 'Fecha de Nacimiento*',
                       hintText: 'DD/MM/AAAA',
                       suffixIcon: const Icon(Icons.calendar_today),
@@ -95,7 +103,7 @@ class ProfileScreen extends StatelessWidget {
 
                 // Sección de Género
                 Align(
-                  alignment: Alignment.centerLeft, 
+                  alignment: Alignment.centerLeft,
                   child: _buildGenderSelection(context, profileVM),
                 ),
                 const SizedBox(height: 15),
@@ -153,14 +161,22 @@ class ProfileScreen extends StatelessWidget {
                   value: profileVM.selectedProvincia,
                   decoration: InputDecoration(
                     labelText: 'Provincia/ Ciudad*',
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8.0),
-                      borderSide: BorderSide(color: AppColors.muted, width: 1.0),
+                      borderSide: BorderSide(
+                        color: AppColors.muted,
+                        width: 1.0,
+                      ),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8.0),
-                      borderSide: BorderSide(color: AppColors.primary, width: 2.0),
+                      borderSide: BorderSide(
+                        color: AppColors.primary,
+                        width: 2.0,
+                      ),
                     ),
                     filled: true,
                     fillColor: AppColors.background,
@@ -168,7 +184,10 @@ class ProfileScreen extends StatelessWidget {
                   items: profileVM.provincias.map((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
-                      child: Text(value, style: TextStyle(color: AppColors.text)),
+                      child: Text(
+                        value,
+                        style: TextStyle(color: AppColors.text),
+                      ),
                     );
                   }).toList(),
                   onChanged: (String? newValue) {
@@ -184,14 +203,22 @@ class ProfileScreen extends StatelessWidget {
                   value: profileVM.selectedDistrito,
                   decoration: InputDecoration(
                     labelText: 'Distrito*',
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8.0),
-                      borderSide: BorderSide(color: AppColors.muted, width: 1.0),
+                      borderSide: BorderSide(
+                        color: AppColors.muted,
+                        width: 1.0,
+                      ),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8.0),
-                      borderSide: BorderSide(color: AppColors.primary, width: 2.0),
+                      borderSide: BorderSide(
+                        color: AppColors.primary,
+                        width: 2.0,
+                      ),
                     ),
                     filled: true,
                     fillColor: AppColors.background,
@@ -199,7 +226,10 @@ class ProfileScreen extends StatelessWidget {
                   items: profileVM.distritos.map((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
-                      child: Text(value, style: TextStyle(color: AppColors.text)),
+                      child: Text(
+                        value,
+                        style: TextStyle(color: AppColors.text),
+                      ),
                     );
                   }).toList(),
                   onChanged: (String? newValue) {
@@ -215,14 +245,22 @@ class ProfileScreen extends StatelessWidget {
                   value: profileVM.selectedUrbanizacion,
                   decoration: InputDecoration(
                     labelText: 'Urbanización',
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8.0),
-                      borderSide: BorderSide(color: AppColors.muted, width: 1.0),
+                      borderSide: BorderSide(
+                        color: AppColors.muted,
+                        width: 1.0,
+                      ),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8.0),
-                      borderSide: BorderSide(color: AppColors.primary, width: 2.0),
+                      borderSide: BorderSide(
+                        color: AppColors.primary,
+                        width: 2.0,
+                      ),
                     ),
                     filled: true,
                     fillColor: AppColors.background,
@@ -230,7 +268,10 @@ class ProfileScreen extends StatelessWidget {
                   items: profileVM.urbanizaciones.map((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
-                      child: Text(value, style: TextStyle(color: AppColors.text)),
+                      child: Text(
+                        value,
+                        style: TextStyle(color: AppColors.text),
+                      ),
                     );
                   }).toList(),
                   onChanged: (String? newValue) {
@@ -250,7 +291,8 @@ class ProfileScreen extends StatelessWidget {
                   maxLines: 3,
                   suffixIcon: IconButton(
                     icon: const Icon(Icons.cancel),
-                    onPressed: () => profileVM.direccionDetalladaController.clear(),
+                    onPressed: () =>
+                        profileVM.direccionDetalladaController.clear(),
                   ),
                 ),
                 const SizedBox(height: 30),
@@ -261,6 +303,25 @@ class ProfileScreen extends StatelessWidget {
                       ? null
                       : () async {
                           await profileVM.saveProfileChanges();
+                          if (context.mounted) {
+                            if (profileVM.errorMessage == null) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Perfil actualizado con éxito'),
+                                  backgroundColor: Colors.green,
+                                ),
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    'Error: ${profileVM.errorMessage!}',
+                                  ),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                            }
+                          }
                         },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.button,
@@ -268,10 +329,15 @@ class ProfileScreen extends StatelessWidget {
                     minimumSize: const Size(double.infinity, 50),
                   ),
                   child: profileVM.isLoading
-                      ? const CircularProgressIndicator(color: AppColors.buttonText)
+                      ? const CircularProgressIndicator(
+                          color: AppColors.buttonText,
+                        )
                       : const Text(
                           'Guardar Cambios',
-                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                 ),
                 // Mensaje de error
@@ -280,7 +346,10 @@ class ProfileScreen extends StatelessWidget {
                     padding: const EdgeInsets.only(top: 20.0),
                     child: Text(
                       profileVM.errorMessage!,
-                      style: const TextStyle(color: AppColors.error, fontSize: 14),
+                      style: const TextStyle(
+                        color: AppColors.error,
+                        fontSize: 14,
+                      ),
                       textAlign: TextAlign.center,
                     ),
                   ),
@@ -293,7 +362,10 @@ class ProfileScreen extends StatelessWidget {
   }
 
   // Método para seleccionar imagen del perfil
-  Future<void> _pickImage(BuildContext context, ProfileViewmodel profileVM) async {
+  Future<void> _pickImage(
+    BuildContext context,
+    ProfileViewmodel profileVM,
+  ) async {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
@@ -322,9 +394,7 @@ class ProfileScreen extends StatelessWidget {
         labelText: labelText,
         hintText: hintText,
         suffixIcon: suffixIcon,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8.0),
-        ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0)),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8.0),
           borderSide: BorderSide(color: AppColors.muted, width: 1.0),
@@ -343,22 +413,23 @@ class ProfileScreen extends StatelessWidget {
 
   // Widget para construir la sección de selección de género
   Widget _buildGenderSelection(
-    BuildContext context, 
-    ProfileViewmodel viewModel
-    ) {
+    BuildContext context,
+    ProfileViewmodel viewModel,
+  ) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start, 
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           'Género *',
-          style: Theme.of(context).textTheme.titleSmall?.copyWith(color: AppColors.text),
+          style: Theme.of(
+            context,
+          ).textTheme.titleSmall?.copyWith(color: AppColors.text),
         ),
         const SizedBox(height: 8),
-        
+
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            
             _buildGenderOption(context, viewModel, 'Masculino'),
             _buildGenderOption(context, viewModel, 'Femenino'),
           ],
@@ -368,9 +439,18 @@ class ProfileScreen extends StatelessWidget {
   }
 
   // Widget auxiliar para construir cada opción de radio de género
-  Widget _buildGenderOption(BuildContext context, ProfileViewmodel viewModel, String gender) {
+  Widget _buildGenderOption(
+    BuildContext context,
+    ProfileViewmodel viewModel,
+    String gender,
+  ) {
     return RadioListTile<String>(
-      title: Text(gender, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.text)),
+      title: Text(
+        gender,
+        style: Theme.of(
+          context,
+        ).textTheme.bodyMedium?.copyWith(color: AppColors.text),
+      ),
       value: gender,
       groupValue: viewModel.selectedGenero,
       onChanged: (String? value) {
@@ -378,7 +458,7 @@ class ProfileScreen extends StatelessWidget {
       },
       activeColor: AppColors.primary,
       dense: true,
-      contentPadding: EdgeInsets.zero, 
+      contentPadding: EdgeInsets.zero,
     );
   }
 }

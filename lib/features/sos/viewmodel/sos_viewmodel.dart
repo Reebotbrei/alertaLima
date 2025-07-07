@@ -3,7 +3,6 @@ import 'package:url_launcher/url_launcher.dart';
 import '../model/emergency_contact.dart';
 
 class SOSViewModel extends ChangeNotifier {
-  
   final List<EmergencyContact> contacts = [
     EmergencyContact(title: 'SAMU', number: '106', icon: Icons.local_hospital),
     EmergencyContact(title: 'Bomberos', number: '116', icon: Icons.fire_truck),

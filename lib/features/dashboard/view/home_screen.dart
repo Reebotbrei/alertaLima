@@ -3,13 +3,16 @@ import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 
 import 'package:alerta_lima/app/Objetitos/usuario.dart';
-import 'package:alerta_lima/features/chat/view/chat_screen.dart';
+import 'package:alerta_lima/features/reporte_incidentes/view/reporte_incidentes.dart';
 import 'package:alerta_lima/features/sos/view/sos_screen.dart';
 import '../../../app/theme/app_colors.dart';
 import '../viewmodel/dashboard_viewmodel.dart';
 import 'menu_card.dart';
 
 import '../../auth/view/login_screen.dart';
+import 'package:alerta_lima/features/chat/chat_vecinal/view/presentacion/chat/chat_vecinal_screen.dart';
+import 'package:alerta_lima/features/map/view/pantalla_Mapa.dart';
+
 
 class HomeScreen extends StatelessWidget {
   final Usuario usuario;
@@ -131,11 +134,14 @@ class HomeScreen extends StatelessWidget {
                   icon: Icons.warning_amber_rounded,
                   title: 'Reportar Incidente',
                   onTap: () {
-                    if (usuario.empadronado == false) {
-                      _mensajeEnable(context);
-                    } else {
-                      Navigator.pushNamed(context, '/report');
-                    }
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => Reporteincidentes(
+                          usuario: usuario,
+                        ), //invocamos al clases donde se encuntra el mapa
+                      ),
+                    );
                   },
                 ),
                 MenuCard(
@@ -149,7 +155,13 @@ class HomeScreen extends StatelessWidget {
                   icon: Icons.map_outlined,
                   title: 'Mapa de Seguridad',
                   onTap: () {
-                    Navigator.pushNamed(context, '/map');
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            (pantallaMapa()), //invocamos al clases donde se encuntra el mapa
+                      ),
+                    );
                   },
                 ),
                 MenuCard(
@@ -172,7 +184,11 @@ class HomeScreen extends StatelessWidget {
                     } else {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => ChatScreen()),
+
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              ChatVecinalScreen(usuario: usuario),
+                        ),
                       );
                     }
                   },
