@@ -15,6 +15,7 @@ class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key, required this.usuario});
   final Color colorIcono = AppColors.primary;
   final Color colorFondo = AppColors.background;
+  final Color colorTexto = AppColors.text;
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
@@ -31,11 +32,14 @@ class HomeScreen extends StatelessWidget {
               crossAxisSpacing: 16,
               children: [
                 MenuCard(
+                  texto: usuario.empadronado == false
+                      ? const Color.fromARGB(136, 49, 46, 46)                  
+                      : colorTexto,
                   fondo: usuario.empadronado == false
-                      ? Colors.grey
+                      ? const Color.fromARGB(170, 251, 247, 247)
                       : colorFondo,
                   colorIcono: usuario.empadronado == false
-                      ?  const Color.fromARGB(99, 39, 38, 38)
+                      ? const Color.fromARGB(99, 39, 38, 38)
                       : colorIcono,
                   icon: Icons.warning_amber_rounded,
                   title: 'Reportar Incidente',
@@ -55,6 +59,7 @@ class HomeScreen extends StatelessWidget {
                   },
                 ),
                 MenuCard(
+                  texto: colorTexto,
                   fondo: colorFondo,
                   colorIcono: colorIcono,
                   icon: Icons.campaign_outlined,
@@ -64,6 +69,7 @@ class HomeScreen extends StatelessWidget {
                   },
                 ),
                 MenuCard(
+                  texto: colorTexto,
                   fondo: colorFondo,
                   colorIcono: colorIcono,
                   icon: Icons.map_outlined,
@@ -79,11 +85,14 @@ class HomeScreen extends StatelessWidget {
                   },
                 ),
                 MenuCard(
-                   fondo: usuario.empadronado == false
-                      ? Colors.grey
+                    texto: usuario.empadronado == false
+                      ?   const Color.fromARGB(136, 49, 46, 46)                         
+                      : colorTexto,
+                  fondo: usuario.empadronado == false
+                      ?  const Color.fromARGB(170, 251, 247, 247)
                       : colorFondo,
                   colorIcono: usuario.empadronado == false
-                      ?   const Color.fromARGB(99, 39, 38, 38)
+                      ? const Color.fromARGB(99, 39, 38, 38)
                       : colorIcono,
                   icon: Icons.support_agent,
                   title: 'Contactar Autoridad',
@@ -96,11 +105,14 @@ class HomeScreen extends StatelessWidget {
                   },
                 ),
                 MenuCard(
-                   fondo: usuario.empadronado == false
-                      ? Colors.grey
+                    texto: usuario.empadronado == false
+                      ? const Color.fromARGB(136, 49, 46, 46)                    
+                      : colorTexto,
+                  fondo: usuario.empadronado == false
+                      ? const Color.fromARGB(170, 251, 247, 247)
                       : colorFondo,
                   colorIcono: usuario.empadronado == false
-                      ?  const Color.fromARGB(99, 39, 38, 38)
+                      ? const Color.fromARGB(99, 39, 38, 38)
                       : colorIcono,
                   icon: Icons.chat,
                   title: 'Chat Vecinal',
@@ -120,6 +132,7 @@ class HomeScreen extends StatelessWidget {
                   },
                 ),
                 MenuCard(
+                  texto: colorTexto,
                   fondo: colorFondo,
                   colorIcono: colorIcono,
                   icon: Icons.phone,

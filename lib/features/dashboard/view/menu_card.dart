@@ -7,6 +7,7 @@ class MenuCard extends StatelessWidget {
   final VoidCallback onTap;
   final Color colorIcono;
   final Color fondo;
+  final Color texto;
   const MenuCard({
     super.key,
     required this.icon,
@@ -14,6 +15,7 @@ class MenuCard extends StatelessWidget {
     required this.onTap,
     required this.colorIcono,
     required this.fondo,
+    required this.texto,
   });
 
   @override
@@ -43,10 +45,10 @@ class MenuCard extends StatelessWidget {
             Text(
               title,
               textAlign: TextAlign.center,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
-                color: AppColors.text,
+                color: texto,
               ),
             ),
           ],
