@@ -13,7 +13,7 @@ class SOSViewModel extends ChangeNotifier {
     ),
     EmergencyContact(title: 'Defensa Civil', number: '115', icon: Icons.shield),
     EmergencyContact(
-      title: 'Elias',
+      title: 'Elias oño',
       number: '927073539',
       icon: Icons.account_circle,
     ),
