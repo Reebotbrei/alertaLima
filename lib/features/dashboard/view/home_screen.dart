@@ -13,7 +13,8 @@ import 'package:alerta_lima/features/map/view/pantalla_Mapa.dart';
 class HomeScreen extends StatelessWidget {
   final Usuario usuario;
   const HomeScreen({super.key, required this.usuario});
-
+  final Color colorIcono = AppColors.primary;
+  final Color colorFondo = AppColors.background;
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
@@ -30,9 +31,19 @@ class HomeScreen extends StatelessWidget {
               crossAxisSpacing: 16,
               children: [
                 MenuCard(
+                  fondo: usuario.empadronado == false
+                      ? Colors.grey
+                      : colorFondo,
+                  colorIcono: usuario.empadronado == false
+                      ?  const Color.fromARGB(99, 39, 38, 38)
+                      : colorIcono,
                   icon: Icons.warning_amber_rounded,
                   title: 'Reportar Incidente',
                   onTap: () {
+                    if (usuario.empadronado == false) {
+                      _mensajeEnable(context);
+                      return;
+                    }
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -44,6 +55,8 @@ class HomeScreen extends StatelessWidget {
                   },
                 ),
                 MenuCard(
+                  fondo: colorFondo,
+                  colorIcono: colorIcono,
                   icon: Icons.campaign_outlined,
                   title: 'Alertas en tu zona',
                   onTap: () {
@@ -51,6 +64,8 @@ class HomeScreen extends StatelessWidget {
                   },
                 ),
                 MenuCard(
+                  fondo: colorFondo,
+                  colorIcono: colorIcono,
                   icon: Icons.map_outlined,
                   title: 'Mapa de Seguridad',
                   onTap: () {
@@ -64,6 +79,12 @@ class HomeScreen extends StatelessWidget {
                   },
                 ),
                 MenuCard(
+                   fondo: usuario.empadronado == false
+                      ? Colors.grey
+                      : colorFondo,
+                  colorIcono: usuario.empadronado == false
+                      ?   const Color.fromARGB(99, 39, 38, 38)
+                      : colorIcono,
                   icon: Icons.support_agent,
                   title: 'Contactar Autoridad',
                   onTap: () {
@@ -75,6 +96,12 @@ class HomeScreen extends StatelessWidget {
                   },
                 ),
                 MenuCard(
+                   fondo: usuario.empadronado == false
+                      ? Colors.grey
+                      : colorFondo,
+                  colorIcono: usuario.empadronado == false
+                      ?  const Color.fromARGB(99, 39, 38, 38)
+                      : colorIcono,
                   icon: Icons.chat,
                   title: 'Chat Vecinal',
                   onTap: () {
@@ -93,6 +120,8 @@ class HomeScreen extends StatelessWidget {
                   },
                 ),
                 MenuCard(
+                  fondo: colorFondo,
+                  colorIcono: colorIcono,
                   icon: Icons.phone,
                   title: 'SOS',
                   onTap: () {

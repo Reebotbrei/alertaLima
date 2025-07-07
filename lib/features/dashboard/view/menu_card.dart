@@ -5,12 +5,15 @@ class MenuCard extends StatelessWidget {
   final IconData icon;
   final String title;
   final VoidCallback onTap;
-
+  final Color colorIcono;
+  final Color fondo;
   const MenuCard({
     super.key,
     required this.icon,
     required this.title,
     required this.onTap,
+    required this.colorIcono,
+    required this.fondo,
   });
 
   @override
@@ -20,7 +23,7 @@ class MenuCard extends StatelessWidget {
       borderRadius: BorderRadius.circular(16),
       child: Container(
         decoration: BoxDecoration(
-          color: AppColors.background,
+          color: fondo,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: AppColors.border),
           boxShadow: [
@@ -35,7 +38,7 @@ class MenuCard extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 40, color: AppColors.primary),
+            Icon(icon, size: 40, color: colorIcono),
             const SizedBox(height: 12),
             Text(
               title,
