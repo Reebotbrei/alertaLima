@@ -2,10 +2,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
-import 'package:firebase_storage/firebase_storage.dart';
 import '../../../app/Objetitos/usuario.dart';
 import 'package:intl/intl.dart';
-
 
 class ProfileViewmodel extends ChangeNotifier {
   // Propiedades del ViewModel
@@ -162,7 +160,7 @@ class ProfileViewmodel extends ChangeNotifier {
       }
 
       DocumentSnapshot userDoc = await FirebaseFirestore.instance
-          .collection('Usuarios')
+          .collection('Usuario')
           .doc(uid)
           .get();
 
@@ -174,7 +172,7 @@ class ProfileViewmodel extends ChangeNotifier {
         dniController.text = _user.dni?.toString() ?? '';
         numeroTelefonoController.text = _user.numeroTelefono?.toString() ?? '';
         _selectedFechaNacimiento = _user.fechaNacimiento;
-       
+
         fechaNacimientoController.text = _user.fechaNacimiento == null
             ? ''
             : DateFormat('dd/MM/yyyy').format(_user.fechaNacimiento!);
@@ -266,10 +264,11 @@ class ProfileViewmodel extends ChangeNotifier {
         return;
       }
 
+      /*
       String? newImageUrl =
           _user.imageUrl; // Mantener la URL existente por defecto
 
-      // Si hay una nueva imagen seleccionada, subirla a Firebase Storage
+       Si hay una nueva imagen seleccionada, subirla a Firebase Storage
       if (_imageFile != null) {
         final storageRef = FirebaseStorage.instance
             .ref()
@@ -278,6 +277,7 @@ class ProfileViewmodel extends ChangeNotifier {
         await storageRef.putFile(_imageFile!);
         newImageUrl = await storageRef.getDownloadURL();
       }
+      */
 
       // Validaciones básicas
       if (nombreCompletoController.text.trim().isEmpty) {
@@ -317,6 +317,16 @@ class ProfileViewmodel extends ChangeNotifier {
         return;
       }
 
+      bool usuarioActualizado = 
+        nombreCompletoController.text.trim().isNotEmpty &&
+        _selectedFechaNacimiento != null &&
+        _selectedGenero != null &&
+        dniController.text.trim().isNotEmpty &&
+        numeroTelefonoController.text.trim().isNotEmpty &&
+        _selectedDistrito != null &&
+        _selectedDistrito != null &&
+        direccionDetalladaController.text.trim().isNotEmpty;
+
       // Crear un nuevo objeto Usuario con los datos actualizados de los controladores y propiedades
       final updatedUser = _user.copyWith(
         nombre: nombreCompletoController.text.trim(),
@@ -325,24 +335,24 @@ class ProfileViewmodel extends ChangeNotifier {
         numeroTelefono: int.tryParse(numeroTelefonoController.text.trim()),
         fechaNacimiento: _selectedFechaNacimiento,
         genero: _selectedGenero,
-        imageUrl: newImageUrl,
         
+
         provincia: _selectedProvincia,
         distrito: _selectedDistrito,
         urbanizacion: _selectedUrbanizacion,
         direccionDetallada: direccionDetalladaController.text.trim(),
+
+        empadronado: usuarioActualizado,
       );
 
       await FirebaseFirestore.instance
-          .collection('Usuarios')
+          .collection('Usuario')
           .doc(uid)
           .set(updatedUser.toFirestore(), SetOptions(merge: true));
 
       _user = updatedUser; // Actualiza el _user localmente
 
       _errorMessage = null; // Limpiar cualquier mensaje de error anterior
-    
-
     } on FirebaseException catch (e) {
       _errorMessage = "Error de Firebase al actualizar perfil: ${e.message}";
       debugPrint("Error Firebase al actualizar perfil: $e"); // Usar debugPrint

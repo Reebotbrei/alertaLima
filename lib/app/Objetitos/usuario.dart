@@ -38,7 +38,7 @@ class Usuario {
   factory Usuario.fromFirestore(DocumentSnapshot doc, id) {
     final inforDeFireStore = doc.data() as Map<String, dynamic>;
     return Usuario(
-      id: id, //doc.id para obtener los datos del usuario ingresado y poder modificarlos
+      id: id, 
       dni: inforDeFireStore["DNI"],
       distrito: inforDeFireStore['Distrito'],
       email: inforDeFireStore['Email'],
@@ -61,7 +61,7 @@ class Usuario {
 
   /*Metodo map para convertir el objeto usuario a un map para que firestore se
 pueda comunicar con Firebase y se puedan realizar los cambios y modificaciones
-del usuario*/
+al actualizar el perfil del usuario*/
 
   Map<String, dynamic> toFirestore() {
     return {

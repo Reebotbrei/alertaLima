@@ -244,7 +244,7 @@ class ProfileScreen extends StatelessWidget {
                 DropdownButtonFormField<String>(
                   value: profileVM.selectedUrbanizacion,
                   decoration: InputDecoration(
-                    labelText: 'Urbanización',
+                    labelText: 'Vecindario',
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
