@@ -329,7 +329,7 @@ class ProfileViewmodel extends ChangeNotifier {
         return;
       }
       if (_selectedFechaNacimiento == null) {
-        _errorMessage = "La fecha de nacimiento es obligatoria.";
+        _errorMessage = "La fecha de nacimiento es obligatoriaa.";
         _isLoading = false;
         notifyListeners();
         return;
