@@ -16,7 +16,7 @@ class AppColors {
   //  Botones y componentes
   static const Color button = Color.fromARGB(195, 32, 138, 71);
   static const Color buttonText = Colors.white;
-  static const Color border = Color(0xFFCCCCCC); // Bordes sutiles
+  static const Color border = Color.fromARGB(255, 204, 204, 204); // Bordes sutiles
 
   //  Estados (opcional pero neutros)
   static const Color error = Color.fromARGB(255, 181, 1, 34); // Rojo para errores

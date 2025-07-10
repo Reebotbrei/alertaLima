@@ -240,6 +240,7 @@ class HomeScreen extends StatelessWidget {
                 ),
                
                 MenuCard(
+
                   texto: colorTexto,
                   fondo: colorFondo,
                   colorIcono: colorIcono,
