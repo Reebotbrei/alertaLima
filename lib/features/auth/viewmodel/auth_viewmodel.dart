@@ -38,7 +38,10 @@ class AuthViewModel extends ChangeNotifier {
 
       if (!context.mounted) return;
 
-      Usuario usuario = Usuario.fromFirestore(snapshot, usuarioParaIngreso.user!.uid);
+      Usuario usuario = Usuario.fromFirestore(
+        snapshot,
+        usuarioParaIngreso.user!.uid,
+      );
 
       Navigator.push(
         context,
@@ -87,6 +90,14 @@ class AuthViewModel extends ChangeNotifier {
     final nombre = nombreControlador.text.trim();
     final confirmaContrasena = confirmaContrasenaControlador.text.trim();
 
+    if(email.startsWith(' ') || !email.startsWith('') ||email.length == 11) {
+       _showSnackbar(context, 'El correo debe tener las caracteristicas necesarias');
+      return;
+    }
+    if (!email.endsWith('@gmail.com')) {
+       _showSnackbar(context, 'Solo puede usar cuentas que sean @gmail.com');
+      return;
+    }
     if (email.isEmpty || password.isEmpty) {
       _showSnackbar(context, 'Completa todos los campos');
       return;
@@ -100,7 +111,6 @@ class AuthViewModel extends ChangeNotifier {
       return;
     }
     try {
-
       UserCredential usuario = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
       FirebaseFirestore.instance
@@ -109,14 +119,14 @@ class AuthViewModel extends ChangeNotifier {
           .set({
             'DNI': null,
             'Distrito': null,
-            'Email': email, 
+            'Email': email,
             'Empadronado': false,
             'FechaNacimiento': null,
             'Nombre': nombre,
             'NumeroTelefono': null,
             'Genero': null,
             'Vecindario': null,
-            });
+          });
       if (!context.mounted) return;
 
       showDialog(
@@ -136,11 +146,12 @@ class AuthViewModel extends ChangeNotifier {
         ),
       );
     } catch (e) {
-         if (context.mounted) {
+      if (context.mounted) {
         _showSnackbar(context, "Este correo ya está siendo utilizado");
       }
     }
   }
+
   void _showSnackbar(BuildContext context, String msg) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
   }
