@@ -40,7 +40,7 @@ class ProfileViewmodel extends ChangeNotifier {
     notifyListeners();
   }
 
-  String? _selectedGenero; // Antes _selectedGender
+  String? _selectedGenero;
   String? get selectedGenero => _selectedGenero;
   set selectedGenero(String? gender) {
     _selectedGenero = gender;
@@ -48,13 +48,6 @@ class ProfileViewmodel extends ChangeNotifier {
   }
 
   // Propiedades para los dropdowns de dirección
-  String? _selectedProvincia;
-  String? get selectedProvincia => _selectedProvincia;
-  set selectedProvincia(String? value) {
-    _selectedProvincia = value;
-    notifyListeners();
-  }
-
   String? _selectedDistrito;
   String? get selectedDistrito => _selectedDistrito;
   set selectedDistrito(String? value) {
@@ -69,9 +62,6 @@ class ProfileViewmodel extends ChangeNotifier {
     _selectedVecindario = value;
     notifyListeners();
   }
-
-  // Listas de opciones para los dropdowns
-  final List<String> provincias = ['LIMA'];
 
   // Lista de distritos para los dropdowns
   List<String> _distritos = [];
@@ -220,7 +210,6 @@ class ProfileViewmodel extends ChangeNotifier {
             ? ''
             : DateFormat('dd/MM/yyyy').format(_user.fechaNacimiento!);
         _selectedGenero = _user.genero;
-        _selectedProvincia = _user.provincia;
         _selectedDistrito = _user.distrito;
         _selectedVecindario = _user.vecindario;
         direccionDetalladaController.text = _user.direccionDetallada ?? '';
@@ -236,9 +225,7 @@ class ProfileViewmodel extends ChangeNotifier {
               'nuevo_usuario@example.com',
           empadronado: false,
           // Inicializa las nuevas propiedades con valores predeterminados o nulos
-          provincia: null,
           distrito: null,
-          urbanizacion: null,
           direccionDetallada: null,
           fechaNacimiento: null,
           genero: null,
@@ -256,7 +243,6 @@ class ProfileViewmodel extends ChangeNotifier {
         direccionDetalladaController.clear();
         _selectedFechaNacimiento = null;
         _selectedGenero = null;
-        _selectedProvincia = null;
         _selectedDistrito = null;
         _selectedVecindario = null;}
     } on FirebaseException catch (e) {
