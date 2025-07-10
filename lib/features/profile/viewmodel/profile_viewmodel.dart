@@ -71,51 +71,25 @@ class ProfileViewmodel extends ChangeNotifier {
 
   // Listas de opciones para los dropdowns
   final List<String> provincias = ['LIMA'];
-  final List<String> distritos = [
-    'ANCON',
-    'ATE',
-    'BARRANCO',
-    'BREÑA',
-    'CHACLACAYO',
-    'CARABAYLLO',
-    'CHORRILLOS',
-    'CIENEGUILLA',
-    'COMAS',
-    'EL AGUSTINO',
-    'INDEPENDENCIA',
-    'JESUS MARIA',
-    'LA MOLINA',
-    'LA VICTORIA',
-    'LIMA',
-    'LINCE',
-    'LOS OLIVOS',
-    'LURIGANCHO',
-    'LURIN',
-    'MAGDALENA DEL MAR',
-    'MIRAFLORES',
-    'PACHAMAC',
-    'PUCUSANA',
-    'PUEBLO LIBRE',
-    'PUENTE PIEDRA',
-    'PUNTA HERMOSA',
-    'PUNTA NEGRA',
-    'RIMAC',
-    'SAN BARTOLO',
-    'SAN ISIDRO',
-    'SAN JUAN DE LURIGANCHO',
-    'SAN JUAN DE MIRAFLORES',
-    'SAN LUIS',
-    'SAN MARTIN DE PORRES',
-    'SAN MIGUEL',
-    'SANTA ANITA',
-    'SANTA MARIA DEL MAR',
-    'SANTA ROSA',
-    'SANTIAGO DE SURCO',
-    'SURQUILLO',
-    'VILLA EL SALVADOR',
-    'VILLA MARIA DEL TRIUNFO',
-  ];
-  final List<String> urbanizaciones = ['LIMA'];
+
+  //Llamar a la lista de distritos de Firebase
+  Future<List<String>> getDistritosFromFirestore() async {
+    List<String> distritos = [ ];
+    try {
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('Distritos')
+          .get();
+      for (var doc in querySnapshot.docs) {
+        if (doc.data() != null &&
+            (doc.data() as Map<String, dynamic>).containsKey('nombre')) {
+          distritos.add(doc['Distritos']as String);
+        }
+      }
+    } catch (e) {
+      ("Error al obtener distritos de Firestore: $e");
+    }
+    return distritos;
+  }
 
   // Propiedad para la imagen temporalmente seleccionada
   File? _imageFile;
@@ -130,6 +104,19 @@ class ProfileViewmodel extends ChangeNotifier {
     fechaNacimientoController = TextEditingController();
     direccionDetalladaController = TextEditingController();
     _loadUserProfile(); // Cargar el perfil al inicializar el ViewModel
+    _cargarDistritos(); // Cargar distritos al inicializar el ViewModel
+  }
+
+  Future<void> _cargarDistritos() async {
+    try {
+      _selectedDistrito = null; // Reiniciar el distrito seleccionado
+      final distritos = await getDistritosFromFirestore();
+      if (distritos.isNotEmpty) {
+        _selectedDistrito = distritos.first; // Seleccionar el primer distrito por defecto
+      }
+    } catch (e) {
+      debugPrint("Error al cargar distritos: $e");
+    }
   }
 
   @override
@@ -317,15 +304,15 @@ class ProfileViewmodel extends ChangeNotifier {
         return;
       }
 
-      bool usuarioActualizado = 
-        nombreCompletoController.text.trim().isNotEmpty &&
-        _selectedFechaNacimiento != null &&
-        _selectedGenero != null &&
-        dniController.text.trim().isNotEmpty &&
-        numeroTelefonoController.text.trim().isNotEmpty &&
-        _selectedDistrito != null &&
-        _selectedDistrito != null &&
-        direccionDetalladaController.text.trim().isNotEmpty;
+      bool usuarioActualizado =
+          nombreCompletoController.text.trim().isNotEmpty &&
+          _selectedFechaNacimiento != null &&
+          _selectedGenero != null &&
+          dniController.text.trim().isNotEmpty &&
+          numeroTelefonoController.text.trim().isNotEmpty &&
+          _selectedDistrito != null &&
+          _selectedDistrito != null &&
+          direccionDetalladaController.text.trim().isNotEmpty;
 
       // Crear un nuevo objeto Usuario con los datos actualizados de los controladores y propiedades
       final updatedUser = _user.copyWith(
@@ -335,7 +322,6 @@ class ProfileViewmodel extends ChangeNotifier {
         numeroTelefono: int.tryParse(numeroTelefonoController.text.trim()),
         fechaNacimiento: _selectedFechaNacimiento,
         genero: _selectedGenero,
-        
 
         provincia: _selectedProvincia,
         distrito: _selectedDistrito,

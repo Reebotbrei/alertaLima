@@ -265,7 +265,7 @@ class ProfileScreen extends StatelessWidget {
                     filled: true,
                     fillColor: AppColors.background,
                   ),
-                  items: profileVM.urbanizaciones.map((String value) {
+                  items: profileVM.distritos.map((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
                       child: Text(

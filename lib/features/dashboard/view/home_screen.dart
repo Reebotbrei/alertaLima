@@ -177,7 +177,7 @@ class HomeScreen extends StatelessWidget {
                 ),
                 MenuCard(
                   icon: Icons.chat,
-                  title: 'Chat Vecinal',
+                  title: 'Chat Vecinal ',
                   onTap: () {
                     if (usuario.empadronado == false) {
                       _mensajeEnable(context);
