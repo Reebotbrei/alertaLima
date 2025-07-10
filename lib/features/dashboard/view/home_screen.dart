@@ -1,3 +1,4 @@
+import 'package:alerta_lima/features/alerts/view/alterts_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
@@ -166,7 +167,13 @@ class HomeScreen extends StatelessWidget {
                   icon: Icons.campaign_outlined,
                   title: 'Alertas en tu zona',
                   onTap: () {
-                    Navigator.pushNamed(context, '/alerts');
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              AltertsScreen(usuario: usuario),
+                        ),
+                      );
                   },
                 ),
                  MenuCard(
@@ -187,7 +194,6 @@ class HomeScreen extends StatelessWidget {
                     } else {
                       Navigator.push(
                         context,
-
                         MaterialPageRoute(
                           builder: (context) =>
                               ChatVecinalScreen(usuario: usuario),
