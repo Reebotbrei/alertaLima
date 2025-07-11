@@ -1,12 +1,15 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import '../../../app/Objetitos/usuario.dart';
 import 'package:intl/intl.dart';
+import '../Model/profile_model.dart';
 
+/// ViewModel para el manejo del estado y lógica de la pantalla de perfil de usuario.
 class ProfileViewmodel extends ChangeNotifier {
-  // Propiedades del ViewModel
+  final ProfileRepository repository;
+
+  // Estado del usuario
   Usuario _user = Usuario(
     id: '',
     nombre: 'Invitado',
@@ -26,10 +29,10 @@ class ProfileViewmodel extends ChangeNotifier {
   late TextEditingController dniController;
   late TextEditingController numeroTelefonoController;
   late TextEditingController emailController;
-  late TextEditingController fechaNacimientoController; //
-  late TextEditingController direccionDetalladaController; //
+  late TextEditingController fechaNacimientoController;
+  late TextEditingController direccionDetalladaController;
 
-  // Propiedades para la selección de fecha y género, ajustadas a los nombres del modelo Usuario
+  // Estado de selección
   DateTime? _selectedFechaNacimiento;
   DateTime? get selectedFechaNacimiento => _selectedFechaNacimiento;
   set selectedFechaNacimiento(DateTime? date) {
@@ -47,13 +50,12 @@ class ProfileViewmodel extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Propiedades para los dropdowns de dirección
   String? _selectedDistrito;
   String? get selectedDistrito => _selectedDistrito;
   set selectedDistrito(String? value) {
     _selectedDistrito = value;
     notifyListeners();
-    _cargarVecindarios(); // Cargar vecindarios cada vez que cambia el distrito
+    _cargarVecindarios();
   }
 
   String? _selectedVecindario;
@@ -63,105 +65,71 @@ class ProfileViewmodel extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Lista de distritos para los dropdowns
+  // Listas para los dropdowns
   List<String> _distritos = [];
   List<String> get distritos => _distritos;
   set distritos(List<String> value) {
-    // Elimina duplicados
     _distritos = value.toSet().toList();
-    // Si el distrito seleccionado no está en la lista, lo resetea
     if (_selectedDistrito != null && !_distritos.contains(_selectedDistrito)) {
       _selectedDistrito = null;
     }
     notifyListeners();
   }
 
-  // Lista de vecindarios para los dropdowns
   List<String> _vecindarios = [];
   List<String> get vecindarios => _vecindarios;
   set vecindarios(List<String> value) {
     _vecindarios = value.toSet().toList();
-    // Si el vecindario seleccionado no está en la lista, lo resetea
     if (_selectedVecindario != null && !_vecindarios.contains(_selectedVecindario)) {
       _selectedVecindario = null;
     }
     notifyListeners();
   }
 
-  //Llamar a la lista de distritos de Firebase
-  Future<List<String>> getDistritosFromFirestore() async {
-    List<String> distritos = [];
-    try {
-      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-          .collection('Distritos')
-          .get();
-      for (var doc in querySnapshot.docs) {
-        distritos.add(doc.id); // El id del documento es el nombre del distrito
-      }
-    } catch (e) {
-      debugPrint("Error al obtener distritos de Firestore: $e");
-    }
-    return distritos;
-  }
-
-  //Llamar a la lista de vecindarios de Firebase
-  Future<List<String>> getVecindariosFromFirestore() async {
-    List<String> vecindarios = [];
-    try {
-      if (_selectedDistrito != null && _selectedDistrito!.isNotEmpty) {
-        QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-            .collection('Distritos')
-            .doc(_selectedDistrito)
-            .collection('Vecindarios')
-            .get();
-        for (var doc in querySnapshot.docs) {
-          vecindarios.add(doc.id); // El id del documento es el nombre del vecindario
-        }
-      }
-    } catch (e) {
-      debugPrint("Error al obtener vecindarios de Firestore: $e");
-    }
-    return vecindarios;
-  }
-
-  // Propiedad para la imagen temporalmente seleccionada
+  // Imagen temporal seleccionada
   File? _imageFile;
   File? get imageFile => _imageFile;
 
   // Constructor
-  ProfileViewmodel() {
+  ProfileViewmodel(this.repository) {
     nombreCompletoController = TextEditingController();
     dniController = TextEditingController();
     numeroTelefonoController = TextEditingController();
     emailController = TextEditingController();
     fechaNacimientoController = TextEditingController();
     direccionDetalladaController = TextEditingController();
-    _loadUserProfile(); // Cargar el perfil al inicializar el ViewModel
-    _cargarDistritos(); // Cargar distritos al inicializar el ViewModel
+    _loadUserProfile();
+    _cargarDistritos();
     _cargarVecindarios();
   }
 
   Future<void> _cargarDistritos() async {
     try {
-      final lista = await getDistritosFromFirestore();
+      final lista = await repository.getDistritos();
       distritos = lista;
       if (lista.isNotEmpty && _selectedDistrito == null) {
         _selectedDistrito = lista.first;
       }
     } catch (e) {
-      debugPrint("Error al cargar distritos: $e");
+      _errorMessage = "No se pudo cargar los distritos: $e";
+      notifyListeners();
     }
   }
 
   Future<void> _cargarVecindarios() async {
     try {
-      final lista = await getVecindariosFromFirestore();
-      vecindarios = lista;
-      if (lista.isNotEmpty && _selectedVecindario == null) {
-        _selectedVecindario = lista.first;
+      if (_selectedDistrito != null && _selectedDistrito!.isNotEmpty) {
+        final lista = await repository.getVecindarios(_selectedDistrito!);
+        vecindarios = lista;
+        if (lista.isNotEmpty && _selectedVecindario == null) {
+          _selectedVecindario = lista.first;
+        }
+      } else {
+        vecindarios = [];
       }
     } catch (e) {
-      debugPrint("Error al cargar vecindarios: $e");
+      _errorMessage = "No se pudo cargar los vecindarios: $e";
+      notifyListeners();
     }
   }
 
@@ -176,36 +144,27 @@ class ProfileViewmodel extends ChangeNotifier {
     super.dispose();
   }
 
-  // Cargar el perfil del usuario desde Firestore
+  /// Carga el perfil del usuario desde Firestore
   Future<void> _loadUserProfile() async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
-
     try {
       final String? uid = firebase_auth.FirebaseAuth.instance.currentUser?.uid;
-
       if (uid == null) {
         _errorMessage = "Usuario no autenticado. Por favor, inicia sesión.";
         _isLoading = false;
         notifyListeners();
         return;
       }
-
-      DocumentSnapshot userDoc = await FirebaseFirestore.instance
-          .collection('Usuario')
-          .doc(uid)
-          .get();
-
-      if (userDoc.exists) {
-        _user = Usuario.fromFirestore(userDoc, uid);
-        // Inicializar controladores y propiedades con los datos del usuario
+      final usuario = await repository.getUsuario(uid);
+      if (usuario != null) {
+        _user = usuario;
         nombreCompletoController.text = _user.nombre;
         emailController.text = _user.email;
         dniController.text = _user.dni?.toString() ?? '';
         numeroTelefonoController.text = _user.numeroTelefono?.toString() ?? '';
         _selectedFechaNacimiento = _user.fechaNacimiento;
-
         fechaNacimientoController.text = _user.fechaNacimiento == null
             ? ''
             : DateFormat('dd/MM/yyyy').format(_user.fechaNacimiento!);
@@ -216,15 +175,12 @@ class ProfileViewmodel extends ChangeNotifier {
       } else {
         _errorMessage =
             "Datos de perfil no encontrados en Firestore para el UID: $uid. Se inicializa un perfil básico.";
-        // Si el documento no existe, inicializa _user con datos básicos
         _user = Usuario(
           id: uid,
           nombre: 'Usuario Nuevo',
-          email:
-              firebase_auth.FirebaseAuth.instance.currentUser?.email ??
+          email: firebase_auth.FirebaseAuth.instance.currentUser?.email ??
               'nuevo_usuario@example.com',
           empadronado: false,
-          // Inicializa las nuevas propiedades con valores predeterminados o nulos
           distrito: null,
           direccionDetallada: null,
           fechaNacimiento: null,
@@ -233,31 +189,26 @@ class ProfileViewmodel extends ChangeNotifier {
           numeroTelefono: null,
           imageUrl: null,
         );
-
         nombreCompletoController.clear();
         dniController.clear();
         numeroTelefonoController.clear();
-        emailController.text =
-            _user.email; // Establece el email del usuario de Auth
+        emailController.text = _user.email;
         fechaNacimientoController.clear();
         direccionDetalladaController.clear();
         _selectedFechaNacimiento = null;
         _selectedGenero = null;
         _selectedDistrito = null;
-        _selectedVecindario = null;}
-    } on FirebaseException catch (e) {
-      _errorMessage = "Error de Firebase al cargar perfil: ${e.message}";
-      debugPrint("Error Firebase al cargar perfil: $e");
+        _selectedVecindario = null;
+      }
     } catch (e) {
       _errorMessage = "Error al cargar el perfil: $e";
-      debugPrint("Error general al cargar perfil: $e");
     } finally {
       _isLoading = false;
       notifyListeners();
     }
   }
 
-  // Selector de fecha de nacimiento
+  /// Selector de fecha de nacimiento
   Future<void> selectDateOfBirth(BuildContext context) async {
     final DateTime? pickedDate = await showDatePicker(
       context: context,
@@ -266,23 +217,21 @@ class ProfileViewmodel extends ChangeNotifier {
       lastDate: DateTime.now(),
     );
     if (pickedDate != null && pickedDate != _selectedFechaNacimiento) {
-      selectedFechaNacimiento =
-          pickedDate; // Usa el setter para actualizar y notificar
+      selectedFechaNacimiento = pickedDate;
     }
   }
 
-  // Selector de imagen de perfil
+  /// Selector de imagen de perfil
   Future<void> updateImage(File image) async {
     _imageFile = image;
     notifyListeners();
   }
 
-  // Guardar cambios del perfil
+  /// Guarda los cambios del perfil del usuario
   Future<void> saveProfileChanges() async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
-
     try {
       final String? uid = firebase_auth.FirebaseAuth.instance.currentUser?.uid;
       if (uid == null) {
@@ -291,22 +240,6 @@ class ProfileViewmodel extends ChangeNotifier {
         notifyListeners();
         return;
       }
-
-      /*
-      String? newImageUrl =
-          _user.imageUrl; // Mantener la URL existente por defecto
-
-       Si hay una nueva imagen seleccionada, subirla a Firebase Storage
-      if (_imageFile != null) {
-        final storageRef = FirebaseStorage.instance
-            .ref()
-            .child('profile_images')
-            .child('$uid.jpg');
-        await storageRef.putFile(_imageFile!);
-        newImageUrl = await storageRef.getDownloadURL();
-      }
-      */
-
       // Validaciones básicas
       if (nombreCompletoController.text.trim().isEmpty) {
         _errorMessage = "El nombre completo es obligatorio.";
@@ -315,7 +248,7 @@ class ProfileViewmodel extends ChangeNotifier {
         return;
       }
       if (_selectedFechaNacimiento == null) {
-        _errorMessage = "La fecha de nacimiento es obligatoriaa.";
+        _errorMessage = "La fecha de nacimiento es obligatoria.";
         _isLoading = false;
         notifyListeners();
         return;
@@ -343,8 +276,7 @@ class ProfileViewmodel extends ChangeNotifier {
         _isLoading = false;
         notifyListeners();
         return;
-      }   
-
+      }
       bool usuarioActualizado =
           nombreCompletoController.text.trim().isNotEmpty &&
           _selectedFechaNacimiento != null &&
@@ -352,10 +284,7 @@ class ProfileViewmodel extends ChangeNotifier {
           dniController.text.trim().isNotEmpty &&
           numeroTelefonoController.text.trim().isNotEmpty &&
           _selectedDistrito != null &&
-          _selectedDistrito != null &&
           direccionDetalladaController.text.trim().isNotEmpty;
-
-      // Crear un nuevo objeto Usuario con los datos actualizados de los controladores y propiedades
       final updatedUser = _user.copyWith(
         nombre: nombreCompletoController.text.trim(),
         email: emailController.text.trim(),
@@ -363,29 +292,16 @@ class ProfileViewmodel extends ChangeNotifier {
         numeroTelefono: int.tryParse(numeroTelefonoController.text.trim()),
         fechaNacimiento: _selectedFechaNacimiento,
         genero: _selectedGenero,
-
-        
         distrito: _selectedDistrito,
         vecindario: _selectedVecindario,
         direccionDetallada: direccionDetalladaController.text.trim(),
-
         empadronado: usuarioActualizado,
       );
-
-      await FirebaseFirestore.instance
-          .collection('Usuario')
-          .doc(uid)
-          .set(updatedUser.toFirestore(), SetOptions(merge: true));
-
-      _user = updatedUser; // Actualiza el _user localmente
-
-      _errorMessage = null; // Limpiar cualquier mensaje de error anterior
-    } on FirebaseException catch (e) {
-      _errorMessage = "Error de Firebase al actualizar perfil: ${e.message}";
-      debugPrint("Error Firebase al actualizar perfil: $e"); // Usar debugPrint
+      await repository.saveUsuario(updatedUser);
+      _user = updatedUser;
+      _errorMessage = null;
     } catch (e) {
       _errorMessage = "Error al actualizar el perfil: $e";
-      debugPrint("Error general al actualizar perfil: $e"); // Usar debugPrint
     } finally {
       _isLoading = false;
       notifyListeners();

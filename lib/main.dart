@@ -10,6 +10,7 @@ import 'package:alerta_lima/features/profile/viewmodel/profile_viewmodel.dart';
 import 'package:alerta_lima/features/profile/view/profile_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+import 'features/profile/Model/profile_model.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -26,7 +27,7 @@ class AlertaLimaApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => SOSViewModel()),
-        ChangeNotifierProvider(create: (_) => ProfileViewmodel()),
+        ChangeNotifierProvider(create: (_) => ProfileViewmodel(ProfileRepository())),
         ],
       child: MaterialApp(
         title: 'Alerta Lima',
