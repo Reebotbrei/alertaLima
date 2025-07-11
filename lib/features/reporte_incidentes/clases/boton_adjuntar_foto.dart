@@ -4,15 +4,17 @@ import 'package:image_picker/image_picker.dart';
 import 'package:alerta_lima/app/widgets/app_button2.dart';
 import 'package:alerta_lima/app/widgets/app_alert_card_pop_up.dart';
 
+
 class BotonAdjuntoFoto extends StatelessWidget {
-  final List<File> imagenes; // Lista actual de imágenes seleccionadas
-  final Function(List<File>)
-  onImagenesSeleccionadas; // Función para actualizar la lista de imágenes
+  final List<File> imagenes;
+  final Function(List<File>) onImagenesSeleccionadas;
+  final String? subtitulo;
 
   const BotonAdjuntoFoto({
     super.key,
     required this.imagenes,
     required this.onImagenesSeleccionadas,
+    this.subtitulo,
   });
 
   @override
@@ -22,12 +24,10 @@ class BotonAdjuntoFoto extends StatelessWidget {
 
     return BotonAdjuntoNuevo(
       titulo: 'Agregar foto',
-      // Subtítulo cambia dinámicamente según si hay imágenes o no
-      subtitulo: imagenes.isNotEmpty
+      subtitulo: subtitulo ?? (imagenes.isNotEmpty
           ? '${imagenes.length} foto(s) agregadas'
-          : 'Presione para tomar o cargar foto',
+          : 'Presione para tomar o cargar foto'),
       icono: Icons.image,
-      // Acción al hacer tap sobre el botón
       onTap: () async {
         mostrarOpcionesBottomSheet(
           context: context,

@@ -5,15 +5,17 @@ import 'package:file_picker/file_picker.dart';
 import 'package:alerta_lima/app/widgets/app_alert_card_pop_up.dart'; // Asegúrate de importar tu función reutilizable
 import 'package:alerta_lima/app/widgets/app_button2.dart';
 
+
 class BotonAdjuntoVideo extends StatelessWidget {
-  final List<File> videos; //lista para adjuntar los videos selecionados
-  final Function(List<File>)
-  onVideosSeleccionados; //funcion para actualizar la lista de videos
+  final List<File> videos;
+  final Function(List<File>) onVideosSeleccionados;
+  final String? subtitulo;
 
   const BotonAdjuntoVideo({
     super.key,
     required this.videos,
     required this.onVideosSeleccionados,
+    this.subtitulo,
   });
 
   @override
@@ -23,12 +25,10 @@ class BotonAdjuntoVideo extends StatelessWidget {
 
     return BotonAdjuntoNuevo(
       titulo: 'Agregar video',
-      // Subtítulo dinámico que muestra cuántos videos han sido agregados
-      subtitulo: videos.isNotEmpty
+      subtitulo: subtitulo ?? (videos.isNotEmpty
           ? '${videos.length} video(s) agregados'
-          : 'Presione para cargar o agregar video',
+          : 'Presione para cargar o agregar video'),
       icono: Icons.videocam,
-      // Acción que ocurre al presionar el botón
       onTap: () async {
         // Muestra un menú (bottom sheet) con dos opciones: grabar o seleccionar video
         mostrarOpcionesBottomSheet(

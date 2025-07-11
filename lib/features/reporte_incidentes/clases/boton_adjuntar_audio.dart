@@ -7,20 +7,21 @@ import 'package:alerta_lima/features/reporte_incidentes/clases/audio_helper.dart
 import 'package:alerta_lima/app/widgets/app_alert_card_pop_up.dart';
 
 //permite al usuario  agregar audio
+
 class BotonAdjuntoAudio extends StatelessWidget {
-  final AudioHelper audioHelper; //calase que maneja la grabacion
-  final File?
-  archivoAudioLocal; //variable para el audio seleccionado desdde archivos
-  final Function(File?)
-  onAudioSeleccionado; //actualizacion para cuanso se selecciona un audio
+  final AudioHelper audioHelper;
+  final File? archivoAudioLocal;
+  final Function(File?) onAudioSeleccionado;
   final Function() onActualizar;
-  //constructor
+  final String? subtitulo;
+
   const BotonAdjuntoAudio({
     super.key,
     required this.audioHelper,
     required this.archivoAudioLocal,
     required this.onAudioSeleccionado,
     required this.onActualizar,
+    this.subtitulo,
   });
 
   // Método para seleccionar un archivo de audio desde el almacenamiento
@@ -40,14 +41,12 @@ class BotonAdjuntoAudio extends StatelessWidget {
   Widget build(BuildContext context) {
     return BotonAdjuntoNuevo(
       titulo: 'Agregar audio',
-      // El subtítulo cambia según el estado de la grabación o si hay un archivo seleccionado
-      subtitulo: audioHelper.estaGrabando
+      subtitulo: subtitulo ?? (audioHelper.estaGrabando
           ? 'Grabando...'
           : (audioHelper.rutaAudio != null || archivoAudioLocal != null)
-          ? 'Audio grabado'
-          : 'Presione para grabar o cargar',
+              ? 'Audio grabado'
+              : 'Presione para grabar o cargar'),
       icono: Icons.mic,
-      // Acción al presionar el botón
       onTap: () {
         mostrarOpcionesBottomSheet(
           context: context,
