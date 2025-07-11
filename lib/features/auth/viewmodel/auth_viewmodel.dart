@@ -21,9 +21,9 @@ class AuthViewModel extends ChangeNotifier {
       _showSnackbar(context, 'Completa todos los campos');
       return;
     }
-    //el llamado para el ingreso y el recogo de datos se puede
-    //hacer desde otra clase de conexion a base de datos, porque creo que estaremos
-    //llamando varias veces desde varias partes
+    /*el llamado para el ingreso y el recogo de datos se puede
+    hacer desde otra clase de conexion a base de datos, porque creo que estaremos
+    llamando varias veces desde varias partes*/
     try {
       isLoading = true;
       notifyListeners();

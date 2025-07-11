@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'dart:io';
 import '../../../app/Objetitos/usuario.dart';
 
 /*Model para el manejo de datos de perfil de usuario
@@ -57,6 +59,18 @@ class ProfileRepository {
       return snapshot.docs.map((doc) => doc.id).toList();
     } catch (e) {
       throw Exception('No se pudo obtener la lista de vecindarios: $e');
+    }
+  }
+
+  /// Sube una imagen a Firebase Storage y retorna la URL pública
+  Future<String> uploadProfileImage(String uid, File imageFile) async {
+    try {
+      final storageRef = FirebaseStorage.instance.ref().child('profile_images/$uid.jpg');
+      await storageRef.putFile(imageFile);
+      final url = await storageRef.getDownloadURL();
+      return url;
+    } catch (e) {
+      throw Exception('No se pudo subir la imagen: $e');
     }
   }
 }

@@ -285,6 +285,13 @@ class ProfileViewmodel extends ChangeNotifier {
           numeroTelefonoController.text.trim().isNotEmpty &&
           _selectedDistrito != null &&
           direccionDetalladaController.text.trim().isNotEmpty;
+
+      String? imageUrl = _user.imageUrl;
+      if (_imageFile != null) {
+        // Subir imagen a Firebase Storage y obtener la URL
+        imageUrl = await repository.uploadProfileImage(uid, _imageFile!);
+      }
+
       final updatedUser = _user.copyWith(
         nombre: nombreCompletoController.text.trim(),
         email: emailController.text.trim(),
@@ -296,6 +303,7 @@ class ProfileViewmodel extends ChangeNotifier {
         vecindario: _selectedVecindario,
         direccionDetallada: direccionDetalladaController.text.trim(),
         empadronado: usuarioActualizado,
+        imageUrl: imageUrl,
       );
       await repository.saveUsuario(updatedUser);
       _user = updatedUser;

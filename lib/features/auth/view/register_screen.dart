@@ -97,22 +97,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                     const SizedBox(height: 16),
 
-                    OutlinedButton.icon(
-                      onPressed: () {}, // futura autenticación
-                      icon: const Icon(Icons.login, color: AppColors.text, size: 26),
-                      label: const Text(
-                        "Registrarse con Google",
-                        style: TextStyle(color: AppColors.text),
-                      ),
-                      style: OutlinedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                        side: const BorderSide(color: AppColors.primary),
-                        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 24),
-                      ),
-                    ),
-
                     const SizedBox(height: 24),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
