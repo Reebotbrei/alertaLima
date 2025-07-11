@@ -155,52 +155,11 @@ class ProfileScreen extends StatelessWidget {
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 20),
-
-                // Dropdown Provincia/Ciudad
-                DropdownButtonFormField<String>(
-                  value: profileVM.selectedProvincia,
-                  decoration: InputDecoration(
-                    labelText: 'Provincia/ Ciudad*',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                      borderSide: BorderSide(
-                        color: AppColors.muted,
-                        width: 1.0,
-                      ),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                      borderSide: BorderSide(
-                        color: AppColors.primary,
-                        width: 2.0,
-                      ),
-                    ),
-                    filled: true,
-                    fillColor: AppColors.background,
-                  ),
-                  items: profileVM.provincias.map((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(
-                        value,
-                        style: TextStyle(color: AppColors.text),
-                      ),
-                    );
-                  }).toList(),
-                  onChanged: (String? newValue) {
-                    if (newValue != null) {
-                      profileVM.selectedProvincia = newValue;
-                    }
-                  },
-                ),
-                const SizedBox(height: 15),
-
                 // Dropdown Distrito
                 DropdownButtonFormField<String>(
-                  value: profileVM.selectedDistrito,
+                  value: profileVM.distritos.contains(profileVM.selectedDistrito)
+                      ? profileVM.selectedDistrito
+                      : null,
                   decoration: InputDecoration(
                     labelText: 'Distrito*',
                     border: OutlineInputBorder(
@@ -223,7 +182,7 @@ class ProfileScreen extends StatelessWidget {
                     filled: true,
                     fillColor: AppColors.background,
                   ),
-                  items: profileVM.distritos.map((String value) {
+                  items: (profileVM.distritos.isNotEmpty ? profileVM.distritos : ["Sin distritos disponibles"]).map((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
                       child: Text(
@@ -233,18 +192,20 @@ class ProfileScreen extends StatelessWidget {
                     );
                   }).toList(),
                   onChanged: (String? newValue) {
-                    if (newValue != null) {
+                    if (newValue != null && profileVM.distritos.contains(newValue)) {
                       profileVM.selectedDistrito = newValue;
                     }
                   },
                 ),
                 const SizedBox(height: 15),
 
-                // Dropdown Urbanización
+                // Dropdown Vecindario
                 DropdownButtonFormField<String>(
-                  value: profileVM.selectedUrbanizacion,
+                  value: profileVM.vecindarios.contains(profileVM.selectedVecindario)
+                      ? profileVM.selectedVecindario
+                      : null,
                   decoration: InputDecoration(
-                    labelText: 'Vecindario',
+                    labelText: 'Vecindario*',
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
@@ -265,7 +226,7 @@ class ProfileScreen extends StatelessWidget {
                     filled: true,
                     fillColor: AppColors.background,
                   ),
-                  items: profileVM.urbanizaciones.map((String value) {
+                  items: (profileVM.vecindarios.isNotEmpty ? profileVM.vecindarios : ["Sin vecindarios disponibles"]).map((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
                       child: Text(
@@ -275,8 +236,8 @@ class ProfileScreen extends StatelessWidget {
                     );
                   }).toList(),
                   onChanged: (String? newValue) {
-                    if (newValue != null) {
-                      profileVM.selectedUrbanizacion = newValue;
+                    if (newValue != null && profileVM.vecindarios.contains(newValue)) {
+                      profileVM.selectedVecindario = newValue;
                     }
                   },
                 ),

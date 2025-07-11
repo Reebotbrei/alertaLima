@@ -8,6 +8,7 @@ class MenuCard extends StatelessWidget {
   final Color colorIcono;
   final Color fondo;
   final Color texto;
+  
   const MenuCard({
     super.key,
     required this.icon,

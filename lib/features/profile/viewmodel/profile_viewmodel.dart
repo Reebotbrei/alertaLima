@@ -60,62 +60,79 @@ class ProfileViewmodel extends ChangeNotifier {
   set selectedDistrito(String? value) {
     _selectedDistrito = value;
     notifyListeners();
+    _cargarVecindarios(); // Cargar vecindarios cada vez que cambia el distrito
   }
 
-  String? _selectedUrbanizacion;
-  String? get selectedUrbanizacion => _selectedUrbanizacion;
-  set selectedUrbanizacion(String? value) {
-    _selectedUrbanizacion = value;
+  String? _selectedVecindario;
+  String? get selectedVecindario => _selectedVecindario;
+  set selectedVecindario(String? value) {
+    _selectedVecindario = value;
     notifyListeners();
   }
 
   // Listas de opciones para los dropdowns
   final List<String> provincias = ['LIMA'];
-  final List<String> distritos = [
-    'ANCON',
-    'ATE',
-    'BARRANCO',
-    'BREÑA',
-    'CHACLACAYO',
-    'CARABAYLLO',
-    'CHORRILLOS',
-    'CIENEGUILLA',
-    'COMAS',
-    'EL AGUSTINO',
-    'INDEPENDENCIA',
-    'JESUS MARIA',
-    'LA MOLINA',
-    'LA VICTORIA',
-    'LIMA',
-    'LINCE',
-    'LOS OLIVOS',
-    'LURIGANCHO',
-    'LURIN',
-    'MAGDALENA DEL MAR',
-    'MIRAFLORES',
-    'PACHAMAC',
-    'PUCUSANA',
-    'PUEBLO LIBRE',
-    'PUENTE PIEDRA',
-    'PUNTA HERMOSA',
-    'PUNTA NEGRA',
-    'RIMAC',
-    'SAN BARTOLO',
-    'SAN ISIDRO',
-    'SAN JUAN DE LURIGANCHO',
-    'SAN JUAN DE MIRAFLORES',
-    'SAN LUIS',
-    'SAN MARTIN DE PORRES',
-    'SAN MIGUEL',
-    'SANTA ANITA',
-    'SANTA MARIA DEL MAR',
-    'SANTA ROSA',
-    'SANTIAGO DE SURCO',
-    'SURQUILLO',
-    'VILLA EL SALVADOR',
-    'VILLA MARIA DEL TRIUNFO',
-  ];
-  final List<String> urbanizaciones = ['LIMA'];
+
+  // Lista de distritos para los dropdowns
+  List<String> _distritos = [];
+  List<String> get distritos => _distritos;
+  set distritos(List<String> value) {
+    // Elimina duplicados
+    _distritos = value.toSet().toList();
+    // Si el distrito seleccionado no está en la lista, lo resetea
+    if (_selectedDistrito != null && !_distritos.contains(_selectedDistrito)) {
+      _selectedDistrito = null;
+    }
+    notifyListeners();
+  }
+
+  // Lista de vecindarios para los dropdowns
+  List<String> _vecindarios = [];
+  List<String> get vecindarios => _vecindarios;
+  set vecindarios(List<String> value) {
+    _vecindarios = value.toSet().toList();
+    // Si el vecindario seleccionado no está en la lista, lo resetea
+    if (_selectedVecindario != null && !_vecindarios.contains(_selectedVecindario)) {
+      _selectedVecindario = null;
+    }
+    notifyListeners();
+  }
+
+  //Llamar a la lista de distritos de Firebase
+  Future<List<String>> getDistritosFromFirestore() async {
+    List<String> distritos = [];
+    try {
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('Distritos')
+          .get();
+      for (var doc in querySnapshot.docs) {
+        distritos.add(doc.id); // El id del documento es el nombre del distrito
+      }
+    } catch (e) {
+      debugPrint("Error al obtener distritos de Firestore: $e");
+    }
+    return distritos;
+  }
+
+  //Llamar a la lista de vecindarios de Firebase
+  Future<List<String>> getVecindariosFromFirestore() async {
+    List<String> vecindarios = [];
+    try {
+      if (_selectedDistrito != null && _selectedDistrito!.isNotEmpty) {
+        QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+            .collection('Distritos')
+            .doc(_selectedDistrito)
+            .collection('Vecindarios')
+            .get();
+        for (var doc in querySnapshot.docs) {
+          vecindarios.add(doc.id); // El id del documento es el nombre del vecindario
+        }
+      }
+    } catch (e) {
+      debugPrint("Error al obtener vecindarios de Firestore: $e");
+    }
+    return vecindarios;
+  }
 
   // Propiedad para la imagen temporalmente seleccionada
   File? _imageFile;
@@ -130,6 +147,32 @@ class ProfileViewmodel extends ChangeNotifier {
     fechaNacimientoController = TextEditingController();
     direccionDetalladaController = TextEditingController();
     _loadUserProfile(); // Cargar el perfil al inicializar el ViewModel
+    _cargarDistritos(); // Cargar distritos al inicializar el ViewModel
+    _cargarVecindarios();
+  }
+
+  Future<void> _cargarDistritos() async {
+    try {
+      final lista = await getDistritosFromFirestore();
+      distritos = lista;
+      if (lista.isNotEmpty && _selectedDistrito == null) {
+        _selectedDistrito = lista.first;
+      }
+    } catch (e) {
+      debugPrint("Error al cargar distritos: $e");
+    }
+  }
+
+  Future<void> _cargarVecindarios() async {
+    try {
+      final lista = await getVecindariosFromFirestore();
+      vecindarios = lista;
+      if (lista.isNotEmpty && _selectedVecindario == null) {
+        _selectedVecindario = lista.first;
+      }
+    } catch (e) {
+      debugPrint("Error al cargar vecindarios: $e");
+    }
   }
 
   @override
@@ -179,7 +222,7 @@ class ProfileViewmodel extends ChangeNotifier {
         _selectedGenero = _user.genero;
         _selectedProvincia = _user.provincia;
         _selectedDistrito = _user.distrito;
-        _selectedUrbanizacion = _user.urbanizacion;
+        _selectedVecindario = _user.vecindario;
         direccionDetalladaController.text = _user.direccionDetallada ?? '';
       } else {
         _errorMessage =
@@ -215,8 +258,7 @@ class ProfileViewmodel extends ChangeNotifier {
         _selectedGenero = null;
         _selectedProvincia = null;
         _selectedDistrito = null;
-        _selectedUrbanizacion = null;
-      }
+        _selectedVecindario = null;}
     } on FirebaseException catch (e) {
       _errorMessage = "Error de Firebase al cargar perfil: ${e.message}";
       debugPrint("Error Firebase al cargar perfil: $e");
@@ -310,22 +352,22 @@ class ProfileViewmodel extends ChangeNotifier {
         notifyListeners();
         return;
       }
-      if (_selectedProvincia == null || _selectedDistrito == null) {
-        _errorMessage = "Provincia y Distrito son obligatorios.";
+      if (_selectedDistrito == null) {
+        _errorMessage = "El distrito es obligatorio.";
         _isLoading = false;
         notifyListeners();
         return;
-      }
+      }   
 
-      bool usuarioActualizado = 
-        nombreCompletoController.text.trim().isNotEmpty &&
-        _selectedFechaNacimiento != null &&
-        _selectedGenero != null &&
-        dniController.text.trim().isNotEmpty &&
-        numeroTelefonoController.text.trim().isNotEmpty &&
-        _selectedDistrito != null &&
-        _selectedDistrito != null &&
-        direccionDetalladaController.text.trim().isNotEmpty;
+      bool usuarioActualizado =
+          nombreCompletoController.text.trim().isNotEmpty &&
+          _selectedFechaNacimiento != null &&
+          _selectedGenero != null &&
+          dniController.text.trim().isNotEmpty &&
+          numeroTelefonoController.text.trim().isNotEmpty &&
+          _selectedDistrito != null &&
+          _selectedDistrito != null &&
+          direccionDetalladaController.text.trim().isNotEmpty;
 
       // Crear un nuevo objeto Usuario con los datos actualizados de los controladores y propiedades
       final updatedUser = _user.copyWith(
@@ -335,11 +377,10 @@ class ProfileViewmodel extends ChangeNotifier {
         numeroTelefono: int.tryParse(numeroTelefonoController.text.trim()),
         fechaNacimiento: _selectedFechaNacimiento,
         genero: _selectedGenero,
-        
 
-        provincia: _selectedProvincia,
+        
         distrito: _selectedDistrito,
-        urbanizacion: _selectedUrbanizacion,
+        vecindario: _selectedVecindario,
         direccionDetallada: direccionDetalladaController.text.trim(),
 
         empadronado: usuarioActualizado,
