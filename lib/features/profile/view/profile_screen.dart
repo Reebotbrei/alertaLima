@@ -4,9 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import '../viewmodel/profile_viewmodel.dart';
 import '/app/theme/app_colors.dart';
-import 'package:alerta_lima/app/widgets/app_text_field.dart';
-import 'package:alerta_lima/app/widgets/profile_gender_widgets.dart';
-import 'package:alerta_lima/features/auth/view/login_screen.dart';
+
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -75,12 +73,15 @@ class ProfileScreen extends StatelessWidget {
                 const SizedBox(height: 20),
 
                 // Campo de Nombre completo
-                AppTextField(
+                _buildTextField(
+                  context,
                   controller: profileVM.nombreCompletoController,
-                  hintText: 'Nombre completo*',
+                  labelText: 'Nombre completo*',
                   keyboardType: TextInputType.name,
-                  maxLines: 1,
-                  icon: Icons.person,
+                  suffixIcon: IconButton(
+                    icon: const Icon(Icons.cancel),
+                    onPressed: () => profileVM.nombreCompletoController.clear(),
+                  ),
                 ),
                 const SizedBox(height: 15),
 
@@ -88,12 +89,12 @@ class ProfileScreen extends StatelessWidget {
                 GestureDetector(
                   onTap: () => profileVM.selectDateOfBirth(context),
                   child: AbsorbPointer(
-                    child: AppTextField(
+                    child: _buildTextField(
+                      context,
                       controller: profileVM.fechaNacimientoController,
-                      hintText: 'Fecha de Nacimiento*',
-                      keyboardType: TextInputType.datetime,
-                      icon: Icons.calendar_today,
-                      readOnly: true,
+                      labelText: 'Fecha de Nacimiento*',
+                      hintText: 'DD/MM/AAAA',
+                      suffixIcon: const Icon(Icons.calendar_today),
                     ),
                   ),
                 ),
@@ -102,38 +103,46 @@ class ProfileScreen extends StatelessWidget {
                 // Sección de Género
                 Align(
                   alignment: Alignment.centerLeft,
-                  child: ProfileGenderSelection(viewModel: profileVM),
+                  child: _buildGenderSelection(context, profileVM),
                 ),
                 const SizedBox(height: 15),
 
                 // Campo de Número de identificación (DNI)
-                AppTextField(
+                _buildTextField(
+                  context,
                   controller: profileVM.dniController,
-                  hintText: 'DNI*',
+                  labelText: 'DNI*',
                   keyboardType: TextInputType.number,
-                  maxLines: 1,
-                  icon: Icons.badge,
+                  suffixIcon: IconButton(
+                    icon: const Icon(Icons.cancel),
+                    onPressed: () => profileVM.dniController.clear(),
+                  ),
                 ),
                 const SizedBox(height: 15),
 
                 // Campo de Número de teléfono
-                AppTextField(
+                _buildTextField(
+                  context,
                   controller: profileVM.numeroTelefonoController,
-                  hintText: 'Número de teléfono*',
+                  labelText: 'Número de teléfono*',
                   keyboardType: TextInputType.phone,
-                  maxLines: 1,
-                  icon: Icons.phone,
+                  suffixIcon: IconButton(
+                    icon: const Icon(Icons.cancel),
+                    onPressed: () => profileVM.numeroTelefonoController.clear(),
+                  ),
                 ),
                 const SizedBox(height: 15),
 
                 // Campo de Email
-                AppTextField(
+                _buildTextField(
+                  context,
                   controller: profileVM.emailController,
-                  hintText: 'Email',
+                  labelText: 'Email',
                   keyboardType: TextInputType.emailAddress,
-                  maxLines: 1,
-                  icon: Icons.email,
-                  readOnly: true,
+                  suffixIcon: IconButton(
+                    icon: const Icon(Icons.cancel),
+                    onPressed: () => profileVM.emailController.clear(),
+                  ),
                 ),
                 const SizedBox(height: 30),
 
@@ -249,12 +258,17 @@ class ProfileScreen extends StatelessWidget {
                 const SizedBox(height: 15),
 
                 // Campo de Dirección detallada
-                AppTextField(
+                _buildTextField(
+                  context,
                   controller: profileVM.direccionDetalladaController,
-                  hintText: 'Dirección detallada',
+                  labelText: 'Dirección detallada',
                   keyboardType: TextInputType.streetAddress,
                   maxLines: 3,
-                  icon: Icons.home,
+                  suffixIcon: IconButton(
+                    icon: const Icon(Icons.cancel),
+                    onPressed: () =>
+                        profileVM.direccionDetalladaController.clear(),
+                  ),
                 ),
                 const SizedBox(height: 30),
 
@@ -346,5 +360,91 @@ class ProfileScreen extends StatelessWidget {
       final image = File(pickedFile.path);
       profileVM.updateImage(image);
     }
+  }
+
+  // Widget para construir un campo de texto reutilizable
+  Widget _buildTextField(
+    BuildContext context, {
+    required TextEditingController controller,
+    required String labelText,
+    String? hintText,
+    TextInputType keyboardType = TextInputType.text,
+    Widget? suffixIcon,
+    int? maxLines = 1,
+  }) {
+    return TextField(
+      controller: controller,
+      keyboardType: keyboardType,
+      maxLines: maxLines, // Se usa aquí
+      decoration: InputDecoration(
+        labelText: labelText,
+        hintText: hintText,
+        suffixIcon: suffixIcon,
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0)),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.0),
+          borderSide: BorderSide(color: AppColors.muted, width: 1.0),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.0),
+          borderSide: BorderSide(color: AppColors.primary, width: 2.0),
+        ),
+        filled: true,
+        fillColor: AppColors.background,
+      ),
+      style: TextStyle(color: AppColors.text),
+      cursorColor: AppColors.primary,
+    );
+  }
+
+  // Widget para construir la sección de selección de género
+  Widget _buildGenderSelection(
+    BuildContext context,
+    ProfileViewmodel viewModel,
+  ) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Género *',
+          style: Theme.of(
+            context,
+          ).textTheme.titleSmall?.copyWith(color: AppColors.text),
+        ),
+        const SizedBox(height: 8),
+
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            _buildGenderOption(context, viewModel, 'Masculino'),
+            _buildGenderOption(context, viewModel, 'Femenino'),
+          ],
+        ),
+      ],
+    );
+  }
+
+  // Widget auxiliar para construir cada opción de radio de género
+  Widget _buildGenderOption(
+    BuildContext context,
+    ProfileViewmodel viewModel,
+    String gender,
+  ) {
+    return RadioListTile<String>(
+      title: Text(
+        gender,
+        style: Theme.of(
+          context,
+        ).textTheme.bodyMedium?.copyWith(color: AppColors.text),
+      ),
+      value: gender,
+      groupValue: viewModel.selectedGenero,
+      onChanged: (String? value) {
+        viewModel.selectedGenero = value;
+      },
+      activeColor: AppColors.primary,
+      dense: true,
+      contentPadding: EdgeInsets.zero,
+    );
   }
 }

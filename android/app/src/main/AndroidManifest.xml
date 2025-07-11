@@ -30,7 +30,7 @@
         android:icon="@mipmap/ic_launcher">
           <!-- especificando la calve api para google maps-->
          <meta-data android:name="com.google.android.geo.API_KEY"
-               android:value="AIzaSyB2TOGJvj7fyObzwYajRMt_jRwW9dqcTyw"/>
+               android:value="AIzaSyB9NKx3PGPmlgfwlLLg-qXCF2Ke4k4WdRk"/>
         <activity
             android:name=".MainActivity"
             android:exported="true"
