@@ -20,6 +20,9 @@ class HomeController {
     LatLng(-11.967350, -76.986990),
     LatLng(-11.942400, -76.976400),
     LatLng(-11.964750, -76.979990),
+    LatLng(-11.9857282, -77.0095093),
+    LatLng(-11.985109, -77.0115048),
+    LatLng(-12.0278577, -77.0137932),
   ];
 
   void generarZonasDeConcurrencia() {
