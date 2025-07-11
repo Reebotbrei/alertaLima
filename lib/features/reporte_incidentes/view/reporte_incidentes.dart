@@ -232,37 +232,25 @@ class _ReporteincidentesState extends State<Reporteincidentes> {
                   return;
                 }
 
-                // Mostrar paths y tamaños antes de subir
-                String logArchivos = '';
-                for (var img in _imagenes) {
-                  final exists = img.existsSync();
-                  final length = exists ? await img.length() : 0;
-                  logArchivos += 'Imagen: ${img.path}\n  Existe: $exists, Tamaño: $length bytes\n';
-                }
-                for (var vid in _videos) {
-                  final exists = vid.existsSync();
-                  final length = exists ? await vid.length() : 0;
-                  logArchivos += 'Video: ${vid.path}\n  Existe: $exists, Tamaño: $length bytes\n';
-                }
-                if (_archivoAudioLocal != null) {
-                  final exists = _archivoAudioLocal!.existsSync();
-                  final length = exists ? await _archivoAudioLocal!.length() : 0;
-                  logArchivos += 'Audio: ${_archivoAudioLocal!.path}\n  Existe: $exists, Tamaño: $length bytes\n';
-                }
-
-                await showDialog(
+                // Mostrar confirmación antes de enviar
+                bool? confirmar = await showDialog<bool>(
                   context: context,
                   builder: (context) => AlertDialog(
-                    title: Text('Archivos a subir'),
-                    content: SingleChildScrollView(child: Text(logArchivos)),
+                    title: Text('Confirmar envío'),
+                    content: Text('¿Estás seguro que quieres enviar?'),
                     actions: [
                       TextButton(
-                        onPressed: () => Navigator.of(context).pop(),
-                        child: Text('Continuar'),
+                        onPressed: () => Navigator.of(context).pop(false),
+                        child: Text('Cancelar'),
+                      ),
+                      TextButton(
+                        onPressed: () => Navigator.of(context).pop(true),
+                        child: Text('Enviar'),
                       ),
                     ],
                   ),
                 );
+                if (confirmar != true) return;
 
                 try {
                   // --- Asegura que todas las imágenes estén en storage persistente ---
@@ -397,10 +385,15 @@ class _ReporteincidentesState extends State<Reporteincidentes> {
                       // Agrega más campos si tu modelo Usuario tiene más
                     },
                   });
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Reporte enviado correctamente.')),
-                  );
-                  // Opcional: limpiar campos
+                  // Mostrar mensaje de éxito después de guardar
+                  Future.delayed(Duration(milliseconds: 100), () {
+                    if (mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Reporte enviado con exito')),
+                      );
+                    }
+                  });
+                  // Limpiar campos
                   setState(() {
                     _imagenes = [];
                     _videos = [];
