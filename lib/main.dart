@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import 'app/theme/app_theme.dart';
 import 'features/auth/view/login_screen.dart';
 import 'features/auth/view/register_screen.dart';
-import 'features/auth/view/forgot_password_screen.dart';
 import 'features/sos/view/sos_screen.dart';
 import 'features/sos/viewmodel/sos_viewmodel.dart';
 import 'package:alerta_lima/features/chat/view/chat_screen.dart';
@@ -40,7 +39,6 @@ class AlertaLimaApp extends StatelessWidget {
           '/': (context) => const SosScreen(mostrar: true),
           '/login': (context) => const LoginScreen(),
           '/register': (context) => const RegisterScreen(),
-          '/forgot': (context) => const ForgotPasswordScreen(),
           '/chat': (context) => ChatScreen(),       
           '/perfil':(context) => const ProfileScreen(), 
 
