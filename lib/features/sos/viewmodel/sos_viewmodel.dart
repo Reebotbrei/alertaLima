@@ -23,7 +23,7 @@ class SOSViewModel extends ChangeNotifier {
     final String cleanNumber = number.replaceAll(
       RegExp(r'\s+'),
       '',
-    ); // 🔽 Quitar espacios
+    ); //Quitar espacios
     final Uri uri = Uri(scheme: 'tel', path: cleanNumber);
 
     try {

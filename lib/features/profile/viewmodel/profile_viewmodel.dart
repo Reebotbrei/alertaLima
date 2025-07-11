@@ -247,38 +247,16 @@ class ProfileViewmodel extends ChangeNotifier {
         notifyListeners();
         return;
       }
-      if (_selectedFechaNacimiento == null) {
-        _errorMessage = "La fecha de nacimiento es obligatoria.";
+      if (emailController.text.trim().isEmpty) {
+        _errorMessage = "El correo es obligatorio.";
         _isLoading = false;
         notifyListeners();
         return;
       }
-      if (_selectedGenero == null) {
-        _errorMessage = "El género es obligatorio.";
-        _isLoading = false;
-        notifyListeners();
-        return;
-      }
-      if (dniController.text.trim().isEmpty) {
-        _errorMessage = "El número de identificación es obligatorio.";
-        _isLoading = false;
-        notifyListeners();
-        return;
-      }
-      if (numeroTelefonoController.text.trim().isEmpty) {
-        _errorMessage = "El número de teléfono es obligatorio.";
-        _isLoading = false;
-        notifyListeners();
-        return;
-      }
-      if (_selectedDistrito == null) {
-        _errorMessage = "El distrito es obligatorio.";
-        _isLoading = false;
-        notifyListeners();
-        return;
-      }
+      // Permite guardar aunque falten otros campos, pero solo empadrona si todos están completos
       bool usuarioActualizado =
           nombreCompletoController.text.trim().isNotEmpty &&
+          emailController.text.trim().isNotEmpty &&
           _selectedFechaNacimiento != null &&
           _selectedGenero != null &&
           dniController.text.trim().isNotEmpty &&
@@ -293,6 +271,7 @@ class ProfileViewmodel extends ChangeNotifier {
       }
 
       final updatedUser = _user.copyWith(
+        id: uid, // Asegura que el id nunca sea vacío
         nombre: nombreCompletoController.text.trim(),
         email: emailController.text.trim(),
         dni: int.tryParse(dniController.text.trim()),
@@ -314,5 +293,24 @@ class ProfileViewmodel extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     }
+  }
+
+  /// Limpia el estado del ViewModel (para usar al cerrar sesión)
+  void clearProfileState() {
+    _user = Usuario(id: '', nombre: 'Invitado', email: 'invitado@example.com', empadronado: false);
+    nombreCompletoController.clear();
+    dniController.clear();
+    numeroTelefonoController.clear();
+    emailController.clear();
+    fechaNacimientoController.clear();
+    direccionDetalladaController.clear();
+    _selectedFechaNacimiento = null;
+    _selectedGenero = null;
+    _selectedDistrito = null;
+    _selectedVecindario = null;
+    _imageFile = null;
+    _errorMessage = null;
+    _isLoading = false;
+    notifyListeners();
   }
 }

@@ -109,7 +109,7 @@ al actualizar el perfil del usuario*/
       dni: dni ?? this.dni,
       distrito: distrito ?? this.distrito,
       fechaNacimiento: fechaNacimiento ?? this.fechaNacimiento,
-      numeroTelefono: numeroTelefono ?? this.numeroTelefono,
+      numeroTelefono: numeroTelefono ?? numeroTelefono,
       genero: genero ?? this.genero,
       vecindario: vecindario ?? this.vecindario,
       provincia: provincia ?? this.provincia,
