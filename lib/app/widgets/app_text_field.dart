@@ -11,6 +11,7 @@ class AppTextField extends StatelessWidget {
   final VoidCallback? onEyeTab;
   final FocusNode? focusNode;
   final int? maxLines;
+  final bool readOnly;
 
   const AppTextField({
     super.key,
@@ -23,6 +24,7 @@ class AppTextField extends StatelessWidget {
     this.onEyeTab,
     this.focusNode,
     this.maxLines = 1,
+    this.readOnly = false,
   });
 
   @override
@@ -33,6 +35,7 @@ class AppTextField extends StatelessWidget {
       obscureText: obscureText,
       keyboardType: keyboardType,
       maxLines: obscureText ? 1 : maxLines,
+      readOnly: readOnly,
       decoration: InputDecoration(
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
         enabledBorder: OutlineInputBorder(
