@@ -133,7 +133,7 @@ class AuthViewModel extends ChangeNotifier {
         context: context,
         builder: (context) => AlertDialog(
           title: Text("Registro exitoso"),
-          content: Text("Bienvenido a la cumunidad $nombre"),
+          content: Text("Bienvenido a la comunidad $nombre"),
           actions: [
             IconButton(
               onPressed: () => Navigator.push(
