@@ -6,6 +6,7 @@ import '../viewmodel/profile_viewmodel.dart';
 import '/app/theme/app_colors.dart';
 import 'package:alerta_lima/app/widgets/app_text_field.dart';
 import 'package:alerta_lima/app/widgets/profile_gender_widgets.dart';
+import 'package:alerta_lima/features/auth/view/login_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -145,7 +146,8 @@ class ProfileScreen extends StatelessWidget {
                 const SizedBox(height: 20),
                 // Dropdown Distrito
                 DropdownButtonFormField<String>(
-                  value: profileVM.distritos.contains(profileVM.selectedDistrito)
+                  value:
+                      profileVM.distritos.contains(profileVM.selectedDistrito)
                       ? profileVM.selectedDistrito
                       : null,
                   decoration: InputDecoration(
@@ -170,17 +172,23 @@ class ProfileScreen extends StatelessWidget {
                     filled: true,
                     fillColor: AppColors.background,
                   ),
-                  items: (profileVM.distritos.isNotEmpty ? profileVM.distritos : ["Sin distritos disponibles"]).map((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(
-                        value,
-                        style: TextStyle(color: AppColors.text),
-                      ),
-                    );
-                  }).toList(),
+                  items:
+                      (profileVM.distritos.isNotEmpty
+                              ? profileVM.distritos
+                              : ["Sin distritos disponibles"])
+                          .map((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(
+                                value,
+                                style: TextStyle(color: AppColors.text),
+                              ),
+                            );
+                          })
+                          .toList(),
                   onChanged: (String? newValue) {
-                    if (newValue != null && profileVM.distritos.contains(newValue)) {
+                    if (newValue != null &&
+                        profileVM.distritos.contains(newValue)) {
                       profileVM.selectedDistrito = newValue;
                     }
                   },
@@ -189,7 +197,10 @@ class ProfileScreen extends StatelessWidget {
 
                 // Dropdown Vecindario
                 DropdownButtonFormField<String>(
-                  value: profileVM.vecindarios.contains(profileVM.selectedVecindario)
+                  value:
+                      profileVM.vecindarios.contains(
+                        profileVM.selectedVecindario,
+                      )
                       ? profileVM.selectedVecindario
                       : null,
                   decoration: InputDecoration(
@@ -214,17 +225,23 @@ class ProfileScreen extends StatelessWidget {
                     filled: true,
                     fillColor: AppColors.background,
                   ),
-                  items: (profileVM.vecindarios.isNotEmpty ? profileVM.vecindarios : ["Sin vecindarios disponibles"]).map((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(
-                        value,
-                        style: TextStyle(color: AppColors.text),
-                      ),
-                    );
-                  }).toList(),
+                  items:
+                      (profileVM.vecindarios.isNotEmpty
+                              ? profileVM.vecindarios
+                              : ["Sin vecindarios disponibles"])
+                          .map((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(
+                                value,
+                                style: TextStyle(color: AppColors.text),
+                              ),
+                            );
+                          })
+                          .toList(),
                   onChanged: (String? newValue) {
-                    if (newValue != null && profileVM.vecindarios.contains(newValue)) {
+                    if (newValue != null &&
+                        profileVM.vecindarios.contains(newValue)) {
                       profileVM.selectedVecindario = newValue;
                     }
                   },
@@ -249,10 +266,23 @@ class ProfileScreen extends StatelessWidget {
                           await profileVM.saveProfileChanges();
                           if (context.mounted) {
                             if (profileVM.errorMessage == null) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Perfil actualizado con éxito'),
-                                  backgroundColor: Colors.green,
+                              showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  title: Text("Registro completo exitoso"),
+                                  content: Text("Para que puedas visualizar los cambios y poder ingresar\n a las demás opciones, por favor \n reinicia la aplicación"),
+                                  actions: [
+                                    IconButton(
+                                      onPressed: () => Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              const LoginScreen(),
+                                        ),
+                                      ),
+                                      icon: Text("Vamos allá"),
+                                    ),
+                                  ],
                                 ),
                               );
                             } else {
