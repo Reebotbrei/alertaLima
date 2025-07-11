@@ -1,5 +1,9 @@
 import 'dart:io';
+import 'dart:math';
+import 'package:path_provider/path_provider.dart';
 import 'package:alerta_lima/app/Objetitos/Incidente.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:alerta_lima/app/widgets/app_text_field.dart';
 import 'package:alerta_lima/app/widgets/app_button.dart';
@@ -29,6 +33,19 @@ class _ReporteincidentesState extends State<Reporteincidentes> {
   List<File> _imagenes = [];
   List<File> _videos = [];
   File? _archivoAudioLocal;
+
+  // Copia un archivo a una ruta persistente y retorna el nuevo File
+  Future<File> _copiarAStoragePersistente(File archivo, String subcarpeta) async {
+    final dir = await getApplicationDocumentsDirectory();
+    final carpeta = Directory('${dir.path}/$subcarpeta');
+    if (!await carpeta.exists()) {
+      await carpeta.create(recursive: true);
+    }
+    final nombreArchivo = '${DateTime.now().millisecondsSinceEpoch}_${archivo.path.split(Platform.pathSeparator).last}';
+    final nuevoPath = '${carpeta.path}/$nombreArchivo';
+    final nuevoArchivo = await archivo.copy(nuevoPath);
+    return nuevoArchivo;
+  }
   //variable para guardar el tipo de incidente
   String? _tipoSeleccionado;
 
@@ -42,6 +59,17 @@ class _ReporteincidentesState extends State<Reporteincidentes> {
   void dispose() {
     _audioHelper.cerrar(); //liberar recursos de microfono
     super.dispose();
+  }
+
+
+
+  // Formatea bytes a string legible (ej: 1.2 MB)
+  String _formatBytes(int bytes, [int decimals = 2]) {
+    if (bytes <= 0) return "0 B";
+    const suffixes = ["B", "KB", "MB", "GB", "TB"];
+    var i = (bytes == 0) ? 0 : (log(bytes) / log(1024)).floor();
+    double size = bytes / pow(1024, i);
+    return size.toStringAsFixed(decimals) + ' ' + suffixes[i];
   }
 
   @override
@@ -117,56 +145,85 @@ class _ReporteincidentesState extends State<Reporteincidentes> {
             ),
             SizedBox(height: 8),
 
-            // Botón de Audio
+            // Botón de Audio (muestra tamaño si existe)
             BotonAdjuntoAudio(
-              audioHelper:
-                  _audioHelper, // helper que maneja la logica de la grabacion
-              archivoAudioLocal:
-                  _archivoAudioLocal, //archivos de audio para cargar de almacenamineto
-              onAudioSeleccionado: (nuevoArchivo) {
-                //actualiza el audio cargado
-                _archivoAudioLocal = nuevoArchivo;
+              audioHelper: _audioHelper,
+              archivoAudioLocal: _archivoAudioLocal,
+              subtitulo: _archivoAudioLocal != null && _archivoAudioLocal!.existsSync()
+                  ? 'Audio grabado (' + _formatBytes(_archivoAudioLocal!.lengthSync()) + ')'
+                  : null,
+              onAudioSeleccionado: (nuevoArchivo) async {
+                if (nuevoArchivo != null) {
+                  final persistente = await _copiarAStoragePersistente(nuevoArchivo, 'audios');
+                  setState(() {
+                    _archivoAudioLocal = persistente;
+                  });
+                }
               },
-              onActualizar: () => setState(() {}), //refresca la vista
+              onActualizar: () async {
+                // Si hay audio grabado en audioHelper.rutaAudio y no está en _archivoAudioLocal, lo asigna
+                if (_audioHelper.rutaAudio != null) {
+                  final file = File(_audioHelper.rutaAudio!);
+                  if (await file.exists()) {
+                    final persistente = await _copiarAStoragePersistente(file, 'audios');
+                    setState(() {
+                      _archivoAudioLocal = persistente;
+                    });
+                  }
+                } else {
+                  setState(() {});
+                }
+              },
             ),
 
             SizedBox(height: 8),
 
-            // Botón de Fotos tomar o almacenamiento
+            // Botón de Fotos tomar o almacenamiento (muestra cantidad y tamaño)
             BotonAdjuntoFoto(
-              imagenes: _imagenes, //lista actual de imagene seleccionados
-              onImagenesSeleccionadas: (nuevasImagenes) {
-                //callback qu actualiza  la lista con nuevas imagens
+              imagenes: _imagenes,
+              subtitulo: _imagenes.isNotEmpty
+                  ? '${_imagenes.length} foto(s) agregadas (' + _formatBytes(_imagenes.fold<int>(0, (p, f) => p + (f.existsSync() ? f.lengthSync() : 0))) + ')'
+                  : 'Presione para tomar o cargar foto',
+              onImagenesSeleccionadas: (nuevasImagenes) async {
+                List<File> persistentes = [];
+                for (var img in nuevasImagenes) {
+                  final persistente = await _copiarAStoragePersistente(img, 'imagenes');
+                  persistentes.add(persistente);
+                }
                 setState(() {
-                  _imagenes = nuevasImagenes;
+                  _imagenes = persistentes;
                 });
               },
             ),
 
             SizedBox(height: 8),
 
-            // Botón de Videos
+            // Botón de Videos (muestra cantidad y tamaño)
             BotonAdjuntoVideo(
-              videos: _videos, // Lista actual de videos seleccionados
-              onVideosSeleccionados: (nuevosVideos) {
-                //actualiza la lista de videos
+              videos: _videos,
+              subtitulo: _videos.isNotEmpty
+                  ? '${_videos.length} video(s) agregados (' + _formatBytes(_videos.fold<int>(0, (p, f) => p + (f.existsSync() ? f.lengthSync() : 0))) + ')'
+                  : 'Presione para cargar o agregar video',
+              onVideosSeleccionados: (nuevosVideos) async {
+                List<File> persistentes = [];
+                for (var vid in nuevosVideos) {
+                  final persistente = await _copiarAStoragePersistente(vid, 'videos');
+                  persistentes.add(persistente);
+                }
                 setState(() {
-                  _videos = nuevosVideos;
+                  _videos = persistentes;
                 });
               },
             ),
-
             const SizedBox(height: 80),
 
             // Botón Final
             AppButton(
               label: 'Enviar reporte',
               onPressed: () async {
-                final ubicacion =
-                    await UbicacionHelper.obtenerUbicacion(); //obtenemos la ubicacion actual del usuario
+                final ubicacion = await UbicacionHelper.obtenerUbicacion();
 
-                if (_tipoSeleccionado == null ||
-                    _numeroController.text.trim().isEmpty) {
+                if (_tipoSeleccionado == null || _numeroController.text.trim().isEmpty) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text('Completa todos los campos obligatorios.'),
@@ -175,18 +232,182 @@ class _ReporteincidentesState extends State<Reporteincidentes> {
                   return;
                 }
 
+                // Mostrar paths y tamaños antes de subir
+                String logArchivos = '';
+                for (var img in _imagenes) {
+                  final exists = img.existsSync();
+                  final length = exists ? await img.length() : 0;
+                  logArchivos += 'Imagen: ${img.path}\n  Existe: $exists, Tamaño: $length bytes\n';
+                }
+                for (var vid in _videos) {
+                  final exists = vid.existsSync();
+                  final length = exists ? await vid.length() : 0;
+                  logArchivos += 'Video: ${vid.path}\n  Existe: $exists, Tamaño: $length bytes\n';
+                }
+                if (_archivoAudioLocal != null) {
+                  final exists = _archivoAudioLocal!.existsSync();
+                  final length = exists ? await _archivoAudioLocal!.length() : 0;
+                  logArchivos += 'Audio: ${_archivoAudioLocal!.path}\n  Existe: $exists, Tamaño: $length bytes\n';
+                }
+
+                await showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: Text('Archivos a subir'),
+                    content: SingleChildScrollView(child: Text(logArchivos)),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.of(context).pop(),
+                        child: Text('Continuar'),
+                      ),
+                    ],
+                  ),
+                );
+
                 try {
+                  // --- Asegura que todas las imágenes estén en storage persistente ---
+                  List<File> imagenesPersistentes = [];
+                  for (var img in _imagenes) {
+                    if (!img.path.contains('/imagenes/') && !img.path.contains('imagenes')) {
+                      final persistente = await _copiarAStoragePersistente(img, 'imagenes');
+                      imagenesPersistentes.add(persistente);
+                    } else {
+                      imagenesPersistentes.add(img);
+                    }
+                  }
+                  _imagenes = imagenesPersistentes;
+
+                  // --- Asegura que todos los videos estén en storage persistente ---
+                  List<File> videosPersistentes = [];
+                  for (var vid in _videos) {
+                    if (!vid.path.contains('/videos/') && !vid.path.contains('videos')) {
+                      final persistente = await _copiarAStoragePersistente(vid, 'videos');
+                      videosPersistentes.add(persistente);
+                    } else {
+                      videosPersistentes.add(vid);
+                    }
+                  }
+                  _videos = videosPersistentes;
+
+                  // Subir imágenes a Firebase Storage (manejo seguro)
+                  List<String> urlsImagenes = [];
+                  for (var img in _imagenes) {
+                    if (!img.existsSync()) {
+                      throw Exception('El archivo de imagen no existe: ${img.path}');
+                    }
+                    final length = await img.length();
+                    if (length == 0) {
+                      throw Exception('El archivo de imagen está vacío: ${img.path}');
+                    }
+                    String nombre = 'imagenes/${DateTime.now().millisecondsSinceEpoch}_${img.path.split(Platform.pathSeparator).last}';
+                    final ref = FirebaseStorage.instance.ref().child(nombre);
+                    try {
+                      final uploadTask = await ref.putFile(img);
+                      debugPrint('UploadTask state for ${img.path}: \\${uploadTask.state}');
+                      if (uploadTask.state == TaskState.success) {
+                        final url = await ref.getDownloadURL();
+                        urlsImagenes.add(url);
+                      } else {
+                        throw Exception('No se pudo subir la imagen: ${img.path}. Estado: \\${uploadTask.state}');
+                      }
+                    } catch (e, stack) {
+                      debugPrint('Firebase error al subir imagen: ${img.path} -> $e');
+                      debugPrint('Stacktrace: $stack');
+                      throw Exception('Error subiendo imagen: ${img.path} -> $e');
+                    }
+                  }
+
+                  // Subir videos a Firebase Storage (manejo seguro)
+                  List<String> urlsVideos = [];
+                  for (var vid in _videos) {
+                    if (!vid.existsSync()) {
+                      throw Exception('El archivo de video no existe: ${vid.path}');
+                    }
+                    final length = await vid.length();
+                    if (length == 0) {
+                      throw Exception('El archivo de video está vacío: ${vid.path}');
+                    }
+                    String nombre = 'videos/${DateTime.now().millisecondsSinceEpoch}_${vid.path.split(Platform.pathSeparator).last}';
+                    final ref = FirebaseStorage.instance.ref().child(nombre);
+                    try {
+                      final uploadTask = await ref.putFile(vid);
+                      debugPrint('UploadTask state for ${vid.path}: \\${uploadTask.state}');
+                      if (uploadTask.state == TaskState.success) {
+                        final url = await ref.getDownloadURL();
+                        urlsVideos.add(url);
+                      } else {
+                        throw Exception('No se pudo subir el video: ${vid.path}. Estado: \\${uploadTask.state}');
+                      }
+                    } catch (e, stack) {
+                      debugPrint('Firebase error al subir video: ${vid.path} -> $e');
+                      debugPrint('Stacktrace: $stack');
+                      throw Exception('Error subiendo video: ${vid.path} -> $e');
+                    }
+                  }
+
+                  // Subir audio a Firebase Storage (manejo seguro)
+                  String? urlAudio;
+                  if (_archivoAudioLocal != null) {
+                    if (!_archivoAudioLocal!.existsSync()) {
+                      throw Exception('El archivo de audio no existe: ${_archivoAudioLocal!.path}');
+                    }
+                    final length = await _archivoAudioLocal!.length();
+                    if (length == 0) {
+                      throw Exception('El archivo de audio está vacío: ${_archivoAudioLocal!.path}');
+                    }
+                    String nombre = 'audios/${DateTime.now().millisecondsSinceEpoch}_${_archivoAudioLocal!.path.split(Platform.pathSeparator).last}';
+                    final ref = FirebaseStorage.instance.ref().child(nombre);
+                    try {
+                      final uploadTask = await ref.putFile(_archivoAudioLocal!);
+                      debugPrint('UploadTask state for ${_archivoAudioLocal!.path}: \\${uploadTask.state}');
+                      if (uploadTask.state == TaskState.success) {
+                        urlAudio = await ref.getDownloadURL();
+                      } else {
+                        throw Exception('No se pudo subir el audio. Estado: \\${uploadTask.state}');
+                      }
+                    } catch (e, stack) {
+                      debugPrint('Firebase error al subir audio: ${_archivoAudioLocal!.path} -> $e');
+                      debugPrint('Stacktrace: $stack');
+                      throw Exception('Error subiendo audio: ${_archivoAudioLocal!.path} -> $e');
+                    }
+                  }
+
                   final incidente = Incidente(
                     tipo: _tipoSeleccionado!,
                     descripcion: _numeroController.text.trim(),
                     fechaHora: DateTime.now(),
                     ubicacion: ubicacion,
-                    imagenes: _imagenes.isEmpty ? null : _imagenes,
-                    audio: _archivoAudioLocal,
-                    video: _videos.isEmpty ? null : _videos,
-                    usuario: widget
-                        .usuario, // Reemplaza con el usuario real si tienes
+                    imagenes: urlsImagenes.isEmpty ? null : urlsImagenes,
+                    audio: urlAudio,
+                    video: urlsVideos.isEmpty ? null : urlsVideos,
+                    usuario: widget.usuario,
                   );
+                  // Guardar el incidente en Firestore
+                  await FirebaseFirestore.instance.collection('reportes_incidentes').add({
+                    'tipo': incidente.tipo,
+                    'descripcion': incidente.descripcion,
+                    'fechaHora': incidente.fechaHora,
+                    'ubicacion': incidente.ubicacion,
+                    'imagenes': incidente.imagenes,
+                    'audio': incidente.audio,
+                    'video': incidente.video,
+                    'usuario': {
+                      'id': incidente.usuario.id,
+                      'nombre': incidente.usuario.nombre,
+                      // Agrega más campos si tu modelo Usuario tiene más
+                    },
+                  });
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Reporte enviado correctamente.')),
+                  );
+                  // Opcional: limpiar campos
+                  setState(() {
+                    _imagenes = [];
+                    _videos = [];
+                    _archivoAudioLocal = null;
+                    _numeroController.clear();
+                    _tipoSeleccionado = null;
+                  });
                 } catch (e) {
                   ScaffoldMessenger.of(
                     context,
