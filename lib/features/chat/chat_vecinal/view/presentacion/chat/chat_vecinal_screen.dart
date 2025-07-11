@@ -58,7 +58,6 @@ class _ChatVecinalView extends StatelessWidget {
         }
         return ListView(
           children: snapshot.data!.docs
-
               .map((doc) => _globosMensaje(doc))
               .toList(),
         );
